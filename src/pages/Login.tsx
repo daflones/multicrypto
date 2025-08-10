@@ -58,7 +58,7 @@ const Login: React.FC = () => {
         
         {/* Conteúdo da página About */}
         <div className="pt-16">
-          <About />
+          <About onBack={() => setShowAbout(false)} />
         </div>
       </div>
     );

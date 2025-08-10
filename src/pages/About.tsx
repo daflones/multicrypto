@@ -1,8 +1,64 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { TrendingUp, Shield, Users, Award, ArrowRight } from 'lucide-react';
 
-const About: React.FC = () => {
+type AboutProps = {
+  onBack?: () => void; // opcional: permite fechar o About quando exibido dentro de Login
+};
+
+const STORAGE_KEY = 'about_stats_v1';
+const INTERVAL_MS = 2 * 60 * 1000; // 2 minutos
+const GROWTH = 1.03; // +3% por intervalo
+
+const About: React.FC<AboutProps> = ({ onBack }) => {
+  const navigate = useNavigate();
+  // base: 500 investidores, 250k BRL
+  const [investors, setInvestors] = useState(500);
+  const [volume, setVolume] = useState(250000);
+
+  const formatBRL = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(v);
+
+  const loadAndProject = useMemo(() => {
+    return () => {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const now = Date.now();
+        const parsed = raw ? JSON.parse(raw) : null;
+        const baseInvestors = parsed?.investors ?? 500;
+        const baseVolume = parsed?.volume ?? 250000;
+        const lastAt = parsed?.ts ?? now;
+        const steps = Math.floor((now - lastAt) / INTERVAL_MS);
+        const factor = Math.pow(GROWTH, Math.max(0, steps));
+        return {
+          investors: Math.floor(baseInvestors * factor),
+          volume: Math.floor(baseVolume * factor),
+          ts: lastAt + steps * INTERVAL_MS,
+        };
+      } catch {
+        return { investors: 500, volume: 250000, ts: Date.now() };
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const apply = () => {
+      const { investors: inv, volume: vol, ts } = loadAndProject();
+      setInvestors(inv);
+      setVolume(vol);
+      // Persist the projected state as the new base
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ investors: inv, volume: vol, ts }));
+    };
+    apply();
+    const id = setInterval(apply, INTERVAL_MS);
+    const onVis = () => apply();
+    document.addEventListener('visibilitychange', onVis);
+    return () => { clearInterval(id); document.removeEventListener('visibilitychange', onVis); };
+  }, [loadAndProject]);
+
+  const handleBackToLogin = () => {
+    onBack?.();
+    navigate('/login');
+  };
   return (
     <div className="min-h-screen bg-background text-white">
       {/* Header */}
@@ -83,16 +139,16 @@ const About: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Stats (com crescimento persistente) */}
         <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-lg p-6">
           <h2 className="text-xl font-bold text-white text-center mb-6">Nossos Números</h2>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <p className="text-2xl font-bold text-primary mb-1">500+</p>
+              <p className="text-2xl font-bold text-primary mb-1">{investors.toLocaleString('pt-BR')}+</p>
               <p className="text-gray-400 text-sm">Investidores Ativos</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-success mb-1">R$ 250.000+</p>
+              <p className="text-2xl font-bold text-success mb-1">{formatBRL(volume)}+</p>
               <p className="text-gray-400 text-sm">Volume Investido</p>
             </div>
             <div>
@@ -167,12 +223,12 @@ const About: React.FC = () => {
               <span>Criar Conta Grátis</span>
               <ArrowRight size={20} />
             </Link>
-            <Link
-              to="/login"
+            <button
+              onClick={handleBackToLogin}
               className="block w-full bg-surface text-white py-3 rounded-lg font-medium hover:bg-surface-light transition-colors"
             >
               Já tenho uma conta
-            </Link>
+            </button>
           </div>
         </div>
 

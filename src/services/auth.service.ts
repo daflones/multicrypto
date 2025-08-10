@@ -9,7 +9,7 @@ export interface RegisterData {
   email: string;
   phone: string;
   password: string;
-  referralCode: string;
+  referralCode?: string; // opcional
 }
 
 export interface LoginData {
@@ -87,33 +87,21 @@ export class AuthService {
         throw new Error('CPF inválido');
       }
 
-      // Check if referral code exists (buscar pelo admin criado no SQL)
-      console.log('🔍 Verificando código de convite:', data.referralCode);
-      
-      // Primeiro, vamos tentar buscar todos os usuários para ver se a tabela tem dados
-      const { data: allUsers, error: allUsersError } = await supabase
-        .from('users')
-        .select('id, referral_code, email');
-      
-      console.log('👥 Todos os usuários no banco:', allUsers, 'Erro:', allUsersError);
-      
-      // Agora buscar o referrer específico
-      const { data: referrer, error: referrerError } = await supabase
-        .from('users')
-        .select('id, referral_code, email')
-        .eq('referral_code', data.referralCode)
-        .maybeSingle(); // Use maybeSingle em vez de single para evitar erro quando não encontrar
-
-      console.log('📊 Resultado da busca:', { referrer, referrerError });
-
-      if (referrerError) {
-        console.error('❌ Erro ao buscar referrer:', referrerError);
-        throw new Error('Erro na consulta: ' + referrerError.message);
-      }
-      
-      if (!referrer) {
-        console.error('❌ Código não encontrado:', data.referralCode);
-        throw new Error('Código de convite inválido');
+      // Verifica código de convite apenas se fornecido
+      console.log('🔍 Verificando código de convite (opcional):', data.referralCode);
+      let referrer: any = null;
+      if (data.referralCode && data.referralCode.trim() !== '') {
+        const { data: refUser, error: refError } = await supabase
+          .from('users')
+          .select('id, referral_code, email')
+          .eq('referral_code', data.referralCode)
+          .single();
+        if (!refError && refUser) {
+          referrer = refUser;
+        } else {
+          console.error('❌ Código não encontrado:', data.referralCode);
+          throw new Error('Código de convite inválido');
+        }
       }
 
       // Check if CPF or email already exists
@@ -139,7 +127,7 @@ export class AuthService {
           data: {
             cpf: data.cpf.replace(/\D/g, ''),
             phone: data.phone.replace(/\D/g, ''),
-            referral_code: data.referralCode
+            referral_code: data.referralCode && data.referralCode.trim() !== '' ? data.referralCode : null
           }
         }
       });
@@ -183,7 +171,7 @@ export class AuthService {
           phone: data.phone.replace(/\D/g, ''),
           password_hash: passwordHash,
           referral_code: newReferralCode,
-          referred_by: referrer.id,
+          referred_by: referrer ? referrer.id : null,
           balance: 0
         })
         .select()
@@ -195,17 +183,19 @@ export class AuthService {
         throw new Error('Erro ao criar perfil: ' + insertError.message);
       }
 
-      // Enviar notificação para o referenciador direto (sem mencionar comissão)
-      try {
-        await NotificationService.createNotification(
-          referrer.id,
-          'referral_new',
-          'Novo cadastro na sua rede',
-          `${data.email} acabou de se cadastrar usando seu código de convite.`,
-          { new_user_id: newUser.id, new_user_email: data.email }
-        );
-      } catch (notifyErr) {
-        console.error('Erro ao criar notificação de cadastro:', notifyErr);
+      // Enviar notificação apenas se houver referenciador
+      if (referrer) {
+        try {
+          await NotificationService.createNotification(
+            referrer.id,
+            'referral_new',
+            'Novo cadastro na sua rede',
+            `${data.email} acabou de se cadastrar usando seu código de convite.`,
+            { new_user_id: newUser.id, new_user_email: data.email }
+          );
+        } catch (notifyErr) {
+          console.error('Erro ao criar notificação de cadastro:', notifyErr);
+        }
       }
 
       return { user: newUser, success: true };

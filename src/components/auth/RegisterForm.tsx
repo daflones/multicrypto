@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, Phone, CreditCard, Users, UserPlus } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { registerSchema, RegisterFormData } from '../../utils/validators';
@@ -20,6 +20,25 @@ const RegisterForm: React.FC = () => {
   
   const { register, isLoading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Auto-preencher código de convite a partir da URL (?ref, ?code, ?referral)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(location.search);
+      const codeFromUrl =
+        params.get('ref') || params.get('code') || params.get('referral') || '';
+      if (codeFromUrl && !formData.referralCode) {
+        setFormData((prev) => ({
+          ...prev,
+          referralCode: codeFromUrl.toUpperCase().slice(0, 8),
+        }));
+      }
+    } catch (e) {
+      // ignore parsing errors
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -185,7 +204,7 @@ const RegisterForm: React.FC = () => {
           {/* Referral Code */}
           <div>
             <label htmlFor="referralCode" className="block text-sm font-medium text-gray-300 mb-2">
-              Código de Convite *
+              Código de convite (opcional)
             </label>
             <div className="relative">
               <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -198,7 +217,7 @@ const RegisterForm: React.FC = () => {
                 className={`w-full pl-10 pr-4 py-3 bg-surface border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
                   errors.referralCode ? 'border-error' : 'border-surface-light'
                 }`}
-                placeholder="ABC12345"
+                placeholder="Se tiver, cole o código do convite"
                 maxLength={8}
                 disabled={isLoading}
               />

@@ -56,9 +56,12 @@ export const registerSchema = z.object({
   password: z.string()
     .min(6, 'Senha deve ter pelo menos 6 caracteres'),
   confirmPassword: z.string(),
-  referralCode: z.string()
-    .min(1, 'Código de convite é obrigatório')
-    .max(8, 'Código de convite inválido'),
+  // Código de convite é opcional; quando presente, até 8 chars
+  referralCode: z
+    .string()
+    .max(8, 'Código de convite inválido')
+    .optional()
+    .or(z.literal('')),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Senhas não coincidem",
   path: ["confirmPassword"],

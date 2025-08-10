@@ -4,13 +4,17 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/images/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- SEO Básico -->
+    <!-- SEO Avançado -->
     <meta name="description" content="Multi Crypto - Plataforma de investimentos em cripto com rendimentos, saques e recargas simples e seguras." />
     <meta name="robots" content="index, follow" />
     <meta name="keywords" content="Multi Crypto, multicrypto, multi crypto, multi-crypto, multi crypto investimento, multicrypto investimento, cripto, investimentos, rendimentos, bitcoin, usdt, crypto yield" />
     <meta name="theme-color" content="#0f0f1a" />
     <link rel="apple-touch-icon" href="/images/logo.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="alternate" href="/" hreflang="pt-BR" />
+    <link rel="alternate" href="/" hreflang="x-default" />
     <!-- Quando tiver o domínio, adicione a canonical: <link rel="canonical" href="https://SEU-DOMINIO.com/" /> -->
+    <!-- Quando tiver o token do Search Console, adicione: <meta name="google-site-verification" content="TOKEN_AQUI" /> -->
 
     <!-- Open Graph / Social Preview -->
     <meta property="og:type" content="website" />
@@ -53,6 +57,51 @@
           "target": "/search?q={query}",
           "query-input": "required name=query"
         }
+      }
+    </script>
+    <!-- Estruturado: FAQPage para cobrir intenções comuns de busca -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "O que é a Multi Crypto?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A Multi Crypto é uma plataforma de investimentos em cripto que oferece recargas, saques e rendimentos com segurança e praticidade."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Como investir na Multi Crypto?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Crie sua conta, faça uma recarga via PIX ou cripto e escolha os produtos de investimento disponíveis conforme seu perfil."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "A Multi Crypto é segura?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Utilizamos autenticação, integração com backend seguro e monitoramento para proteger os dados e operações dos usuários."
+            }
+          }
+        ]
+      }
+    </script>
+    <!-- Estruturado: BreadcrumbList simples -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Início", "item": "/"},
+          {"@type": "ListItem", "position": 2, "name": "Login", "item": "/login"},
+          {"@type": "ListItem", "position": 3, "name": "Cadastro", "item": "/register"}
+        ]
       }
     </script>
     <title>Multi Crypto - Plataforma de Investimentos</title>

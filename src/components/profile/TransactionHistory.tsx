@@ -104,16 +104,18 @@ const TransactionHistory: React.FC = () => {
       if (investmentsData && (filter === 'all' || filter === 'investment')) {
         allTransactions.push(
           ...investmentsData.map(inv => {
-            const productName = Array.isArray(inv.product)
-              ? inv.product[0]?.name
-              : inv.product?.name;
+            // Supabase retorna o alias product:products(name). Pode vir como array ou objeto.
+            const productField: unknown = (inv as any).product;
+            const productName = Array.isArray(productField)
+              ? (productField as any[])[0]?.name as string | undefined
+              : (productField as any)?.name as string | undefined;
             return {
               id: inv.id,
               type: 'investment' as const,
               amount: inv.amount,
               status: inv.status as Transaction['status'],
               created_at: inv.purchase_date,
-              product: { name: productName },
+              product: { name: productName || 'Produto' },
               description: `Investimento em ${productName || 'Produto'}`
             };
           })

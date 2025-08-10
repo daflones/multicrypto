@@ -1,17 +1,66 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabase';
 import { validatePassword } from '../utils/validators';
 
 const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [status, setStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error'; message?: string}>({ type: 'idle' });
+  const [status, setStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error' | 'guard'; message?: string}>({ type: 'idle' });
+  const [email, setEmail] = useState<string | null>(null);
+  const [isRecovery, setIsRecovery] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const hashParams = useMemo(() => {
+    const hash = location.hash.startsWith('#') ? location.hash.slice(1) : location.hash;
+    const params = new URLSearchParams(hash);
+    return params;
+  }, [location.hash]);
+
+  useEffect(() => {
+    let mounted = true;
+    // Detect if we arrived via recovery link (type=recovery in hash)
+    const type = hashParams.get('type');
+    if (type === 'recovery') {
+      setIsRecovery(true);
+    }
+
+    const init = async () => {
+      // Try to get current session/user set by Supabase from the URL hash
+      const { data: { session } } = await supabase.auth.getSession();
+      if (mounted && session?.user) {
+        setEmail(session.user.email ?? null);
+      }
+      if (mounted && !session && type !== 'recovery') {
+        // Not in recovery and no session → guard UI
+        setStatus({ type: 'guard', message: 'Abra este endereço a partir do link recebido por email.' });
+      }
+    };
+    init();
+
+    // Listen to auth state changes to detect PASSWORD_RECOVERY automatically
+    const { data: sub } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecovery(true);
+      }
+      if (session?.user) {
+        setEmail(session.user.email ?? null);
+      }
+    });
+    return () => { mounted = false; sub.subscription.unsubscribe(); };
+  }, [hashParams]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus({ type: 'idle' });
+
+    // Guard: ensure this page was opened from a valid recovery link
+    if (!isRecovery) {
+      setStatus({ type: 'guard', message: 'Este link não é válido para redefinição. Use o link enviado por email.' });
+      return;
+    }
 
     if (!validatePassword(password)) {
       setStatus({ type: 'error', message: 'Senha deve ter pelo menos 6 caracteres' });
@@ -37,8 +86,14 @@ const ResetPassword: React.FC = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-surface border border-surface-light rounded-xl p-6 shadow-xl">
         <h1 className="text-2xl font-bold text-white mb-2">Definir nova senha</h1>
-        <p className="text-gray-400 mb-6">Insira e confirme sua nova senha para concluir a redefinição.</p>
+        <p className="text-gray-400 mb-1">Insira e confirme sua nova senha para concluir a redefinição.</p>
+        {email && (
+          <p className="text-gray-500 text-sm mb-6">Conta: <span className="text-gray-300">{email}</span></p>
+        )}
 
+        {status.type === 'guard' && (
+          <div className="bg-warning/10 border border-warning/20 rounded-lg p-3 text-yellow-300 text-sm mb-4">{status.message}</div>
+        )}
         {status.type === 'error' && (
           <div className="bg-error/10 border border-error/20 rounded-lg p-3 text-error text-sm mb-4">{status.message}</div>
         )}

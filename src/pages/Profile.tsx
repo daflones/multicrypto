@@ -165,7 +165,7 @@ const Profile: React.FC = () => {
             Falar com Suporte (WhatsApp)
           </a>
           <a
-            href="https://chat.whatsapp.com/BvxkAn6oVkB3chCVOvaaOi?mode=ac_t"
+            href="https://chat.whatsapp.com/IEqTSpXZSC1FqqMRXJhHeg?mode=ac_t"
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 text-center bg-secondary hover:bg-secondary/80 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"

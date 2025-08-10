@@ -45,9 +45,10 @@ const LoginForm: React.FC = () => {
     }
     try {
       setForgotStatus({ type: 'loading' });
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://multicrypto.com.br';
+      const siteUrl = (import.meta as any)?.env?.VITE_PUBLIC_SITE_URL
+        || (typeof window !== 'undefined' ? window.location.origin : 'https://multicrypto.com.br');
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${origin}/reset-password`
+        redirectTo: `${siteUrl}/reset-password`
       });
       if (error) throw error;
       setForgotStatus({ type: 'success', message: 'Enviamos um link para seu email. Verifique sua caixa de entrada e spam.' });

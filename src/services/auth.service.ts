@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 import { generateReferralCode } from '../utils/formatters';
-import { validateCPF } from '../utils/validators';
+import { validateCPF, validatePhone, sanitizeInput, validatePassword } from '../utils/validators';
 import bcrypt from 'bcryptjs';
 import { NotificationService } from './notification.service';
 
@@ -18,6 +18,68 @@ export interface LoginData {
 }
 
 export class AuthService {
+  static async updateUserPhone(userId: string, newPhone: string) {
+    try {
+      const clean = sanitizeInput(newPhone).replace(/\D/g, '');
+      if (!validatePhone(clean)) {
+        throw new Error('Telefone inválido');
+      }
+
+      const { error } = await supabase
+        .from('users')
+        .update({ phone: clean })
+        .eq('id', userId);
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error('Update phone error:', error);
+      throw error;
+    }
+  }
+
+  static async updateUserPassword(userId: string, currentPassword: string, newPassword: string) {
+    try {
+      const cur = sanitizeInput(currentPassword);
+      const next = sanitizeInput(newPassword);
+      if (!validatePassword(next)) {
+        throw new Error('Nova senha inválida');
+      }
+
+      // Buscar hash atual
+      const { data: user, error: userErr } = await supabase
+        .from('users')
+        .select('id, password_hash, email')
+        .eq('id', userId)
+        .single();
+      if (userErr || !user) {
+        throw new Error('Usuário não encontrado');
+      }
+
+      const ok = await bcrypt.compare(cur, user.password_hash);
+      if (!ok) throw new Error('Senha atual incorreta');
+
+      const newHash = await bcrypt.hash(next, 10);
+
+      // Atualiza hash na tabela users
+      const { error: updErr } = await supabase
+        .from('users')
+        .update({ password_hash: newHash })
+        .eq('id', userId);
+      if (updErr) throw updErr;
+
+      // Atualiza senha no Supabase Auth para manter login funcional
+      const { error: authErr } = await supabase.auth.updateUser({ password: next });
+      if (authErr) {
+        // Não falhar duro se auth update falhar; mas logar
+        console.warn('Falha ao atualizar senha no Supabase Auth:', authErr);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Update password error:', error);
+      throw error;
+    }
+  }
   static async register(data: RegisterData) {
     try {
       // Validate CPF

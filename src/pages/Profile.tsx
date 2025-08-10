@@ -3,9 +3,13 @@ import { User, LogOut, CreditCard, Phone, Mail, Copy, Check, Settings } from 'lu
 import { useAuthStore } from '../store/authStore';
 import { formatCPF, formatPhone, formatDate } from '../utils/formatters';
 import TransactionHistory from '../components/profile/TransactionHistory';
+import ChangePhoneModal from '../components/profile/ChangePhoneModal';
+import ChangePasswordModal from '../components/profile/ChangePasswordModal';
 
 const Profile: React.FC = () => {
   const [copied, setCopied] = useState(false);
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const { user, logout } = useAuthStore();
 
   if (!user) return null;
@@ -114,21 +118,27 @@ const Profile: React.FC = () => {
         <h2 className="text-lg font-semibold text-white">Configurações da Conta</h2>
         
         <div className="bg-surface rounded-lg overflow-hidden">
-          <button className="w-full p-4 text-left hover:bg-surface-light transition-colors flex items-center justify-between">
+          <button
+            className="w-full p-4 text-left hover:bg-surface-light transition-colors flex items-center justify-between"
+            onClick={() => setShowPasswordModal(true)}
+          >
             <div className="flex items-center space-x-3">
               <Settings className="text-gray-400" size={20} />
               <span className="text-white">Alterar Senha</span>
             </div>
-            <span className="text-gray-400">Em breve</span>
+            <span className="text-gray-400">Abrir</span>
           </button>
           
           <div className="border-t border-surface-light">
-            <button className="w-full p-4 text-left hover:bg-surface-light transition-colors flex items-center justify-between">
+            <button
+              className="w-full p-4 text-left hover:bg-surface-light transition-colors flex items-center justify-between"
+              onClick={() => setShowPhoneModal(true)}
+            >
               <div className="flex items-center space-x-3">
                 <Phone className="text-gray-400" size={20} />
                 <span className="text-white">Alterar Telefone</span>
               </div>
-              <span className="text-gray-400">Em breve</span>
+              <span className="text-gray-400">Abrir</span>
             </button>
           </div>
         </div>
@@ -173,6 +183,10 @@ const Profile: React.FC = () => {
         <LogOut size={20} />
         <span>Sair da Conta</span>
       </button>
+
+      {/* Modals */}
+      <ChangePhoneModal isOpen={showPhoneModal} onClose={() => setShowPhoneModal(false)} />
+      <ChangePasswordModal isOpen={showPasswordModal} onClose={() => setShowPasswordModal(false)} />
     </div>
   );
 };

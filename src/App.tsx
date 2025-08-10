@@ -19,13 +19,13 @@ import Profile from './pages/Profile';
 import About from './pages/About';
 import AdminLogin from './pages/AdminLogin';
 // Admin pages
-import AdminDashboard from './pages/admin/Dashboard';
-import AdminUsers from './pages/admin/Users';
-import AdminProducts from './pages/admin/Products';
-import AdminDeposits from './pages/admin/Deposits';
-import AdminWithdrawals from './pages/admin/Withdrawals';
-import AdminInvestments from './pages/admin/Investments';
-import AdminSettings from './pages/admin/Settings';
+import AdminDashboard from './pages/Admin/Dashboard';
+import AdminUsers from './pages/Admin/Users';
+import AdminProducts from './pages/Admin/Products';
+import AdminDeposits from './pages/Admin/Deposits';
+import AdminWithdrawals from './pages/Admin/Withdrawals';
+import AdminInvestments from './pages/Admin/Investments';
+import AdminSettings from './pages/Admin/Settings';
 
 // Componente wrapper para rotas protegidas
 function ProtectedRoutes() {

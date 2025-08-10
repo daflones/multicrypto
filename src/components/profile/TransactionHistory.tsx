@@ -143,7 +143,7 @@ const TransactionHistory: React.FC = () => {
     }
   };
 
-  const getTransactionDescription = (type: string, paymentMethod?: string, status?: string) => {
+  const getTransactionDescription = (type: string, paymentMethod?: string, _status?: string) => {
     switch (type) {
       case 'deposit':
         return `Recarga via ${paymentMethod?.toUpperCase() || 'PIX'}`;

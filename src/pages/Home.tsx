@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { TrendingUp, Users, Wallet, DollarSign, Plus, Eye } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';

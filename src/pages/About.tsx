@@ -7,7 +7,7 @@ type AboutProps = {
 };
 
 const STORAGE_KEY = 'about_stats_v1';
-const INTERVAL_MS = 2 * 60 * 1000; // 2 minutos
+const INTERVAL_MS = 60_000; // 1 minuto
 const GROWTH = 1.03; // +3% por intervalo
 
 const About: React.FC<AboutProps> = ({ onBack }) => {
@@ -144,11 +144,11 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
           <h2 className="text-xl font-bold text-white text-center mb-6">Nossos Números</h2>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <p className="text-2xl font-bold text-primary mb-1">{investors.toLocaleString('pt-BR')}+</p>
+              <p className="text-2xl font-bold text-primary mb-1">{investors.toLocaleString('pt-BR')}</p>
               <p className="text-gray-400 text-sm">Investidores Ativos</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-success mb-1">{formatBRL(volume)}+</p>
+              <p className="text-2xl font-bold text-success mb-1">{formatBRL(volume)}</p>
               <p className="text-gray-400 text-sm">Volume Investido</p>
             </div>
             <div>

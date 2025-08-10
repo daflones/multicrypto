@@ -26,6 +26,7 @@ import AdminDeposits from './pages/Admin/Deposits';
 import AdminWithdrawals from './pages/Admin/Withdrawals';
 import AdminInvestments from './pages/Admin/Investments';
 import AdminSettings from './pages/Admin/Settings';
+import ResetPassword from './pages/ResetPassword';
 
 // Componente wrapper para rotas protegidas
 function ProtectedRoutes() {
@@ -63,6 +64,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/about" element={<About />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />

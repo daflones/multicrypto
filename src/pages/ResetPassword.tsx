@@ -9,6 +9,7 @@ const ResetPassword: React.FC = () => {
   const [status, setStatus] = useState<{ type: 'idle' | 'loading' | 'success' | 'error' | 'guard'; message?: string}>({ type: 'idle' });
   const [email, setEmail] = useState<string | null>(null);
   const [isRecovery, setIsRecovery] = useState(false);
+  const [usedOnce, setUsedOnce] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -75,7 +76,13 @@ const ResetPassword: React.FC = () => {
       setStatus({ type: 'loading' });
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
-      setStatus({ type: 'success', message: 'Senha atualizada com sucesso. Você já pode entrar.' });
+      setUsedOnce(true);
+      setStatus({ type: 'success', message: 'Senha atualizada com sucesso. Redirecionando para o login...' });
+      // Invalida a sessão de recuperação e evita reuso
+      await supabase.auth.signOut();
+      setTimeout(() => {
+        navigate('/login');
+      }, 1200);
     } catch (err: any) {
       const msg = err?.message || 'Não foi possível atualizar a senha.';
       setStatus({ type: 'error', message: msg });
@@ -125,7 +132,7 @@ const ResetPassword: React.FC = () => {
 
           <button
             type="submit"
-            disabled={status.type === 'loading'}
+            disabled={status.type === 'loading' || usedOnce}
             className="w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {status.type === 'loading' ? 'Salvando...' : 'Salvar nova senha'}

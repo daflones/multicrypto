@@ -18,7 +18,7 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({
 
   // Generate PIX payload according to Brazilian PIX EMV standard
   const generatePixPayload = (key: string, value: number): string => {
-    const merchantNameRaw = 'MULTI CRYPTO';
+    const merchantNameRaw = 'MULTICRYPTO LTDA';
     const merchantCityRaw = 'SAO PAULO';
     const merchantName = merchantNameRaw.substring(0, 25);
     const merchantCity = merchantCityRaw.substring(0, 15);

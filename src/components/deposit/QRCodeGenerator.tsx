@@ -16,38 +16,48 @@ const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
 
-  // Generate PIX payload according to Brazilian PIX standard
+  // Generate PIX payload according to Brazilian PIX EMV standard
   const generatePixPayload = (key: string, value: number): string => {
-    const merchantName = 'MULTI CRYPTO';
-    const merchantCity = 'SAO PAULO';
+    const merchantNameRaw = 'MULTI CRYPTO';
+    const merchantCityRaw = 'SAO PAULO';
+    const merchantName = merchantNameRaw.substring(0, 25);
+    const merchantCity = merchantCityRaw.substring(0, 15);
     const txId = Math.random().toString(36).substring(2, 27).toUpperCase();
-    
-    // Format value with 2 decimal places
+
+    const tlv = (id: string, val: string) => {
+      const len = val.length.toString().padStart(2, '0');
+      return `${id}${len}${val}`;
+    };
+
     const formattedValue = value.toFixed(2);
-    
-    // Build PIX payload
-    let payload = '';
-    payload += '000201'; // Payload Format Indicator
-    payload += '010212'; // Point of Initiation Method
-    payload += '26'; // Merchant Account Information
-    payload += (14 + key.length).toString().padStart(2, '0'); // Length
-    payload += '0014BR.GOV.BCB.PIX'; // GUI
-    payload += '01' + key.length.toString().padStart(2, '0') + key; // PIX Key
-    payload += '5204'; // Merchant Category Code
-    payload += '0000'; // Transaction Currency (BRL)
-    payload += '54' + formattedValue.length.toString().padStart(2, '0') + formattedValue; // Transaction Amount
-    payload += '5802BR'; // Country Code
-    payload += '59' + merchantName.length.toString().padStart(2, '0') + merchantName; // Merchant Name
-    payload += '60' + merchantCity.length.toString().padStart(2, '0') + merchantCity; // Merchant City
-    payload += '62' + (4 + txId.length).toString().padStart(2, '0'); // Additional Data Field
-    payload += '05' + txId.length.toString().padStart(2, '0') + txId; // Reference Label
-    payload += '6304'; // CRC16 placeholder
-    
-    // Calculate CRC16
-    const crc = calculateCRC16(payload);
-    payload += crc;
-    
-    return payload;
+
+    // Merchant Account Information (ID 26)
+    const gui = tlv('00', 'BR.GOV.BCB.PIX');
+    const pixKey = tlv('01', key);
+    const merchantAccountInfo = tlv('26', gui + pixKey);
+
+    // Additional Data Field Template (ID 62) with Reference Label (05)
+    const additionalData = tlv('62', tlv('05', txId));
+
+    // Build payload without CRC
+    let payloadNoCRC = '';
+    payloadNoCRC += tlv('00', '01'); // Payload Format Indicator
+    payloadNoCRC += tlv('01', '12'); // Point of Initiation Method (dynamic)
+    payloadNoCRC += merchantAccountInfo;
+    payloadNoCRC += tlv('52', '0000'); // Merchant Category Code
+    payloadNoCRC += tlv('53', '986'); // Transaction Currency (986 = BRL)
+    if (value > 0) {
+      payloadNoCRC += tlv('54', formattedValue); // Transaction Amount
+    }
+    payloadNoCRC += tlv('58', 'BR'); // Country Code
+    payloadNoCRC += tlv('59', merchantName); // Merchant Name
+    payloadNoCRC += tlv('60', merchantCity); // Merchant City
+    payloadNoCRC += additionalData; // Additional Data (txid)
+    payloadNoCRC += '6304'; // CRC16 placeholder
+
+    // Calculate CRC16 over payload with '6304' placeholder
+    const crc = calculateCRC16(payloadNoCRC);
+    return payloadNoCRC + crc;
   };
 
   // CRC16 calculation for PIX

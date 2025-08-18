@@ -1,9 +1,10 @@
 import { supabase } from './supabase';
+import { nowInSaoPauloISO } from '../utils/date';
 
 export interface Notification {
   id: string;
   user_id: string;
-  type: 'referral_new' | 'referral_indirect' | 'referral_level3' | 'deposit_approved' | 'deposit_rejected' | 'withdraw_approved' | 'withdraw_rejected' | 'product_expired' | 'commission_level1' | 'commission_level2' | 'commission_level3' | 'investment_approved' | 'investment_rejected';
+  type: 'referral_new' | 'referral_indirect' | 'referral_level3' | 'deposit_approved' | 'deposit_rejected' | 'withdraw_approved' | 'withdraw_rejected' | 'product_expired' | 'commission_level1' | 'commission_level2' | 'commission_level3' | 'investment_approved' | 'investment_rejected' | 'investment_completed';
   title: string;
   message: string;
   data?: any;
@@ -24,7 +25,6 @@ export class NotificationService {
       if (error) {
         throw new Error('Erro ao buscar notificações');
       }
-
       return notifications || [];
     } catch (error) {
       console.error('Get notifications error:', error);
@@ -88,6 +88,24 @@ export class NotificationService {
     }
   }
 
+  static async deleteNotification(notificationId: string) {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', notificationId);
+
+      if (error) {
+        throw new Error('Erro ao apagar notificação');
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Delete notification error:', error);
+      throw error;
+    }
+  }
+
   static async createNotification(
     userId: string,
     type: Notification['type'],
@@ -104,7 +122,8 @@ export class NotificationService {
           title,
           message,
           data,
-          is_read: false
+          is_read: false,
+          created_at: nowInSaoPauloISO()
         })
         .select()
         .single();
@@ -147,7 +166,8 @@ export class NotificationService {
       'commission_level2': '🏅',
       'commission_level3': '🎖️',
       'investment_approved': '✅',
-      'investment_rejected': '❌'
+      'investment_rejected': '❌',
+      'investment_completed': '🎉'
     } as const;
     return icons[type] || '📢';
   }
@@ -167,7 +187,8 @@ export class NotificationService {
       'commission_level2': 'text-amber-400',
       'commission_level3': 'text-violet-400',
       'investment_approved': 'text-green-400',
-      'investment_rejected': 'text-red-400'
+      'investment_rejected': 'text-red-400',
+      'investment_completed': 'text-green-400'
     } as const;
     return colors[type] || 'text-gray-400';
   }

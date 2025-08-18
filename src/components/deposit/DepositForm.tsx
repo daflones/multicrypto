@@ -144,8 +144,15 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
       const amount = parseFloat(formData.amount.replace(',', '.'));
       const isCrypto = formData.paymentMethod !== 'pix';
 
-      if (isNaN(amount) || (isCrypto && amount < 3) || (!isCrypto && amount < 10)) {
-        setError(isCrypto ? 'Valor mínimo de $ 3.00' : 'Valor mínimo de R$ 10,00');
+      if (isNaN(amount)) {
+        setError('Informe um valor válido.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Mínimo em BRL para todos os métodos
+      if (amount < 10) {
+        setError('Valor mínimo de R$ 10,00');
         setIsSubmitting(false);
         return;
       }
@@ -176,17 +183,19 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
 
   const amount = parseFloat(formData.amount.replace(',', '.')) || 0;
   const isPix = formData.paymentMethod === 'pix';
-  const currencySymbol = isPix ? 'R$' : 'USDT';
-  const minAmount = isPix ? 10 : 3;
-  const amountInUsd = isPix && usdRate ? amount * usdRate : amount;
+  const isCrypto = !isPix;
+  const currencySymbol = 'R$';
+  // When paying with crypto, user inputs BRL and we show the converted USD amount on step 2
+  const amountInUsd = isCrypto && usdRate ? amount * usdRate : undefined;
 
   const handleContinue = () => {
-    if (amount < minAmount) {
-      setError(`Valor mínimo de ${currencySymbol} ${minAmount.toFixed(2)}`);
-    } else {
-      setError('');
-      setStep(2);
+    // PIX and Crypto: same minimum in BRL
+    if (amount < 10) {
+      setError(`Valor mínimo de ${currencySymbol} ${(10).toFixed(2)}`);
+      return;
     }
+    setError('');
+    setStep(2);
   };
 
   return (
@@ -203,7 +212,7 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">{currencySymbol}</span>
             <input
               type="text"
-              placeholder={isPix ? '10,00' : '3.00'}
+              placeholder={isPix ? '10,00' : '0,00'}
               value={formData.amount}
               onChange={handleAmountChange}
               className="w-full bg-surface-light border border-surface-light rounded-lg p-3 pl-14 text-white text-lg focus:ring-2 focus:ring-primary focus:outline-none transition-colors"
@@ -238,7 +247,7 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
 
           <button
             onClick={handleContinue}
-            disabled={!formData.amount || (isPix && !usdRate)}
+            disabled={!formData.amount}
             className="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
           >
             <DollarSign size={20} />
@@ -260,7 +269,7 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
           ) : (
             <div className="bg-surface rounded-lg p-4 space-y-4">
               <div className="text-center">
-                <p className="text-2xl font-bold text-primary">{amountInUsd.toFixed(2)} USDT</p>
+                <p className="text-2xl font-bold text-primary">{(amountInUsd ?? 0).toFixed(2)} USDT</p>
                 <p className="text-gray-400 text-sm mt-1">
                   Envie o valor para o endereço abaixo na rede {PAYMENT_METHODS.find(m => m.id === formData.paymentMethod)?.name}
                 </p>

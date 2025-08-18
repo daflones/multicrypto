@@ -1,5 +1,6 @@
 import { supabase } from './supabase';
 import { todayInSaoPauloYMD, diffDaysYMD, nowInSaoPauloISO, diffDaysISOInSP } from '../utils/date';
+import { NotificationService } from './notification.service';
 
 export class InvestmentExpirationService {
   // Processar investimentos expirados
@@ -52,9 +53,8 @@ export class InvestmentExpirationService {
     try {
       console.log(`Completing investment ${investment.id} for user ${investment.user_id}`);
 
-      // Calcular total a devolver (capital + rendimentos)
-      const totalYield = investment.products.daily_yield * investment.products.duration_days;
-      const totalReturn = investment.amount + totalYield;
+      // Devolver APENAS o principal. Rendimentos já foram pagos diariamente.
+      const principalToReturn = investment.amount;
 
       // Buscar saldo atual do usuário
       const { data: user, error: userError } = await supabase
@@ -68,8 +68,8 @@ export class InvestmentExpirationService {
         return;
       }
 
-      // Atualizar saldo do usuário
-      const newBalance = user.balance + totalReturn;
+      // Atualizar saldo do usuário com o principal
+      const newBalance = user.balance + principalToReturn;
       const { error: balanceError } = await supabase
         .from('users')
         .update({ balance: newBalance })
@@ -80,12 +80,11 @@ export class InvestmentExpirationService {
         return;
       }
 
-      // Marcar investimento como completo
+      // Marcar investimento como completo (não sobrescrever total_earned)
       const { error: investmentError } = await supabase
         .from('user_investments')
         .update({ 
           status: 'completed',
-          total_earned: totalYield,
           completed_at: new Date().toISOString()
         })
         .eq('id', investment.id);
@@ -95,22 +94,20 @@ export class InvestmentExpirationService {
         return;
       }
 
-      // Criar transação de retorno
+      // Criar transação de retorno do principal
       const { error: transactionError } = await supabase
         .from('transactions')
         .insert({
           user_id: investment.user_id,
           type: 'yield',
-          amount: totalReturn,
+          amount: principalToReturn,
           payment_method: 'balance',
           status: 'approved',
           data: {
             investment_id: investment.id,
-            product_name: investment.products.name,
-            original_amount: investment.amount,
-            yield_amount: totalYield,
-            total_return: totalReturn,
-            duration_days: investment.products.duration_days
+            product_name: investment.products?.name,
+            kind: 'principal_return',
+            original_amount: investment.amount
           }
         });
 
@@ -118,14 +115,35 @@ export class InvestmentExpirationService {
         console.error('Error creating return transaction:', transactionError);
       }
 
-      console.log(`Investment ${investment.id} completed successfully. Returned ${totalReturn} to user ${investment.user_id}`);
+      // Criar notificação para o usuário sobre a conclusão do investimento
+      try {
+        const productName = investment.products?.name || 'seu investimento';
+        const amountBRL = (principalToReturn ?? 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        const title = '🎉 Parabéns! Investimento finalizado';
+        const message = `Seu investimento ${productName} foi finalizado! Você recebeu ${amountBRL} de volta no seu saldo. 💸🚀 Agora você pode usar esse valor para novas transações!`;
+        await NotificationService.createNotification(
+          investment.user_id,
+          'investment_completed',
+          title,
+          message,
+          {
+            investment_id: investment.id,
+            product_name: investment.products?.name,
+            kind: 'investment_completed',
+            returned_principal: principalToReturn
+          }
+        );
+      } catch (notifyErr) {
+        console.error('Error creating completion notification:', notifyErr);
+      }
+
+      console.log(`Investment ${investment.id} completed successfully. Returned principal ${principalToReturn} to user ${investment.user_id}`);
       
       return {
         investmentId: investment.id,
         userId: investment.user_id,
         originalAmount: investment.amount,
-        yieldAmount: totalYield,
-        totalReturn: totalReturn
+        totalReturn: principalToReturn
       };
     } catch (error) {
       console.error('Error completing investment:', error);

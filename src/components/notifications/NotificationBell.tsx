@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X, Check, CheckCheck } from 'lucide-react';
+import { Bell, X, Check, CheckCheck, Trash } from 'lucide-react';
 import { NotificationService, Notification } from '../../services/notification.service';
 import { useAuthStore } from '../../store/authStore';
 import { formatDistanceToNow } from 'date-fns';
@@ -29,6 +29,20 @@ const NotificationBell: React.FC = () => {
       console.error('Error fetching notifications:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (notificationId: string) => {
+    try {
+      await NotificationService.deleteNotification(notificationId);
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      // Se apagar uma não lida, ajusta o contador
+      const deleted = notifications.find(n => n.id === notificationId);
+      if (deleted && !deleted.is_read) {
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error) {
+      console.error('Error deleting notification:', error);
     }
   };
 
@@ -166,14 +180,24 @@ const NotificationBell: React.FC = () => {
                           }`}>
                             {notification.title}
                           </h4>
-                          {!notification.is_read && (
+                          <div className="flex items-center gap-2 ml-2">
+                            {!notification.is_read && (
+                              <button
+                                onClick={() => handleMarkAsRead(notification.id)}
+                                className="text-primary hover:text-primary/80"
+                                title="Marcar como lida"
+                              >
+                                <Check size={14} />
+                              </button>
+                            )}
                             <button
-                              onClick={() => handleMarkAsRead(notification.id)}
-                              className="text-primary hover:text-primary/80 ml-2"
+                              onClick={() => handleDelete(notification.id)}
+                              className="text-red-400 hover:text-red-300"
+                              title="Apagar"
                             >
-                              <Check size={14} />
+                              <Trash size={14} />
                             </button>
-                          )}
+                          </div>
                         </div>
                         
                         <p className={`text-xs mt-1 ${

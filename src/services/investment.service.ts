@@ -177,7 +177,7 @@ export class InvestmentService {
 
   static async calculateDailyYields() {
     try {
-      // Get all active investments
+      // Pagar rendimento apenas para investimentos ativos, dentro da janela [start_date, end_date)
       const { data: investments, error } = await supabase
         .from('user_investments')
         .select(`
@@ -198,23 +198,64 @@ export class InvestmentService {
       let processed = 0;
 
       for (const investment of investments) {
-        const dailyYield = investment.product.daily_yield;
-        const newTotalEarned = investment.total_earned + dailyYield;
+        // Respeitar janela: só paga se já começou e ainda não terminou
+        const now = new Date();
+        const nowISO = now.toISOString();
+        if (investment.start_date && nowISO < investment.start_date) {
+          continue;
+        }
+        if (investment.end_date && nowISO >= investment.end_date) {
+          continue;
+        }
 
-        // Update investment total earned
+        const dailyYield = investment.product?.daily_yield ?? 0;
+        if (!dailyYield || dailyYield <= 0) continue;
+
+        // Idempotência: verificar se já houve pagamento hoje
+        // Janela de hoje em YYYY-MM-DD (UTC). Para maior precisão por fuso, preferir Edge Function com TZ.
+        const todayYMD = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        const tomorrow = new Date(Date.UTC(
+          Number(todayYMD.slice(0, 4)),
+          Number(todayYMD.slice(5, 7)) - 1,
+          Number(todayYMD.slice(8, 10)) + 1
+        ));
+        const tomorrowYMD = `${tomorrow.getUTCFullYear()}-${String(tomorrow.getUTCMonth() + 1).padStart(2, '0')}-${String(tomorrow.getUTCDate()).padStart(2, '0')}`;
+
+        const { data: existing, error: existingErr } = await supabase
+          .from('transactions')
+          .select('id')
+          .eq('user_id', investment.user_id)
+          .eq('type', 'yield')
+          .contains('data', { investment_id: investment.id, kind: 'daily_yield' })
+          .gte('created_at', `${todayYMD} 00:00:00`)
+          .lt('created_at', `${tomorrowYMD} 00:00:00`)
+          .limit(1);
+
+        if (existingErr) {
+          console.warn('Erro ao checar pagamentos do dia, ignorando investimento:', existingErr);
+          continue;
+        }
+        if (existing && existing.length > 0) {
+          // já pago hoje
+          continue;
+        }
+
+        const newTotalEarned = (investment.total_earned || 0) + dailyYield;
+
+        // Atualiza ganhos no investimento
         await supabase
           .from('user_investments')
           .update({ total_earned: newTotalEarned })
           .eq('id', investment.id);
 
-        // Update user balance
-        const newBalance = investment.user.balance + dailyYield;
+        // Credita saldo do usuário
+        const newBalance = (investment.user?.balance || 0) + dailyYield;
         await supabase
           .from('users')
           .update({ balance: newBalance })
           .eq('id', investment.user_id);
 
-        // Create yield transaction
+        // Registra transação de rendimento diário (idempotência via contains + janela)
         await supabase
           .from('transactions')
           .insert({
@@ -222,7 +263,8 @@ export class InvestmentService {
             type: 'yield',
             amount: dailyYield,
             payment_method: 'system',
-            status: 'approved'
+            status: 'approved',
+            data: { investment_id: investment.id, kind: 'daily_yield' }
           });
 
         processed++;
@@ -237,37 +279,50 @@ export class InvestmentService {
 
   static async getInvestmentStats(userId: string) {
     try {
-      const { data: investments, error } = await supabase
+      // Active investments for live stats
+      const { data: activeInvestments, error: activeErr } = await supabase
         .from('user_investments')
         .select(`
           amount,
-          total_earned,
           product:products(daily_yield)
         `)
         .eq('user_id', userId)
         .eq('status', 'active');
 
-      if (error) {
+      if (activeErr) {
+        throw new Error('Erro ao buscar estatísticas');
+      }
+
+      // All investments (any status) to compute lifetime total earned
+      const { data: allInvestments, error: allErr } = await supabase
+        .from('user_investments')
+        .select('total_earned')
+        .eq('user_id', userId);
+
+      if (allErr) {
         throw new Error('Erro ao buscar estatísticas');
       }
 
       const stats = {
         totalInvested: 0,
-        totalEarned: 0,
+        totalEarned: 0, // lifetime
         dailyYield: 0,
-        activeInvestments: investments?.length || 0
+        activeInvestments: activeInvestments?.length || 0
       };
 
-      if (investments) {
-        stats.totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
-        stats.totalEarned = investments.reduce((sum, inv) => sum + inv.total_earned, 0);
-        stats.dailyYield = investments.reduce((sum, inv) => {
-          const product = inv.product as any;
+      if (activeInvestments) {
+        stats.totalInvested = activeInvestments.reduce((sum, inv: any) => sum + (inv.amount || 0), 0);
+        stats.dailyYield = activeInvestments.reduce((sum, inv: any) => {
+          const product = (inv as any).product as any;
           const daily = Array.isArray(product)
             ? (product[0]?.daily_yield ?? 0)
             : (product?.daily_yield ?? 0);
-          return sum + daily;
+          return sum + (daily || 0);
         }, 0);
+      }
+
+      if (allInvestments) {
+        stats.totalEarned = allInvestments.reduce((sum, inv: any) => sum + (inv.total_earned || 0), 0);
       }
 
       return stats;

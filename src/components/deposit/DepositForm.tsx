@@ -26,6 +26,18 @@ const DepositForm: React.FC<DepositFormProps> = () => {
 
   // Script DBXPay já está carregado no HTML principal - sem inicialização extra
 
+  // Reinicializar DBXPay quando o botão aparecer
+  useEffect(() => {
+    if (step === 2 && formData.paymentMethod === 'pix') {
+      setTimeout(() => {
+        if (typeof (window as any).DBXPay !== 'undefined') {
+          console.log('🔄 Reinicializando DBXPay para detectar botão...');
+          (window as any).DBXPay.init();
+        }
+      }, 100);
+    }
+  }, [step, formData.paymentMethod]);
+
   useEffect(() => {
     const fetchUsdRate = async () => {
       try {
@@ -157,38 +169,32 @@ const DepositForm: React.FC<DepositFormProps> = () => {
                 <p className="text-2xl font-bold text-white">{formatCurrency(amount)}</p>
               </div>
 
-              {/* Botão DBXPay - EXATAMENTE como na documentação */}
-              <div className="text-center">
-                <button 
-                  onClick={() => {
-                    if (typeof (window as any).DBXPay !== 'undefined' && typeof (window as any).DBXPay.createPayment === 'function') {
-                      (window as any).DBXPay.createPayment({
-                        amount: amount,
-                        description: 'Recarga CryptoYield',
-                        customer_email: 'officiallbittencourt@gmail.com',
-                        customer_name: 'officiallbittencourt@gmail.com',
-                        customer_document: '00000000000',
-                        customer_phone: '11999999999'
-                      });
-                    } else {
-                      console.error('❌ DBXPay.createPayment não disponível');
-                      alert('Erro ao inicializar pagamento. Recarregue a página.');
-                    }
-                  }}
-                  style={{
-                    background: '#10b981',
-                    color: 'white',
-                    padding: '15px 30px',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '18px',
-                    cursor: 'pointer',
-                    width: '100%'
-                  }}
-                >
-                  💳 Pagar {formatCurrency(amount)} com PIX
-                </button>
-              </div>
+              {/* Botão DBXPay com classe dbxpay-button */}
+              <div className="text-center" dangerouslySetInnerHTML={{
+                __html: `
+                  <button 
+                    class="dbxpay-button"
+                    data-api-key="dbx_live_hdVWEy3e9EfnAFNeVIdx1WqcH6RPKRiz"
+                    data-amount="${amount.toFixed(2)}"
+                    data-description="Recarga CryptoYield"
+                    data-customer-email="officiallbittencourt@gmail.com"
+                    data-customer-name="officiallbittencourt@gmail.com"
+                    data-customer-document="00000000000"
+                    data-customer-phone="11999999999"
+                    style="
+                      background: #10b981;
+                      color: white;
+                      padding: 15px 30px;
+                      border: none;
+                      border-radius: 8px;
+                      font-size: 18px;
+                      cursor: pointer;
+                      width: 100%;
+                    ">
+                    💳 Pagar ${formatCurrency(amount)} com PIX
+                  </button>
+                `
+              }} />
 
               <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
                 <h4 className="text-primary font-semibold mb-2">Como funciona:</h4>

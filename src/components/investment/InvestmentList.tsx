@@ -3,6 +3,7 @@ import { TrendingUp, Calendar, DollarSign, Target, Clock } from 'lucide-react';
 import { UserInvestment } from '../../services/supabase';
 import { formatCurrency, formatDateTimeSP } from '../../utils/formatters';
 import { DAILY_YIELD_PERCENTAGE } from '../../constants/investment';
+import { getProductImage } from '../../utils/imageUtils';
 
 interface InvestmentListProps {
   investments: UserInvestment[];
@@ -50,11 +51,11 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
           <div className="flex items-start space-x-4">
             {/* Product Image */}
             <img 
-              src={investment.product?.image_path || '/images/crypto-placeholder.jpg'} 
+              src={investment.product?.image_path || getProductImage(investment.product?.name || 'default')} 
               alt={investment.product?.name}
               className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
               onError={(e) => {
-                e.currentTarget.src = '/images/crypto-placeholder.jpg';
+                e.currentTarget.src = getProductImage(investment.product?.name || 'default');
               }}
             />
 

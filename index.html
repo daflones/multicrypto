@@ -118,6 +118,22 @@
         ]
       }
     </script>
+    
+    <!-- DBXPay Widget Script -->
+    <script src="https://dbxbankpay.com/widget.js" 
+            data-api-key="dbx_live_hdVWEy3e9EfnAFNeVIdx1WqcH6RPKRiz">
+    </script>
+    
+    <script>
+      // Função global para callback de sucesso do DBXPay
+      function quandoPagar(dados) {
+        console.log('✅ Pagamento confirmado!', dados);
+        alert('Recarga efetuada com sucesso! 🎉');
+        // Recarregar a página para atualizar o saldo
+        window.location.reload();
+      }
+    </script>
+    
     <title>Multi Crypto - Plataforma de Investimentos</title>
   </head>
   <body>

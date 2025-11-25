@@ -24,14 +24,22 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
     level1: TeamMember[];
     level2: TeamMember[];
     level3: TeamMember[];
-  }>({ level1: [], level2: [], level3: [] });
+    level4: TeamMember[];
+    level5: TeamMember[];
+    level6: TeamMember[];
+    level7: TeamMember[];
+  }>({ level1: [], level2: [], level3: [], level4: [], level5: [], level6: [], level7: [] });
   const [teamStats, setTeamStats] = useState<any>(null);
   const [commissionStats, setCommissionStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedLevels, setExpandedLevels] = useState<{ [key: number]: boolean }>({
     1: true,
     2: false,
-    3: false
+    3: false,
+    4: false,
+    5: false,
+    6: false,
+    7: false
   });
 
   const { user } = useAuthStore();
@@ -94,7 +102,13 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-gray-400 text-sm">
-              {level === 1 && '10%'} {level === 2 && '5%'} {level === 3 && '3%'}
+              {level === 1 && '10%'}
+              {level === 2 && '4%'}
+              {level === 3 && '2%'}
+              {level === 4 && '1%'}
+              {level === 5 && '1%'}
+              {level === 6 && '1%'}
+              {level === 7 && '1%'}
             </span>
             {isExpanded ? (
               <ChevronDown className="text-gray-400" size={20} />
@@ -188,24 +202,51 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
       {commissionStats && (
         <div className="bg-surface rounded-lg p-4">
           <h3 className="text-lg font-semibold text-white mb-4">Resumo de Comissões</h3>
-          <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="grid grid-cols-3 gap-3 text-center mb-3">
             <div>
-              <div className="text-lg font-bold text-primary mb-1">
+              <div className="text-base font-bold text-primary mb-1">
                 {formatCurrency(commissionStats.level1Total)}
               </div>
-              <div className="text-xs text-gray-400">Nível 1</div>
+              <div className="text-xs text-gray-400">Nível 1 (10%)</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-secondary mb-1">
+              <div className="text-base font-bold text-secondary mb-1">
                 {formatCurrency(commissionStats.level2Total)}
               </div>
-              <div className="text-xs text-gray-400">Nível 2</div>
+              <div className="text-xs text-gray-400">Nível 2 (4%)</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-warning mb-1">
+              <div className="text-base font-bold text-warning mb-1">
                 {formatCurrency(commissionStats.level3Total)}
               </div>
-              <div className="text-xs text-gray-400">Nível 3</div>
+              <div className="text-xs text-gray-400">Nível 3 (2%)</div>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-4 gap-2 text-center">
+            <div>
+              <div className="text-sm font-bold text-success mb-1">
+                {formatCurrency(commissionStats.level4Total || 0)}
+              </div>
+              <div className="text-xs text-gray-400">N4 (1%)</div>
+            </div>
+            <div>
+              <div className="text-sm font-bold text-success mb-1">
+                {formatCurrency(commissionStats.level5Total || 0)}
+              </div>
+              <div className="text-xs text-gray-400">N5 (1%)</div>
+            </div>
+            <div>
+              <div className="text-sm font-bold text-success mb-1">
+                {formatCurrency(commissionStats.level6Total || 0)}
+              </div>
+              <div className="text-xs text-gray-400">N6 (1%)</div>
+            </div>
+            <div>
+              <div className="text-sm font-bold text-success mb-1">
+                {formatCurrency(commissionStats.level7Total || 0)}
+              </div>
+              <div className="text-xs text-gray-400">N7 (1%)</div>
             </div>
           </div>
           
@@ -232,7 +273,7 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
         {renderTeamLevel(
           teamData.level2, 
           2, 
-          'Nível 2 - Indiretos', 
+          'Nível 2', 
           'bg-secondary'
         )}
         
@@ -241,6 +282,34 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
           3, 
           'Nível 3', 
           'bg-warning'
+        )}
+        
+        {renderTeamLevel(
+          teamData.level4, 
+          4, 
+          'Nível 4', 
+          'bg-success'
+        )}
+        
+        {renderTeamLevel(
+          teamData.level5, 
+          5, 
+          'Nível 5', 
+          'bg-success'
+        )}
+        
+        {renderTeamLevel(
+          teamData.level6, 
+          6, 
+          'Nível 6', 
+          'bg-success'
+        )}
+        
+        {renderTeamLevel(
+          teamData.level7, 
+          7, 
+          'Nível 7', 
+          'bg-success'
         )}
       </div>
 

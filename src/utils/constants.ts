@@ -82,9 +82,14 @@ export const PRODUCTS = [
 ];
 
 export const COMMISSION_RATES = {
-  LEVEL_1: 0.10, // Pai - 10%
-  LEVEL_2: 0.05, // Avô - 5%
-  LEVEL_3: 0.03  // Bisavô - 3%
+  LEVEL_1: 0.10, // Nível 1 - 10%
+  LEVEL_2: 0.04, // Nível 2 - 4%
+  LEVEL_3: 0.02, // Nível 3 - 2%
+  LEVEL_4: 0.01, // Nível 4 - 1%
+  LEVEL_5: 0.01, // Nível 5 - 1%
+  LEVEL_6: 0.01, // Nível 6 - 1%
+  LEVEL_7: 0.01  // Nível 7 - 1%
+  // Total: 20%
 };
 
 

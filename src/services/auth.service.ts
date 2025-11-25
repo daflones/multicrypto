@@ -409,37 +409,38 @@ export class AuthService {
       const referralTree = {
         level1,
         level2: [] as any[],
-        level3: [] as any[]
+        level3: [] as any[],
+        level4: [] as any[],
+        level5: [] as any[],
+        level6: [] as any[],
+        level7: [] as any[]
       };
 
-      // Get level 2 referrals
-      if (level1 && level1.length > 0) {
-        const level1Ids = level1.map(user => user.id);
-        const { data: level2Raw, error: level2Error } = await supabase
+      // Get levels 2-7 iteratively
+      let currentLevelIds = level1.map(user => user.id);
+      
+      for (let level = 2; level <= 7; level++) {
+        if (currentLevelIds.length === 0) break;
+
+        const { data: levelRaw, error: levelError } = await supabase
           .from('users')
           .select('id, email, referral_code, created_at, balance, referred_by')
-          .in('referred_by', level1Ids);
+          .in('referred_by', currentLevelIds);
 
-        if (!level2Error && level2Raw) {
-          // Add total_invested to level 2
-          const level2 = await addTotalInvested(level2Raw);
-          referralTree.level2 = level2;
+        if (levelError || !levelRaw || levelRaw.length === 0) break;
 
-          // Get level 3 referrals
-          const level2Ids = level2.map(user => user.id);
-          if (level2Ids.length > 0) {
-            const { data: level3Raw, error: level3Error } = await supabase
-              .from('users')
-              .select('id, email, referral_code, created_at, balance, referred_by')
-              .in('referred_by', level2Ids);
-
-            if (!level3Error && level3Raw) {
-              // Add total_invested to level 3
-              const level3 = await addTotalInvested(level3Raw);
-              referralTree.level3 = level3;
-            }
-          }
+        const levelData = await addTotalInvested(levelRaw);
+        
+        switch (level) {
+          case 2: referralTree.level2 = levelData; break;
+          case 3: referralTree.level3 = levelData; break;
+          case 4: referralTree.level4 = levelData; break;
+          case 5: referralTree.level5 = levelData; break;
+          case 6: referralTree.level6 = levelData; break;
+          case 7: referralTree.level7 = levelData; break;
         }
+
+        currentLevelIds = levelData.map(user => user.id);
       }
 
       return referralTree;

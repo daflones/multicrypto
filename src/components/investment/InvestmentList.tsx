@@ -2,6 +2,7 @@ import React from 'react';
 import { TrendingUp, Calendar, DollarSign, Target, Clock } from 'lucide-react';
 import { UserInvestment } from '../../services/supabase';
 import { formatCurrency, formatDateTimeSP } from '../../utils/formatters';
+import { DAILY_YIELD_PERCENTAGE } from '../../constants/investment';
 
 interface InvestmentListProps {
   investments: UserInvestment[];
@@ -89,7 +90,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
                   <div>
                     <p className="text-xs text-gray-400">Rendimento</p>
                     <p className="text-sm font-semibold text-success">
-                      {formatCurrency(investment.product?.daily_yield || 0)}/dia
+                      {formatCurrency(investment.amount * DAILY_YIELD_PERCENTAGE)}/dia
                     </p>
                   </div>
                 </div>
@@ -99,7 +100,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
                   <div>
                     <p className="text-xs text-gray-400">Total Retorno</p>
                     <p className="text-sm font-semibold text-primary">
-                      {formatCurrency(investment.amount + (investment.product?.daily_yield || 0) * (investment.product?.duration_days || 0))}
+                      {formatCurrency(investment.amount + (investment.amount * DAILY_YIELD_PERCENTAGE) * (investment.product?.duration_days || 30))}
                     </p>
                   </div>
                 </div>

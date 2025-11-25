@@ -45,7 +45,7 @@ const ReferralLink: React.FC = () => {
         </div>
         <h2 className="text-xl font-bold text-white mb-2">Convide Amigos</h2>
         <p className="text-gray-400">
-          Ganhe comissões de até 18% dos investimentos da sua equipe
+          Ganhe comissões de até 20% dos investimentos da sua equipe
         </p>
       </div>
 
@@ -115,50 +115,68 @@ const ReferralLink: React.FC = () => {
           <span>Estrutura de Comissões</span>
         </h3>
         
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                <span className="text-primary font-bold text-sm">1</span>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <div className="w-7 h-7 bg-primary/20 rounded-full flex items-center justify-center">
+                <span className="text-primary font-bold text-xs">1</span>
               </div>
-              <div>
-                <p className="text-white font-medium">Nível 1 (Diretos)</p>
-                <p className="text-gray-400 text-sm">Pessoas que você convidou</p>
-              </div>
+              <p className="text-white font-medium text-sm">Nível 1</p>
             </div>
             <span className="text-success font-bold">10%</span>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center">
-                <span className="text-secondary font-bold text-sm">2</span>
+          <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <div className="w-7 h-7 bg-secondary/20 rounded-full flex items-center justify-center">
+                <span className="text-secondary font-bold text-xs">2</span>
               </div>
-              <div>
-                <p className="text-white font-medium">Nível 2 (Indiretos)</p>
-                <p className="text-gray-400 text-sm">Convidados dos seus diretos</p>
-              </div>
+              <p className="text-white font-medium text-sm">Nível 2</p>
             </div>
-            <span className="text-success font-bold">5%</span>
+            <span className="text-success font-bold">4%</span>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-warning/20 rounded-full flex items-center justify-center">
-                <span className="text-warning font-bold text-sm">3</span>
+          <div className="flex items-center justify-between p-2 bg-background/50 rounded-lg">
+            <div className="flex items-center space-x-2">
+              <div className="w-7 h-7 bg-warning/20 rounded-full flex items-center justify-center">
+                <span className="text-warning font-bold text-xs">3</span>
               </div>
-              <div>
-                <p className="text-white font-medium">Nível 3</p>
-                <p className="text-gray-400 text-sm">Terceiro nível da sua rede</p>
-              </div>
+              <p className="text-white font-medium text-sm">Nível 3</p>
             </div>
-            <span className="text-success font-bold">3%</span>
+            <span className="text-success font-bold">2%</span>
+          </div>
+
+          <div className="grid grid-cols-4 gap-2">
+            <div className="flex flex-col items-center p-2 bg-background/50 rounded-lg">
+              <div className="w-6 h-6 bg-success/20 rounded-full flex items-center justify-center mb-1">
+                <span className="text-success font-bold text-xs">4</span>
+              </div>
+              <span className="text-success font-bold text-xs">1%</span>
+            </div>
+            <div className="flex flex-col items-center p-2 bg-background/50 rounded-lg">
+              <div className="w-6 h-6 bg-success/20 rounded-full flex items-center justify-center mb-1">
+                <span className="text-success font-bold text-xs">5</span>
+              </div>
+              <span className="text-success font-bold text-xs">1%</span>
+            </div>
+            <div className="flex flex-col items-center p-2 bg-background/50 rounded-lg">
+              <div className="w-6 h-6 bg-success/20 rounded-full flex items-center justify-center mb-1">
+                <span className="text-success font-bold text-xs">6</span>
+              </div>
+              <span className="text-success font-bold text-xs">1%</span>
+            </div>
+            <div className="flex flex-col items-center p-2 bg-background/50 rounded-lg">
+              <div className="w-6 h-6 bg-success/20 rounded-full flex items-center justify-center mb-1">
+                <span className="text-success font-bold text-xs">7</span>
+              </div>
+              <span className="text-success font-bold text-xs">1%</span>
+            </div>
           </div>
         </div>
 
         <div className="mt-4 p-3 bg-success/10 border border-success/20 rounded-lg">
           <p className="text-success text-sm text-center">
-            <strong>Total: até 18%</strong> de comissão sobre todos os investimentos da sua equipe!
+            <strong>Total: 20%</strong> de comissão sobre todos os investimentos da sua equipe!
           </p>
         </div>
       </div>

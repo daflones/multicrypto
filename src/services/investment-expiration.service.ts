@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { DAILY_YIELD_PERCENTAGE } from '../constants/investment';
 import { todayInSaoPauloYMD, diffDaysYMD, nowInSaoPauloISO, diffDaysISOInSP } from '../utils/date';
 import { NotificationService } from './notification.service';
 
@@ -225,6 +226,7 @@ export class InvestmentExpirationService {
     // Não pode passar da duração total
     const effectiveDays = Math.min(daysPassed, investment.products?.duration_days || 0);
     
-    return effectiveDays * (investment.products?.daily_yield || 0);
+    // Calcula 8% ao dia sobre o valor investido
+    return effectiveDays * ((investment.amount || 0) * DAILY_YIELD_PERCENTAGE);
   }
 }

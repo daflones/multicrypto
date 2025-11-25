@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { DAILY_YIELD_PERCENTAGE } from '../constants/investment';
 import { PRODUCTS } from '../utils/constants';
 import { todayInSaoPauloYMD, nowInSaoPauloISO, addDaysPreserveTimeISO } from '../utils/date';
 
@@ -90,20 +91,16 @@ export class InvestmentService {
         throw new Error('Produto não encontrado');
       }
 
-      // Validate amount against product limits
-      if (amount < product.min_investment) {
-        throw new Error(`Valor mínimo para este produto: R$ ${product.min_investment}`);
+      // Validate amount - minimum R$ 50
+      if (amount < 50) {
+        throw new Error('Valor mínimo de investimento: R$ 50,00');
       }
 
-      if (amount > product.max_investment) {
-        throw new Error(`Valor máximo para este produto: R$ ${product.max_investment}`);
+      if (amount > 50000) {
+        throw new Error('Valor máximo de investimento: R$ 50.000,00');
       }
 
-      // Check if user has reached max purchases for this product
-      const currentCount = await this.getUserInvestmentCount(userId, productId);
-      if (currentCount >= product.max_purchases) {
-        throw new Error('Limite de compras atingido para este produto');
-      }
+      // Sem limite de compras - usuário pode comprar quantas vezes quiser
 
       // Get user balance
       const { data: user, error: userError } = await supabase
@@ -208,7 +205,8 @@ export class InvestmentService {
           continue;
         }
 
-        const dailyYield = investment.product?.daily_yield ?? 0;
+        // Calcula 8% ao dia sobre o valor investido
+        const dailyYield = (investment.amount || 0) * DAILY_YIELD_PERCENTAGE;
         if (!dailyYield || dailyYield <= 0) continue;
 
         // Idempotência: verificar se já houve pagamento hoje
@@ -282,10 +280,7 @@ export class InvestmentService {
       // Active investments for live stats
       const { data: activeInvestments, error: activeErr } = await supabase
         .from('user_investments')
-        .select(`
-          amount,
-          product:products(daily_yield)
-        `)
+        .select('amount')
         .eq('user_id', userId)
         .eq('status', 'active');
 
@@ -312,13 +307,8 @@ export class InvestmentService {
 
       if (activeInvestments) {
         stats.totalInvested = activeInvestments.reduce((sum, inv: any) => sum + (inv.amount || 0), 0);
-        stats.dailyYield = activeInvestments.reduce((sum, inv: any) => {
-          const product = (inv as any).product as any;
-          const daily = Array.isArray(product)
-            ? (product[0]?.daily_yield ?? 0)
-            : (product?.daily_yield ?? 0);
-          return sum + (daily || 0);
-        }, 0);
+        // Calcula 8% ao dia sobre o total investido em investimentos ativos
+        stats.dailyYield = stats.totalInvested * DAILY_YIELD_PERCENTAGE;
       }
 
       if (allInvestments) {

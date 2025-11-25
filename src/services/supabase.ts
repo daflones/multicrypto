@@ -65,7 +65,7 @@ export interface Commission {
   beneficiary_id: string;
   source_user_id: string;
   investment_id: string;
-  level: 1 | 2 | 3;
+  level: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   percentage: number;
   amount: number;
   created_at: string;

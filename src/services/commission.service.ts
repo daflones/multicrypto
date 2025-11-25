@@ -11,8 +11,8 @@ export class CommissionService {
 
       // Notificações serão tratadas por trigger/RPC no backend
 
-      // Calculate commissions for each level
-      for (let level = 1; level <= 3; level++) {
+      // Calculate commissions for each level (up to 7 levels)
+      for (let level = 1; level <= 7; level++) {
         const referrerId = referrerChain[level - 1];
         if (!referrerId) continue;
 
@@ -27,6 +27,18 @@ export class CommissionService {
           case 3:
             commissionRate = COMMISSION_RATES.LEVEL_3;
             break;
+          case 4:
+            commissionRate = COMMISSION_RATES.LEVEL_4;
+            break;
+          case 5:
+            commissionRate = COMMISSION_RATES.LEVEL_5;
+            break;
+          case 6:
+            commissionRate = COMMISSION_RATES.LEVEL_6;
+            break;
+          case 7:
+            commissionRate = COMMISSION_RATES.LEVEL_7;
+            break;
         }
 
         const commissionAmount = investmentAmount * commissionRate;
@@ -38,7 +50,7 @@ export class CommissionService {
             beneficiary_id: referrerId,
             source_user_id: userId,
             investment_id: investmentId,
-            level: level as 1 | 2 | 3,
+            level: level as 1 | 2 | 3 | 4 | 5 | 6 | 7,
             percentage: commissionRate,
             amount: commissionAmount
           })
@@ -91,8 +103,8 @@ export class CommissionService {
       const chain: string[] = [];
       let currentUserId = userId;
 
-      // Get up to 3 levels of referrers
-      for (let level = 0; level < 3; level++) {
+      // Get up to 7 levels of referrers
+      for (let level = 0; level < 7; level++) {
         const { data: user, error } = await supabase
           .from('users')
           .select('referred_by')
@@ -152,6 +164,10 @@ export class CommissionService {
         level1Total: 0,
         level2Total: 0,
         level3Total: 0,
+        level4Total: 0,
+        level5Total: 0,
+        level6Total: 0,
+        level7Total: 0,
         thisMonthTotal: 0,
         commissionsCount: commissions?.length || 0
       };
@@ -174,6 +190,18 @@ export class CommissionService {
             case 3:
               stats.level3Total += commission.amount;
               break;
+            case 4:
+              stats.level4Total += commission.amount;
+              break;
+            case 5:
+              stats.level5Total += commission.amount;
+              break;
+            case 6:
+              stats.level6Total += commission.amount;
+              break;
+            case 7:
+              stats.level7Total += commission.amount;
+              break;
           }
 
           // Count this month's commissions
@@ -194,69 +222,64 @@ export class CommissionService {
 
   static async getTeamStats(userId: string) {
     try {
-      // Get direct referrals count
-      const { count: level1Count, error: level1Error } = await supabase
+      const stats = {
+        level1Count: 0,
+        level2Count: 0,
+        level3Count: 0,
+        level4Count: 0,
+        level5Count: 0,
+        level6Count: 0,
+        level7Count: 0,
+        totalTeamSize: 0
+      };
+
+      // Get level 1 (direct referrals)
+      const { data: level1Users, error: level1Error } = await supabase
         .from('users')
-        .select('*', { count: 'exact', head: true })
+        .select('id')
         .eq('referred_by', userId);
 
       if (level1Error) {
         throw new Error('Erro ao buscar estatísticas da equipe');
       }
 
-      // Get level 1 user IDs
-      const { data: level1Users, error: level1UsersError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('referred_by', userId);
-
-      if (level1UsersError) {
-        throw new Error('Erro ao buscar usuários nível 1');
+      if (!level1Users || level1Users.length === 0) {
+        return stats;
       }
 
-      let level2Count = 0;
-      let level3Count = 0;
+      stats.level1Count = level1Users.length;
+      let currentLevelIds = level1Users.map(u => u.id);
 
-      if (level1Users && level1Users.length > 0) {
-        const level1Ids = level1Users.map(user => user.id);
+      // Iterate through levels 2-7
+      for (let level = 2; level <= 7; level++) {
+        if (currentLevelIds.length === 0) break;
 
-        // Get level 2 count
-        const { count: level2CountResult, error: level2Error } = await supabase
-          .from('users')
-          .select('*', { count: 'exact', head: true })
-          .in('referred_by', level1Ids);
-
-        if (!level2Error) {
-          level2Count = level2CountResult || 0;
-        }
-
-        // Get level 2 user IDs for level 3 count
-        const { data: level2Users, error: level2UsersError } = await supabase
+        const { data: nextLevelUsers, error } = await supabase
           .from('users')
           .select('id')
-          .in('referred_by', level1Ids);
+          .in('referred_by', currentLevelIds);
 
-        if (!level2UsersError && level2Users && level2Users.length > 0) {
-          const level2Ids = level2Users.map(user => user.id);
-
-          // Get level 3 count
-          const { count: level3CountResult, error: level3Error } = await supabase
-            .from('users')
-            .select('*', { count: 'exact', head: true })
-            .in('referred_by', level2Ids);
-
-          if (!level3Error) {
-            level3Count = level3CountResult || 0;
-          }
+        if (error || !nextLevelUsers || nextLevelUsers.length === 0) {
+          break;
         }
+
+        const count = nextLevelUsers.length;
+        switch (level) {
+          case 2: stats.level2Count = count; break;
+          case 3: stats.level3Count = count; break;
+          case 4: stats.level4Count = count; break;
+          case 5: stats.level5Count = count; break;
+          case 6: stats.level6Count = count; break;
+          case 7: stats.level7Count = count; break;
+        }
+
+        currentLevelIds = nextLevelUsers.map(u => u.id);
       }
 
-      return {
-        level1Count: level1Count || 0,
-        level2Count,
-        level3Count,
-        totalTeamSize: (level1Count || 0) + level2Count + level3Count
-      };
+      stats.totalTeamSize = stats.level1Count + stats.level2Count + stats.level3Count + 
+                           stats.level4Count + stats.level5Count + stats.level6Count + stats.level7Count;
+
+      return stats;
     } catch (error) {
       console.error('Get team stats error:', error);
       throw error;

@@ -15,6 +15,30 @@ const simpleMiddleware = (req, res, next) => {
   next();
 };
 
+// Endpoint simples igual ao exemplo do DBXBankPay
+router.post('/webhook', (req, res) => {
+  const { event, transaction_id, external_reference, status, amount } = req.body;
+  
+  console.log('Webhook recebido:', {
+    event,
+    transaction_id,
+    external_reference,
+    status,
+    amount
+  });
+  
+  if (status === 'approved') {
+    // Pagamento aprovado - liberar produto/serviço
+    console.log('Pagamento aprovado! Liberar pedido:', external_reference);
+    
+    // Atualizar seu banco de dados
+    // updateOrderStatus(external_reference, 'paid');
+  }
+  
+  // Retornar 200 para confirmar recebimento
+  res.status(200).json({ received: true });
+});
+
 // Teste GET para verificar se webhook está acessível
 router.get('/dbxbankpay', (req, res) => {
   console.log('✅ Webhook GET test chamado');

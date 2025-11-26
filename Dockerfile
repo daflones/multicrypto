@@ -22,7 +22,7 @@ WORKDIR /app/server
 RUN npm install --production
 
 # Expor porta
-EXPOSE 3001
+EXPOSE 3000
 
 # Servir frontend e backend
 CMD ["node", "index.js"]

@@ -32,14 +32,8 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
     script.async = true;
     document.head.appendChild(script);
 
-    return () => {
-      // Não remover o script para evitar problemas
-    };
-  }, []);
-
-  // Função global para callback de sucesso
-  useEffect(() => {
-    (window as any).quandoPagar = (dados: any) => {
+    // Função global para callback de sucesso
+    (window as any).onDBXPaySuccess = (dados: any) => {
       console.log('✅ Pagamento confirmado via widget:', dados);
       
       // Mostrar mensagem de sucesso
@@ -52,7 +46,8 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
     };
 
     return () => {
-      delete (window as any).quandoPagar;
+      document.head.removeChild(script);
+      delete (window as any).onDBXPaySuccess;
     };
   }, [formData.amount, onSuccess]);
 
@@ -189,26 +184,17 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
                 <p className="text-2xl font-bold text-white">{formatCurrency(amount)}</p>
               </div>
 
-              {/* Widget DBXPay - Exatamente como na documentação */}
+              {/* Widget DBXPay */}
               <div className="text-center">
                 <button 
-                  className="dbxpay-button"
+                  className="dbxpay-button w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-medium text-lg hover:opacity-90 transition-opacity"
                   data-api-key={import.meta.env.VITE_DBXPAY_API_KEY}
                   data-amount={amount.toFixed(2)}
                   data-description={`Recarga CryptoYield - ${formatCurrency(amount)}`}
                   data-customer-email={user?.email || ''}
                   data-customer-name={user?.email || ''}
-                  data-on-success="quandoPagar"
-                  style={{
-                    background: '#10b981',
-                    color: 'white',
-                    padding: '15px 30px',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '18px',
-                    cursor: 'pointer',
-                    width: '100%'
-                  }}
+                  data-on-success="onDBXPaySuccess"
+                  data-webhook-url={`${import.meta.env.VITE_APP_URL}/api/webhook/dbxpay`}
                 >
                   💳 Pagar {formatCurrency(amount)} com PIX
                 </button>

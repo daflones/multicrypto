@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, DollarSign } from 'lucide-react';
+import { AlertCircle, DollarSign, Copy, CheckCircle, Clock, X } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { PAYMENT_METHODS } from '../../utils/constants';
 import { formatCurrency } from '../../utils/formatters';
+import { dbxBankPayService, DBXPaymentResponse } from '../../services/dbxbankpay.service';
 
 interface DepositFormProps {
   onSuccess?: () => void;
 }
 
-const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
+const DepositForm: React.FC<DepositFormProps> = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     amount: '',
     paymentMethod: 'pix' as 'pix' | 'trc20' | 'bep20'
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [payment, setPayment] = useState<DBXPaymentResponse | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'aguardando' | 'aprovado' | 'expirado' | 'cancelado'>('idle');
+  const [copied, setCopied] = useState(false);
   const [usdRate, setUsdRate] = useState<number | null>(null);
 
   const { user } = useAuthStore();
@@ -25,37 +30,7 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
     TRC20: import.meta.env.VITE_TRC20_KEY || '',
   };
 
-  // Carregar script do DBXPay Widget
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://dbxbankpay.com/widget.js';
-    script.async = true;
-    document.head.appendChild(script);
-
-    return () => {
-      // Não remover o script para evitar problemas
-    };
-  }, []);
-
-  // Função global para callback de sucesso
-  useEffect(() => {
-    (window as any).quandoPagar = (dados: any) => {
-      console.log('✅ Pagamento confirmado via widget:', dados);
-      
-      // Mostrar mensagem de sucesso
-      alert(`Recarga de ${formatCurrency(parseFloat(formData.amount))} efetuada com sucesso! 🎉`);
-      
-      // Chamar callback de sucesso
-      setTimeout(() => {
-        onSuccess?.();
-      }, 2000);
-    };
-
-    return () => {
-      delete (window as any).quandoPagar;
-    };
-  }, [formData.amount, onSuccess]);
-
+  // Buscar taxa USD
   useEffect(() => {
     const fetchUsdRate = async () => {
       try {
@@ -70,6 +45,9 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
     fetchUsdRate();
   }, []);
 
+  // O status será atualizado via webhook
+  // Não fazemos polling, apenas aguardamos a notificação do webhook
+
   const handleAmountChange = (value: string) => {
     const numericValue = value.replace(/[^\d,]/g, '').replace(',', '.');
     setFormData(prev => ({ ...prev, amount: numericValue }));
@@ -79,27 +57,93 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
   const handlePaymentMethodChange = (method: 'pix' | 'trc20' | 'bep20') => {
     setFormData(prev => ({ ...prev, paymentMethod: method, amount: '' }));
     setError('');
+    setPayment(null);
+    setPaymentStatus('idle');
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     const amount = parseFloat(formData.amount.replace(',', '.')) || 0;
-    const currencySymbol = 'R$';
     
     // Validação de valor mínimo
     if (amount < 10) {
-      setError(`Valor mínimo de ${currencySymbol} ${(10).toFixed(2)}`);
+      setError('Valor mínimo de R$ 10,00');
       return;
     }
-    setError('');
     
-    setStep(2);
+    setError('');
+    setIsLoading(true);
+
+    try {
+      if (formData.paymentMethod === 'pix') {
+        // Criar pagamento PIX via DBXBankPay
+        const externalReference = dbxBankPayService.generateExternalReference(user?.id || 'anonymous');
+        
+        const paymentData = {
+          amount: dbxBankPayService.formatAmountToCents(amount),
+          description: `Recarga CryptoYield - ${formatCurrency(amount)}`,
+          customer_email: user?.email || '',
+          customer_name: user?.email || '',
+          external_reference: externalReference,
+          webhook_url: `${import.meta.env.VITE_APP_URL}/functions/v1/dbxpay-webhook`
+        };
+
+        const newPayment = await dbxBankPayService.createPayment(paymentData);
+        setPayment(newPayment);
+        setPaymentStatus(newPayment.status);
+      }
+      
+      setStep(2);
+    } catch (error: any) {
+      console.error('Erro ao criar pagamento:', error);
+      setError(error.message || 'Erro ao processar pagamento. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error('Erro ao copiar:', error);
+    }
   };
 
   const amount = parseFloat(formData.amount.replace(',', '.')) || 0;
   const isPix = formData.paymentMethod === 'pix';
   const isCrypto = !isPix;
-  const currencySymbol = 'R$';
   const amountInUsd = isCrypto && usdRate ? amount * usdRate : undefined;
+
+  const getStatusIcon = () => {
+    switch (paymentStatus) {
+      case 'aguardando':
+        return <Clock className="text-yellow-400" size={24} />;
+      case 'aprovado':
+        return <CheckCircle className="text-green-400" size={24} />;
+      case 'expirado':
+      case 'cancelado':
+        return <X className="text-red-400" size={24} />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusMessage = () => {
+    switch (paymentStatus) {
+      case 'aguardando':
+        return 'Aguardando pagamento...';
+      case 'aprovado':
+        return 'Pagamento aprovado! Saldo creditado.';
+      case 'expirado':
+        return 'Pagamento expirado. Tente novamente.';
+      case 'cancelado':
+        return 'Pagamento cancelado.';
+      default:
+        return '';
+    }
+  };
 
   return (
     <div className="w-full max-w-md mx-auto bg-background p-8 rounded-xl shadow-lg">
@@ -140,7 +184,7 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
           {/* Amount Input */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-300">
-              Valor ({currencySymbol})
+              Valor (R$)
             </label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -159,16 +203,26 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
 
           {error && (
             <div className="bg-error/10 border border-error/20 rounded-lg p-3">
-              <p className="text-error text-sm">{error}</p>
+              <div className="flex items-center space-x-2">
+                <AlertCircle size={16} className="text-error" />
+                <p className="text-error text-sm">{error}</p>
+              </div>
             </div>
           )}
 
           <button
             onClick={handleContinue}
-            disabled={!formData.amount || parseFloat(formData.amount.replace(',', '.')) <= 0}
-            className="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!formData.amount || parseFloat(formData.amount.replace(',', '.')) <= 0 || isLoading}
+            className="w-full py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
           >
-            Continuar
+            {isLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <span>Processando...</span>
+              </>
+            ) : (
+              <span>Continuar</span>
+            )}
           </button>
         </div>
       )}
@@ -181,53 +235,84 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
             <p className="text-gray-400">Efetue o pagamento para prosseguir</p>
           </div>
 
-          {isPix ? (
-            // PIX via Widget DBXPay
+          {/* Status do Pagamento */}
+          {paymentStatus !== 'idle' && (
+            <div className={`rounded-lg p-4 border ${
+              paymentStatus === 'aprovado' ? 'bg-green-500/10 border-green-500/20' :
+              paymentStatus === 'aguardando' ? 'bg-yellow-500/10 border-yellow-500/20' :
+              'bg-red-500/10 border-red-500/20'
+            }`}>
+              <div className="flex items-center space-x-3">
+                {getStatusIcon()}
+                <span className={`font-medium ${
+                  paymentStatus === 'aprovado' ? 'text-green-400' :
+                  paymentStatus === 'aguardando' ? 'text-yellow-400' :
+                  'text-red-400'
+                }`}>
+                  {getStatusMessage()}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {isPix && payment ? (
+            // PIX via DBXBankPay
             <div className="bg-surface rounded-lg p-6 space-y-4">
               <div className="text-center">
                 <p className="text-gray-400 text-sm">Valor a pagar:</p>
                 <p className="text-2xl font-bold text-white">{formatCurrency(amount)}</p>
               </div>
 
-              {/* Widget DBXPay - Exatamente como na documentação */}
-              <div className="text-center">
-                <button 
-                  className="dbxpay-button"
-                  data-api-key={import.meta.env.VITE_DBXPAY_API_KEY}
-                  data-amount={amount.toFixed(2)}
-                  data-description={`Recarga CryptoYield - ${formatCurrency(amount)}`}
-                  data-customer-email={user?.email || ''}
-                  data-customer-name={user?.email || ''}
-                  data-on-success="quandoPagar"
-                  style={{
-                    background: '#10b981',
-                    color: 'white',
-                    padding: '15px 30px',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '18px',
-                    cursor: 'pointer',
-                    width: '100%'
-                  }}
-                >
-                  💳 Pagar {formatCurrency(amount)} com PIX
-                </button>
+              {/* QR Code */}
+              <div className="bg-white p-4 rounded-lg">
+                <img 
+                  src={payment.qr_code_base64}
+                  alt="QR Code PIX"
+                  className="w-full max-w-xs mx-auto"
+                />
               </div>
 
+              {/* PIX Code */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-300">
+                  Código PIX (Copia e Cola):
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={payment.qr_code}
+                    readOnly
+                    className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
+                  />
+                  <button
+                    onClick={() => copyToClipboard(payment.qr_code)}
+                    className="px-3 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors"
+                  >
+                    {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Instruções */}
               <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
-                <h4 className="text-primary font-semibold mb-2">Como funciona:</h4>
+                <h4 className="text-primary font-semibold mb-2">Como pagar:</h4>
                 <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
-                  <li>Clique no botão acima</li>
+                  <li>Abra o app do seu banco</li>
                   <li>Escaneie o QR Code ou cole o código PIX</li>
-                  <li>Confirme o pagamento no seu banco</li>
+                  <li>Confirme o pagamento</li>
                   <li>Aguarde a confirmação automática</li>
                 </ol>
                 <p className="text-xs text-gray-400 mt-2">
-                  ⚡ O saldo será creditado automaticamente após a confirmação.
+                  ⚡ O saldo será creditado automaticamente em alguns segundos.
                 </p>
               </div>
+
+              {/* Info adicional */}
+              <div className="text-center text-xs text-gray-400">
+                ID da Transação: {payment.id}
+              </div>
             </div>
-          ) : (
+          ) : isCrypto ? (
             // Crypto (mantém o sistema atual)
             <div className="bg-surface rounded-lg p-6 space-y-4">
               <div className="text-center">
@@ -253,10 +338,18 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
 
           <div className="flex justify-center">
-            <button onClick={() => setStep(1)} className="py-3 px-6 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors">
+            <button 
+              onClick={() => {
+                setStep(1);
+                setPayment(null);
+                setPaymentStatus('idle');
+                setError('');
+              }} 
+              className="py-3 px-6 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
+            >
               ← Voltar
             </button>
           </div>

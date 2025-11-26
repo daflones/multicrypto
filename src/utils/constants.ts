@@ -1,3 +1,5 @@
+import { CreditCard, Coins } from 'lucide-react';
+
 export const PRODUCTS = [
   { 
     id: 1, 
@@ -94,9 +96,9 @@ export const COMMISSION_RATES = {
 
 
 export const PAYMENT_METHODS = [
-  { id: 'pix', name: 'PIX', icon: '🏦' },
-  { id: 'trc20', name: 'USDT TRC20', icon: '₮' },
-  { id: 'bep20', name: 'USDT BEP20', icon: '₮' }
+  { id: 'pix', name: 'PIX', icon: CreditCard, description: 'Pagamento instantâneo via PIX' },
+  { id: 'trc20', name: 'USDT TRC20', icon: Coins, description: 'USDT na rede Tron' },
+  { id: 'bep20', name: 'USDT BEP20', icon: Coins, description: 'USDT na rede Binance Smart Chain' }
 ];
 
 export const TRANSACTION_STATUS = {

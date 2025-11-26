@@ -8,11 +8,17 @@
     "npm": ">=9"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "vite",
+    "dev:backend": "cd server && npm run dev",
+    "build": "tsc && vite build && npm run build:backend",
+    "build:backend": "cd server && npm install --production",
+    "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
+    "start:frontend": "serve -s dist -l ${PORT:-3000}",
+    "start:backend": "cd server && npm start",
+    "install:all": "npm install && cd server && npm install",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "start": "serve -s dist -l ${PORT:-3000}"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
@@ -34,6 +40,7 @@
     "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-react": "^4.1.1",
     "autoprefixer": "^10.4.16",
+    "concurrently": "^8.2.2",
     "eslint": "^8.53.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",

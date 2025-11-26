@@ -27,8 +27,20 @@ const rawBodyMiddleware = (req, res, next) => {
   });
 };
 
+// Teste GET para verificar se webhook está acessível
+router.get('/dbxbankpay', (req, res) => {
+  console.log('✅ Webhook GET test chamado');
+  res.json({
+    status: 'ok',
+    message: 'Webhook DBXBankPay está acessível',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Webhook DBXBankPay
 router.post('/dbxbankpay', rawBodyMiddleware, async (req, res) => {
+  const startTime = Date.now();
+  
   // Log da requisição
   console.log('🚨 DBXBankPay WEBHOOK CHAMADO!', {
     method: req.method,
@@ -36,6 +48,13 @@ router.post('/dbxbankpay', rawBodyMiddleware, async (req, res) => {
     timestamp: new Date().toISOString(),
     headers: req.headers,
     ip: req.ip
+  });
+
+  // Responder imediatamente para evitar timeout
+  res.status(200).json({
+    received: true,
+    timestamp: new Date().toISOString(),
+    processing: true
   });
 
   try {
@@ -118,11 +137,8 @@ router.post('/dbxbankpay', rawBodyMiddleware, async (req, res) => {
 
     if (!customerEmail) {
       console.log('❌ Email do cliente não encontrado');
-      return res.status(200).json({
-        error: 'Customer email not found',
-        received: true,
-        processed: false
-      });
+      console.log('⏱️ Processamento finalizado em:', Date.now() - startTime, 'ms');
+      return; // Já respondemos no início
     }
 
     // Processar apenas pagamentos aprovados
@@ -149,48 +165,21 @@ router.post('/dbxbankpay', rawBodyMiddleware, async (req, res) => {
 
       if (error) {
         console.error('❌ Erro ao processar webhook:', error);
-        return res.status(200).json({
-          error: 'Erro interno do servidor',
-          details: error.message,
-          received: true,
-          processed: false
-        });
+        console.log('⏱️ Processamento finalizado em:', Date.now() - startTime, 'ms');
+        return; // Já respondemos no início
       }
 
       console.log('✅ Webhook processado com sucesso:', result);
-
-      // Resposta de sucesso
-      return res.status(200).json({
-        received: true,
-        processed: true,
-        message: 'Pagamento processado com sucesso',
-        transaction_id: transaction_id,
-        amount: amount,
-        user_email: customerEmail
-      });
+      console.log('⏱️ Processamento finalizado em:', Date.now() - startTime, 'ms');
     } else {
       console.log('ℹ️ Evento não processado:', { status, event });
-      
-      return res.status(200).json({
-        received: true,
-        processed: false,
-        message: 'Evento não requer processamento',
-        event_type: event,
-        status: status
-      });
+      console.log('⏱️ Processamento finalizado em:', Date.now() - startTime, 'ms');
     }
 
   } catch (error) {
     console.error('❌ Erro no webhook:', error);
-    
-    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-    
-    return res.status(200).json({
-      error: 'Erro interno do servidor',
-      details: errorMessage,
-      received: true,
-      processed: false
-    });
+    console.log('⏱️ Processamento finalizado com erro em:', Date.now() - startTime, 'ms');
+    // Já respondemos no início, apenas logamos o erro
   }
 });
 

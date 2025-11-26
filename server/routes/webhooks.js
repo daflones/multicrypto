@@ -17,6 +17,11 @@ const simpleMiddleware = (req, res, next) => {
 
 // Endpoint simples igual ao exemplo do DBXBankPay
 router.post('/webhook', (req, res) => {
+  // Log completo para debug
+  console.log('🔍 WEBHOOK DEBUG - Headers:', req.headers);
+  console.log('🔍 WEBHOOK DEBUG - Body completo:', req.body);
+  console.log('🔍 WEBHOOK DEBUG - Body type:', typeof req.body);
+  
   const { event, transaction_id, external_reference, status, amount } = req.body;
   
   console.log('Webhook recebido:', {
@@ -33,6 +38,8 @@ router.post('/webhook', (req, res) => {
     
     // Atualizar seu banco de dados
     // updateOrderStatus(external_reference, 'paid');
+  } else {
+    console.log('⚠️ Status não é approved:', status);
   }
   
   // Retornar 200 para confirmar recebimento

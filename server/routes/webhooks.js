@@ -15,35 +15,95 @@ const simpleMiddleware = (req, res, next) => {
   next();
 };
 
-// Endpoint simples igual ao exemplo do DBXBankPay
+// Endpoint DBXBankPay com formato correto
 router.post('/webhook', (req, res) => {
-  // Log completo para debug
-  console.log('🔍 WEBHOOK DEBUG - Headers:', req.headers);
-  console.log('🔍 WEBHOOK DEBUG - Body completo:', req.body);
-  console.log('🔍 WEBHOOK DEBUG - Body type:', typeof req.body);
-  
-  const { event, transaction_id, external_reference, status, amount } = req.body;
-  
-  console.log('Webhook recebido:', {
-    event,
-    transaction_id,
-    external_reference,
-    status,
-    amount
-  });
-  
-  if (status === 'approved') {
-    // Pagamento aprovado - liberar produto/serviço
-    console.log('Pagamento aprovado! Liberar pedido:', external_reference);
-    
-    // Atualizar seu banco de dados
-    // updateOrderStatus(external_reference, 'paid');
-  } else {
-    console.log('⚠️ Status não é approved:', status);
-  }
-  
-  // Retornar 200 para confirmar recebimento
+  // Responder imediatamente para evitar timeout
   res.status(200).json({ received: true });
+  
+  try {
+    // Log completo para debug
+    console.log('🔍 WEBHOOK DEBUG - Headers:', req.headers);
+    console.log('🔍 WEBHOOK DEBUG - Body completo:', req.body);
+    
+    // Verificar assinatura HMAC
+    const timestamp = req.headers['x-dbxpay-timestamp'];
+    const signature = req.headers['x-dbxpay-signature'];
+    const webhookSecret = process.env.DBXPAY_WEBHOOK_SECRET;
+    
+    if (signature && timestamp && webhookSecret) {
+      console.log('🔐 Validando assinatura DBXBankPay...');
+      
+      const rawBody = JSON.stringify(req.body);
+      const signingString = `${timestamp}.${rawBody}`;
+      
+      const expectedSignature = crypto
+        .createHmac('sha256', webhookSecret)
+        .update(signingString)
+        .digest('hex');
+      
+      const receivedSignature = signature.replace('v1=', '');
+      
+      if (expectedSignature !== receivedSignature) {
+        console.log('❌ Assinatura inválida');
+        return;
+      }
+      
+      console.log('✅ Assinatura válida');
+    } else {
+      console.log('⚠️ Headers de assinatura não encontrados');
+    }
+    
+    // Extrair dados do payload DBXBankPay (formato correto)
+    const { id, type, data } = req.body;
+    
+    if (!data) {
+      console.log('❌ Payload inválido - campo "data" não encontrado');
+      return;
+    }
+    
+    const {
+      transaction_id,
+      external_reference,
+      status,
+      amount,
+      currency,
+      payment_method,
+      net_amount,
+      paid_at
+    } = data;
+    
+    console.log('📥 Webhook DBXBankPay recebido:', {
+      id,
+      type,
+      transaction_id,
+      external_reference,
+      status,
+      amount,
+      currency,
+      payment_method
+    });
+    
+    // Processar apenas pagamentos aprovados
+    if (type === 'payment.approved' && status === 'approved') {
+      console.log('✅ Pagamento aprovado! Liberar pedido:', external_reference);
+      
+      // Aqui você pode integrar com seu banco de dados
+      // Exemplo: updateOrderStatus(external_reference, 'paid');
+      // Exemplo: creditUserBalance(external_reference, amount);
+      
+    } else if (type === 'payment.failed') {
+      console.log('❌ Pagamento falhou:', external_reference);
+      
+    } else if (type === 'payment.expired') {
+      console.log('⏰ Pagamento expirou:', external_reference);
+      
+    } else {
+      console.log('ℹ️ Evento não processado:', { type, status });
+    }
+    
+  } catch (error) {
+    console.error('❌ Erro no webhook:', error);
+  }
 });
 
 // Teste GET para verificar se webhook está acessível

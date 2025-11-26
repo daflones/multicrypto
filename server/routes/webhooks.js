@@ -9,22 +9,10 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Middleware para capturar raw body
-const rawBodyMiddleware = (req, res, next) => {
-  let data = '';
-  req.setEncoding('utf8');
-  req.on('data', chunk => {
-    data += chunk;
-  });
-  req.on('end', () => {
-    req.rawBody = data;
-    try {
-      req.body = JSON.parse(data);
-    } catch (e) {
-      req.body = {};
-    }
-    next();
-  });
+// Middleware simplificado - usar o body já parseado pelo express.json()
+const simpleMiddleware = (req, res, next) => {
+  req.rawBody = JSON.stringify(req.body || {});
+  next();
 };
 
 // Teste GET para verificar se webhook está acessível
@@ -38,7 +26,7 @@ router.get('/dbxbankpay', (req, res) => {
 });
 
 // Webhook DBXBankPay
-router.post('/dbxbankpay', rawBodyMiddleware, async (req, res) => {
+router.post('/dbxbankpay', simpleMiddleware, async (req, res) => {
   const startTime = Date.now();
   
   // Log da requisição

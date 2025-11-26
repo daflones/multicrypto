@@ -15,6 +15,17 @@ const simpleMiddleware = (req, res, next) => {
   next();
 };
 
+// Endpoint GET para teste de conectividade
+router.get('/webhook', (req, res) => {
+  console.log('✅ GET /webhook - Teste de conectividade');
+  res.json({
+    status: 'ok',
+    message: 'Webhook DBXBankPay está acessível',
+    timestamp: new Date().toISOString(),
+    endpoint: '/api/webhooks/webhook'
+  });
+});
+
 // Endpoint DBXBankPay com formato correto
 router.post('/webhook', (req, res) => {
   // Responder imediatamente para evitar timeout

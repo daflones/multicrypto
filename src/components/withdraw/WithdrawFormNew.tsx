@@ -14,6 +14,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
   const [formData, setFormData] = useState<WithdrawFormData>({
     amount: 0,
     paymentMethod: 'pix',
+    balanceType: 'main',
     pixKey: '',
     walletAddress: ''
   });
@@ -91,6 +92,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
       setFormData({
         amount: 0,
         paymentMethod: 'pix',
+        balanceType: 'main',
         pixKey: '',
         walletAddress: ''
       });

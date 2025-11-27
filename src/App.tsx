@@ -4,7 +4,6 @@ import { useAuthStore } from './store/authStore';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
-import AdminLayout from './components/layout/AdminLayout';
 import { ToastProvider } from './contexts/ToastContext';
 
 // Pages
@@ -21,12 +20,6 @@ import About from './pages/About';
 import AdminLogin from './pages/AdminLogin';
 // Admin pages
 import AdminDashboard from './pages/Admin/Dashboard';
-import AdminUsers from './pages/Admin/Users';
-import AdminProducts from './pages/Admin/Products';
-import AdminDeposits from './pages/Admin/Deposits';
-import AdminWithdrawals from './pages/Admin/Withdrawals';
-import AdminInvestments from './pages/Admin/Investments';
-import AdminSettings from './pages/Admin/Settings';
 import ResetPassword from './pages/ResetPassword';
 
 // Componente wrapper para rotas protegidas
@@ -70,22 +63,14 @@ function App() {
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route
-            path="/admin"
+          <Route 
+            path="/admin" 
             element={
               <AdminProtectedRoute>
-                <AdminLayout />
+                <AdminDashboard />
               </AdminProtectedRoute>
-            }
-          >
-            <Route index element={<AdminDashboard />} />
-            <Route path="usuarios" element={<AdminUsers />} />
-            <Route path="produtos" element={<AdminProducts />} />
-            <Route path="recargas" element={<AdminDeposits />} />
-            <Route path="saques" element={<AdminWithdrawals />} />
-            <Route path="investimentos" element={<AdminInvestments />} />
-            <Route path="config" element={<AdminSettings />} />
-          </Route>
+            } 
+          />
           
           {/* Protected Routes */}
           <Route path="/" element={<ProtectedRoutes />}>

@@ -10,7 +10,7 @@ import {
   LogOut,
   ChevronRight
 } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 
 interface AdminSidebarProps {
@@ -20,7 +20,6 @@ interface AdminSidebarProps {
 
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeSection, onSectionChange }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { logout } = useAuthStore();
 
   const menuItems = [

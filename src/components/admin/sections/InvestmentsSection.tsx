@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TrendingUp, Calendar, User, Package, Filter, Search, Eye } from 'lucide-react';
 import { supabase } from '../../../services/supabase';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
+import Pagination from '../../ui/Pagination';
 
 interface Investment {
   id: string;
@@ -28,6 +29,10 @@ const InvestmentsSection: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'completed' | 'cancelled'>('all');
+  
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20); // 20 investimentos por página
 
   useEffect(() => {
     fetchInvestments();
@@ -96,6 +101,18 @@ const InvestmentsSection: React.FC = () => {
     
     return matchesSearch && matchesStatus;
   });
+
+  // Paginação
+  const totalItems = filteredInvestments.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedInvestments = filteredInvestments.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const totalInvested = investments.reduce((sum, inv) => sum + inv.amount, 0);
   const activeInvestments = investments.filter(inv => inv.status === 'active');
@@ -190,7 +207,10 @@ const InvestmentsSection: React.FC = () => {
             type="text"
             placeholder="Buscar por usuário ou produto..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full pl-10 pr-4 py-2 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
           />
         </div>
@@ -199,7 +219,10 @@ const InvestmentsSection: React.FC = () => {
           <Filter size={16} className="text-gray-400" />
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value as typeof statusFilter);
+              setCurrentPage(1);
+            }}
             className="bg-surface border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
           >
             <option value="all">Todos</option>
@@ -232,14 +255,14 @@ const InvestmentsSection: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredInvestments.length === 0 ? (
+                {paginatedInvestments.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="text-center py-8 text-gray-400">
-                      Nenhum investimento encontrado
+                      {filteredInvestments.length === 0 ? 'Nenhum investimento encontrado' : 'Nenhum resultado na página atual'}
                     </td>
                   </tr>
                 ) : (
-                  filteredInvestments.map((investment) => (
+                  paginatedInvestments.map((investment) => (
                     <tr key={investment.id} className="border-b border-surface-light hover:bg-background/30">
                       <td className="p-4">
                         <div className="flex items-center space-x-3">
@@ -287,6 +310,19 @@ const InvestmentsSection: React.FC = () => {
               </tbody>
             </table>
           </div>
+          
+          {/* Paginação */}
+          {totalPages > 1 && (
+            <div className="p-4 border-t border-surface-light">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

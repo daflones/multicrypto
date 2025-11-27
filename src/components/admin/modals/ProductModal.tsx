@@ -34,7 +34,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
     price: product?.price || 0,
     min_investment: product?.min_investment || 0,
     max_investment: product?.max_investment || 0,
-    duration_days: product?.duration_days || 30,
+    duration_days: product?.duration_days || 60,
     daily_yield_percentage: product?.daily_yield_percentage || 5,
     is_active: product?.is_active ?? true,
     image_path: product?.image_path || ''
@@ -368,7 +368,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
                 min="1"
                 required
                 value={formData.duration_days}
-                onChange={(e) => setFormData({ ...formData, duration_days: parseInt(e.target.value) || 30 })}
+                onChange={(e) => setFormData({ ...formData, duration_days: parseInt(e.target.value) || 60 })}
                 className="w-full bg-background border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
               />
               <p className="text-xs text-gray-500 mt-1">

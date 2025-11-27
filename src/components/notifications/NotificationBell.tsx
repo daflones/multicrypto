@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, X, Check, CheckCheck, Trash } from 'lucide-react';
+import { Bell, X, Check, CheckCheck, Trash, Trash2 } from 'lucide-react';
 import { NotificationService, Notification } from '../../services/notification.service';
 import { useAuthStore } from '../../store/authStore';
 import { formatDistanceToNow } from 'date-fns';
@@ -96,6 +96,22 @@ const NotificationBell: React.FC = () => {
     }
   };
 
+  const handleDeleteAll = async () => {
+    if (!user?.id) return;
+    
+    if (!confirm('Tem certeza que deseja apagar todas as notificações?')) {
+      return;
+    }
+    
+    try {
+      await NotificationService.deleteAllNotifications(user.id);
+      setNotifications([]);
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Error deleting all notifications:', error);
+    }
+  };
+
   const toggleNotifications = () => {
     setIsOpen(!isOpen);
   };
@@ -134,9 +150,20 @@ const NotificationBell: React.FC = () => {
                   <button
                     onClick={handleMarkAllAsRead}
                     className="text-xs text-primary hover:text-primary/80 flex items-center space-x-1"
+                    title="Marcar todas como lidas"
                   >
                     <CheckCheck size={14} />
                     <span>Marcar todas</span>
+                  </button>
+                )}
+                {notifications.length > 0 && (
+                  <button
+                    onClick={handleDeleteAll}
+                    className="text-xs text-red-400 hover:text-red-300 flex items-center space-x-1"
+                    title="Deletar todas as notificações"
+                  >
+                    <Trash2 size={14} />
+                    <span>Deletar todas</span>
                   </button>
                 )}
                 <button

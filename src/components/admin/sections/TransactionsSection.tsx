@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../../services/supabase';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
+import Pagination from '../../ui/Pagination';
 
 interface Transaction {
   id: string;
@@ -37,6 +38,10 @@ const TransactionsSection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'deposit' | 'withdraw' | 'investment' | 'commission' | 'yield'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'completed'>('all');
+  
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(25); // 25 transações por página
 
   useEffect(() => {
     fetchTransactions();
@@ -103,6 +108,18 @@ const TransactionsSection: React.FC = () => {
     
     return matchesSearch && matchesType && matchesStatus;
   });
+
+  // Paginação
+  const totalItems = filteredTransactions.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const totalVolume = transactions.reduce((sum, tx) => sum + tx.amount, 0);
   const pendingTransactions = transactions.filter(tx => tx.status === 'pending');
@@ -274,7 +291,10 @@ const TransactionsSection: React.FC = () => {
             type="text"
             placeholder="Buscar por usuário ou ID da transação..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full pl-10 pr-4 py-2 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
           />
         </div>
@@ -283,7 +303,10 @@ const TransactionsSection: React.FC = () => {
           <Filter size={16} className="text-gray-400" />
           <select
             value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value as typeof typeFilter)}
+            onChange={(e) => {
+              setTypeFilter(e.target.value as typeof typeFilter);
+              setCurrentPage(1);
+            }}
             className="bg-surface border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
           >
             <option value="all">Todos os Tipos</option>
@@ -296,7 +319,10 @@ const TransactionsSection: React.FC = () => {
           
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+            onChange={(e) => {
+              setStatusFilter(e.target.value as typeof statusFilter);
+              setCurrentPage(1);
+            }}
             className="bg-surface border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
           >
             <option value="all">Todos os Status</option>
@@ -331,14 +357,14 @@ const TransactionsSection: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredTransactions.length === 0 ? (
+                {paginatedTransactions.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="text-center py-8 text-gray-400">
-                      Nenhuma transação encontrada
+                      {filteredTransactions.length === 0 ? 'Nenhuma transação encontrada' : 'Nenhum resultado na página atual'}
                     </td>
                   </tr>
                 ) : (
-                  filteredTransactions.map((transaction) => (
+                  paginatedTransactions.map((transaction) => (
                     <tr key={transaction.id} className="border-b border-surface-light hover:bg-background/30">
                       <td className="p-4">
                         <p className="text-white font-mono text-sm">{transaction.id.slice(0, 8)}...</p>
@@ -392,6 +418,20 @@ const TransactionsSection: React.FC = () => {
               </tbody>
             </table>
           </div>
+          
+          {/* Paginação */}
+          {totalPages > 1 && (
+            <div className="p-4 border-t border-surface-light">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                onPageChange={handlePageChange}
+                maxVisiblePages={10}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -6,7 +6,7 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-const publicPaths = ['/login', '/register', '/admin'];
+const publicPaths = ['/login', '/register', '/admin/6785/login', '/admin/6785/admin'];
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuthStore();

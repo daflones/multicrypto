@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, DollarSign, Percent, Lock, Save, AlertTriangle } from 'lucide-react';
+import { X, DollarSign, Lock, Save, AlertTriangle, Trash2 } from 'lucide-react';
 import { supabase } from '../../../services/supabase';
 import { formatCurrency } from '../../../utils/formatters';
 
@@ -32,7 +32,6 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdate }
     balance: user.balance,
     commission_balance: user.commission_balance,
     withdrawal_limit: user.withdrawal_limit || 0,
-    custom_yield_rate: user.custom_yield_rate || 5, // 5% padrão
     is_active: user.is_active
   });
 
@@ -42,20 +41,28 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdate }
     try {
       setLoading(true);
 
+      console.log('Updating user with data:', {
+        balance: formData.balance,
+        commission_balance: formData.commission_balance,
+        withdrawal_limit: formData.withdrawal_limit,
+        is_active: formData.is_active
+      });
+
+      const updateData = {
+        balance: formData.balance,
+        commission_balance: formData.commission_balance,
+        withdrawal_limit: formData.withdrawal_limit || null, // Enviar null se for 0
+        is_active: formData.is_active
+      };
+
       const { error } = await supabase
         .from('users')
-        .update({
-          balance: formData.balance,
-          commission_balance: formData.commission_balance,
-          withdrawal_limit: formData.withdrawal_limit,
-          custom_yield_rate: formData.custom_yield_rate,
-          is_active: formData.is_active
-        })
+        .update(updateData)
         .eq('id', user.id);
 
       if (error) {
         console.error('Error updating user:', error);
-        alert('Erro ao atualizar usuário');
+        alert('Erro ao atualizar usuário: ' + error.message);
         return;
       }
 
@@ -65,6 +72,41 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdate }
     } catch (error) {
       console.error('Error updating user:', error);
       alert('Erro ao atualizar usuário');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!confirm(`Tem certeza que deseja DELETAR o usuário ${user.name}? Esta ação NÃO pode ser desfeita e irá remover todos os dados relacionados (investimentos, transações, etc).`)) {
+      return;
+    }
+
+    if (!confirm('CONFIRMAÇÃO FINAL: Você tem ABSOLUTA CERTEZA? Digite OK para confirmar.')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Deletar usuário (cascade irá deletar investimentos, transações, etc)
+      const { error } = await supabase
+        .from('users')
+        .delete()
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error deleting user:', error);
+        alert('Erro ao deletar usuário: ' + error.message);
+        return;
+      }
+
+      alert('Usuário deletado com sucesso!');
+      onUpdate();
+      onClose();
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('Erro ao deletar usuário');
     } finally {
       setLoading(false);
     }
@@ -176,8 +218,14 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdate }
                   type="number"
                   step="0.01"
                   min="0"
-                  value={formData.withdrawal_limit}
-                  onChange={(e) => setFormData({ ...formData, withdrawal_limit: parseFloat(e.target.value) || 0 })}
+                  value={formData.withdrawal_limit || 0}
+                  onChange={(e) => {
+                    const value = parseFloat(e.target.value);
+                    setFormData({ 
+                      ...formData, 
+                      withdrawal_limit: isNaN(value) ? 0 : value 
+                    });
+                  }}
                   className="w-full bg-surface border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
                 />
               </div>
@@ -206,33 +254,6 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdate }
             </div>
           </div>
 
-          {/* Taxa de Rendimento Personalizada */}
-          <div className="bg-background/50 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
-              <Percent size={20} />
-              <span>Taxa de Rendimento</span>
-            </h3>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Taxa Diária (%)
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                min="0"
-                max="20"
-                value={formData.custom_yield_rate}
-                onChange={(e) => setFormData({ ...formData, custom_yield_rate: parseFloat(e.target.value) || 5 })}
-                className="w-full bg-surface border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
-              />
-              <div className="mt-2 text-xs text-gray-500">
-                <p>• Taxa padrão: 5% ao dia</p>
-                <p>• Taxa atual: {user.custom_yield_rate || 5}% ao dia</p>
-                <p>• Esta taxa será aplicada aos rendimentos diários do usuário</p>
-              </div>
-            </div>
-          </div>
 
           {/* Resumo das Alterações */}
           <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
@@ -253,17 +274,32 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, onUpdate }
                   Limite Saque: {formatCurrency(user.withdrawal_limit || 0)} → {formatCurrency(formData.withdrawal_limit)}
                 </p>
               )}
-              {formData.custom_yield_rate !== (user.custom_yield_rate || 5) && (
-                <p className="text-gray-300">
-                  Taxa Rendimento: {user.custom_yield_rate || 5}% → {formData.custom_yield_rate}%
-                </p>
-              )}
               {formData.is_active !== user.is_active && (
                 <p className="text-gray-300">
                   Status: {user.is_active ? 'Ativo' : 'Inativo'} → {formData.is_active ? 'Ativo' : 'Inativo'}
                 </p>
               )}
             </div>
+          </div>
+
+          {/* Zona de Perigo */}
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+            <h4 className="text-red-400 font-medium mb-2 flex items-center space-x-2">
+              <AlertTriangle size={16} />
+              <span>Zona de Perigo</span>
+            </h4>
+            <p className="text-sm text-gray-400 mb-3">
+              Deletar este usuário irá remover permanentemente todos os seus dados, incluindo investimentos, transações e histórico. Esta ação não pode ser desfeita.
+            </p>
+            <button
+              type="button"
+              onClick={handleDeleteUser}
+              disabled={loading}
+              className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <Trash2 size={16} />
+              <span>Deletar Usuário</span>
+            </button>
           </div>
 
           {/* Actions */}

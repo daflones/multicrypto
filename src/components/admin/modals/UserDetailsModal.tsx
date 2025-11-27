@@ -47,10 +47,23 @@ interface Transaction {
   payment_method?: string;
 }
 
+interface ReferralWithLevel extends User {
+  level: number;
+  total_invested: number;
+  commission_generated: number;
+}
+
 const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, onClose }) => {
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [referrals, setReferrals] = useState<User[]>([]);
+  const [referralsWithLevel, setReferralsWithLevel] = useState<ReferralWithLevel[]>([]);
+  const [networkStats, setNetworkStats] = useState({
+    totalLevels: 0,
+    totalReferrals: 0,
+    totalNetworkInvested: 0,
+    totalCommissionsGenerated: 0,
+    byLevel: {} as Record<number, { count: number; invested: number; commissions: number }>
+  });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'investments' | 'transactions' | 'referrals'>('overview');
 
@@ -84,20 +97,11 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, onClose }) =>
         .order('created_at', { ascending: false })
         .limit(10);
 
-      // Buscar indicados
-      const { data: referralsData } = await supabase
+      // Buscar indicados (será processado em fetchNetworkDetails)
+      await supabase
         .from('users')
-        .select(`
-          id,
-          name,
-          email,
-          created_at,
-          is_active,
-          balance,
-          commission_balance
-        `)
-        .eq('referred_by', user.id)
-        .order('created_at', { ascending: false });
+        .select('id')
+        .eq('referred_by', user.id);
 
       // Processar investimentos com tipagem correta
       const processedInvestments = (investmentsData || []).map((inv: any) => ({
@@ -111,21 +115,100 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, onClose }) =>
       }));
 
       // Processar referrals com tipagem correta
-      const processedReferrals = (referralsData || []).map((ref: any) => ({
-        ...ref,
-        phone: ref.phone || '',
-        cpf: ref.cpf || '',
-        referral_code: ref.referral_code || '',
-        referred_by: ref.referred_by || null
-      }));
-
       setInvestments(processedInvestments);
       setTransactions(transactionsData || []);
-      setReferrals(processedReferrals);
+
+      // Buscar dados detalhados da rede
+      await fetchNetworkDetails();
     } catch (error) {
       console.error('Error fetching user details:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchNetworkDetails = async () => {
+    try {
+      // Buscar comissões geradas por este usuário
+      const { data: commissionsData } = await supabase
+        .from('commissions')
+        .select('amount, level, source_user_id')
+        .eq('beneficiary_id', user.id);
+
+      // Buscar todos os indicados diretos
+      const { data: directReferrals } = await supabase
+        .from('users')
+        .select('id, name, email, created_at, is_active, balance, commission_balance, phone, cpf, referral_code, referred_by')
+        .eq('referred_by', user.id);
+
+      if (!directReferrals) return;
+
+      // Calcular estatísticas por nível
+      const levelStats: Record<number, { count: number; invested: number; commissions: number }> = {};
+      let totalNetworkInvested = 0;
+      let totalCommissions = 0;
+      const referralsWithLevelData: ReferralWithLevel[] = [];
+
+      // Processar indicados diretos (nível 1)
+      for (const referral of directReferrals) {
+        // Buscar investimentos do indicado
+        const { data: referralInvestments } = await supabase
+          .from('user_investments')
+          .select('amount')
+          .eq('user_id', referral.id);
+
+        const totalInvested = referralInvestments?.reduce((sum, inv) => sum + inv.amount, 0) || 0;
+
+        // Buscar comissões geradas por este indicado
+        const commissionsFromReferral = commissionsData?.filter(c => c.source_user_id === referral.id) || [];
+        const commissionGenerated = commissionsFromReferral.reduce((sum, c) => sum + c.amount, 0);
+
+        referralsWithLevelData.push({
+          ...referral,
+          level: 1,
+          total_invested: totalInvested,
+          commission_generated: commissionGenerated
+        });
+
+        if (!levelStats[1]) {
+          levelStats[1] = { count: 0, invested: 0, commissions: 0 };
+        }
+        levelStats[1].count++;
+        levelStats[1].invested += totalInvested;
+        levelStats[1].commissions += commissionGenerated;
+        
+        totalNetworkInvested += totalInvested;
+        totalCommissions += commissionGenerated;
+      }
+
+      // Agrupar comissões por nível
+      const commissionsByLevel = commissionsData?.reduce((acc, comm) => {
+        if (!acc[comm.level]) {
+          acc[comm.level] = 0;
+        }
+        acc[comm.level] += comm.amount;
+        return acc;
+      }, {} as Record<number, number>) || {};
+
+      // Atualizar estatísticas com todos os níveis de comissão
+      Object.keys(commissionsByLevel).forEach(level => {
+        const lvl = parseInt(level);
+        if (!levelStats[lvl]) {
+          levelStats[lvl] = { count: 0, invested: 0, commissions: 0 };
+        }
+        levelStats[lvl].commissions = commissionsByLevel[lvl];
+      });
+
+      setReferralsWithLevel(referralsWithLevelData);
+      setNetworkStats({
+        totalLevels: Math.max(...Object.keys(levelStats).map(Number), 0),
+        totalReferrals: directReferrals.length,
+        totalNetworkInvested,
+        totalCommissionsGenerated: commissionsData?.reduce((sum, c) => sum + c.amount, 0) || 0,
+        byLevel: levelStats
+      });
+    } catch (error) {
+      console.error('Error fetching network details:', error);
     }
   };
 
@@ -248,16 +331,16 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, onClose }) =>
                         <p className="text-gray-400 text-sm">Total Investido</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-green-400">{formatCurrency(user.network_invested || 0)}</p>
+                        <p className="text-2xl font-bold text-green-400">{formatCurrency(networkStats.totalNetworkInvested)}</p>
                         <p className="text-gray-400 text-sm">Rede Investiu</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-white">{user.referrals_count}</p>
-                        <p className="text-gray-400 text-sm">Indicados</p>
+                        <p className="text-2xl font-bold text-white">{networkStats.totalReferrals}</p>
+                        <p className="text-gray-400 text-sm">Indicados Diretos</p>
                       </div>
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-green-400">{formatCurrency(user.network_earnings || 0)}</p>
-                        <p className="text-gray-400 text-sm">Ganhos da Rede</p>
+                        <p className="text-2xl font-bold text-purple-400">{formatCurrency(networkStats.totalCommissionsGenerated)}</p>
+                        <p className="text-gray-400 text-sm">Comissões Geradas</p>
                       </div>
                     </div>
                   </div>
@@ -277,10 +360,6 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, onClose }) =>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400">Limite de Saque:</span>
                         <span className="text-white">{formatCurrency(user.withdrawal_limit || 0)}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Taxa de Rendimento:</span>
-                        <span className="text-white">{user.custom_yield_rate || 5}% ao dia</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400">Código de Indicação:</span>
@@ -348,35 +427,105 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, onClose }) =>
               )}
 
               {activeTab === 'referrals' && (
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-white">Usuários Indicados</h3>
-                  {referrals.length === 0 ? (
-                    <p className="text-gray-400 text-center py-8">Nenhum usuário indicado</p>
-                  ) : (
-                    <div className="space-y-3">
-                      {referrals.map((referral) => (
-                        <div key={referral.id} className="bg-background/50 rounded-lg p-4 flex justify-between items-center">
-                          <div className="flex items-center space-x-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                              referral.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-                            }`}>
-                              <User size={16} />
+                <div className="space-y-6">
+                  {/* Estatísticas da Rede */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-4">Estatísticas da Rede</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="bg-background/50 rounded-lg p-4">
+                        <p className="text-gray-400 text-sm">Total de Indicados</p>
+                        <p className="text-2xl font-bold text-primary">{networkStats.totalReferrals}</p>
+                      </div>
+                      <div className="bg-background/50 rounded-lg p-4">
+                        <p className="text-gray-400 text-sm">Níveis Ativos</p>
+                        <p className="text-2xl font-bold text-green-400">{networkStats.totalLevels}</p>
+                      </div>
+                      <div className="bg-background/50 rounded-lg p-4">
+                        <p className="text-gray-400 text-sm">Rede Investiu</p>
+                        <p className="text-2xl font-bold text-yellow-400">{formatCurrency(networkStats.totalNetworkInvested)}</p>
+                      </div>
+                      <div className="bg-background/50 rounded-lg p-4">
+                        <p className="text-gray-400 text-sm">Comissões Geradas</p>
+                        <p className="text-2xl font-bold text-purple-400">{formatCurrency(networkStats.totalCommissionsGenerated)}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Estatísticas por Nível */}
+                  {Object.keys(networkStats.byLevel).length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-semibold text-white mb-4">Detalhamento por Nível</h3>
+                      <div className="space-y-3">
+                        {Object.entries(networkStats.byLevel)
+                          .sort(([a], [b]) => parseInt(a) - parseInt(b))
+                          .map(([level, stats]) => (
+                            <div key={level} className="bg-background/50 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center space-x-2">
+                                  <span className="px-2 py-1 bg-primary/20 text-primary rounded text-sm font-medium">
+                                    Nível {level}
+                                  </span>
+                                  <span className="text-gray-400 text-sm">
+                                    {stats.count} {stats.count === 1 ? 'pessoa' : 'pessoas'}
+                                  </span>
+                                </div>
+                                <span className="text-white font-medium">{formatCurrency(stats.commissions)}</span>
+                              </div>
+                              {stats.invested > 0 && (
+                                <p className="text-gray-400 text-sm">
+                                  Investido: {formatCurrency(stats.invested)}
+                                </p>
+                              )}
                             </div>
-                            <div>
-                              <h4 className="text-white font-medium">{referral.name}</h4>
-                              <p className="text-gray-400 text-sm">{referral.email}</p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-white font-medium">
-                              {formatCurrency(referral.balance + referral.commission_balance)}
-                            </p>
-                            <p className="text-gray-400 text-sm">{formatDate(referral.created_at)}</p>
-                          </div>
-                        </div>
-                      ))}
+                          ))}
+                      </div>
                     </div>
                   )}
+
+                  {/* Lista de Indicados Diretos */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-4">Indicados Diretos (Nível 1)</h3>
+                    {referralsWithLevel.length === 0 ? (
+                      <p className="text-gray-400 text-center py-8">Nenhum usuário indicado</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {referralsWithLevel.map((referral) => (
+                          <div key={referral.id} className="bg-background/50 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center space-x-3">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                  referral.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                                }`}>
+                                  <User size={20} />
+                                </div>
+                                <div>
+                                  <h4 className="text-white font-medium">{referral.name}</h4>
+                                  <p className="text-gray-400 text-sm">{referral.email}</p>
+                                </div>
+                              </div>
+                              <span className="px-2 py-1 bg-primary/20 text-primary rounded text-xs font-medium">
+                                Nível {referral.level}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-4 text-sm">
+                              <div>
+                                <p className="text-gray-400">Investiu</p>
+                                <p className="text-white font-medium">{formatCurrency(referral.total_invested)}</p>
+                              </div>
+                              <div>
+                                <p className="text-gray-400">Comissão Gerada</p>
+                                <p className="text-green-400 font-medium">{formatCurrency(referral.commission_generated)}</p>
+                              </div>
+                              <div>
+                                <p className="text-gray-400">Cadastro</p>
+                                <p className="text-white">{formatDate(referral.created_at)}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </>

@@ -134,7 +134,7 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
   const sliderMin = productMin;
   const sliderMax = productMax;
   
-  // Cálculos de rendimento (8% ao dia)
+  // Cálculos de rendimento (5% ao dia)
   const dailyReturn = calculateDailyYield(investAmount);
   const monthlyReturn = calculateMonthlyYield(investAmount);
   const roi = calculateMonthlyROI(investAmount);
@@ -273,7 +273,7 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
 
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Rendimento diário (8%):</span>
+                <span className="text-gray-400">Rendimento diário (5%):</span>
                 <span className="text-success font-semibold flex items-center space-x-1">
                   <TrendingUp size={16} />
                   <span>{formatCurrency(dailyReturn)}</span>

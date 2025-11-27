@@ -24,7 +24,7 @@ const AdminLogin: React.FC = () => {
         setError('Você não tem permissão para acessar esta área.');
         await state.logout(); // Força o logout se o usuário não for admin
       } else if (state.isAuthenticated && state.user?.role === 'admin') {
-        navigate('/admin');
+        navigate('/admin/6785/admin');
       } else if (!state.isAuthenticated) {
         setError('Email ou senha inválidos.');
       }

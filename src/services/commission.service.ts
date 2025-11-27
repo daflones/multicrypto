@@ -1,6 +1,54 @@
 import { supabase } from './supabase';
 
 export class CommissionService {
+  /**
+   * Calcula o progresso total rumo aos 300%
+   * Considera RENDIMENTO + COMISSÕES juntos
+   */
+  static async getInvestmentProgress(userId: string): Promise<{ 
+    totalInvested: number;
+    totalLimit: number;
+    totalEarnedYield: number;
+    totalEarnedCommission: number;
+    totalEarned: number;
+    remainingToLimit: number;
+    percentageCompleted: number;
+  }> {
+    try {
+      const { data, error } = await supabase.rpc('get_investment_progress', {
+        p_user_id: userId
+      });
+
+      if (error) {
+        console.error('Error fetching investment progress:', error);
+        throw error;
+      }
+
+      const result = data?.[0] || {
+        total_invested: 0,
+        total_limit: 0,
+        total_earned_yield: 0,
+        total_earned_commission: 0,
+        total_earned: 0,
+        remaining_to_limit: 0,
+        percentage_completed: 0
+      };
+
+      return {
+        totalInvested: result.total_invested,
+        totalLimit: result.total_limit,
+        totalEarnedYield: result.total_earned_yield,
+        totalEarnedCommission: result.total_earned_commission,
+        totalEarned: result.total_earned,
+        remainingToLimit: result.remaining_to_limit,
+        percentageCompleted: result.percentage_completed
+      };
+    } catch (error) {
+      console.error('Get investment progress error:', error);
+      throw error;
+    }
+  }
+
   static async calculateCommissions(userId: string, investmentAmount: number, _investmentId?: string) {
     try {
       // Usar a função existente do Supabase para calcular e distribuir comissões

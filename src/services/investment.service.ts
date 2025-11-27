@@ -237,7 +237,7 @@ export class InvestmentService {
         .select(`
           *,
           product:products(*),
-          user:users(balance)
+          user:users(balance, custom_yield_rate, is_active)
         `)
         .eq('status', 'active');
 
@@ -364,7 +364,7 @@ export class InvestmentService {
 
       if (activeInvestments) {
         stats.totalInvested = activeInvestments.reduce((sum, inv: any) => sum + (inv.amount || 0), 0);
-        // Calcula 8% ao dia sobre o total investido em investimentos ativos
+        // Calcula 5% ao dia sobre o total investido em investimentos ativos
         stats.dailyYield = stats.totalInvested * DAILY_YIELD_PERCENTAGE;
       }
 

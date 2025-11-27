@@ -118,8 +118,8 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
               <div>
                 <h3 className="text-white font-semibold mb-2">Sistema de Referência</h3>
                 <p className="text-gray-400 text-sm">
-                  Ganhe até 18% de comissão sobre os investimentos da sua equipe 
-                  em 3 níveis de profundidade.
+                  Ganhe comissões sobre os investimentos da sua equipe 
+                  em até 7 níveis de profundidade.
                 </p>
               </div>
             </div>

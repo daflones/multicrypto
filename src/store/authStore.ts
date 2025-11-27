@@ -13,6 +13,7 @@ interface User {
   commission_balance: number;
   created_at: string;
   role: string;
+  withdrawal_limit?: number;
 }
 
 interface AuthState {
@@ -202,7 +203,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const { data: userData, error } = await supabase
             .from('users')
-            .select('balance, commission_balance')
+            .select('balance, commission_balance, withdrawal_limit')
             .eq('id', user.id)
             .single();
 
@@ -212,7 +213,8 @@ export const useAuthStore = create<AuthState>()(
               user: state.user ? { 
                 ...state.user, 
                 balance: userData.balance,
-                commission_balance: userData.commission_balance || 0
+                commission_balance: userData.commission_balance || 0,
+                withdrawal_limit: userData.withdrawal_limit
               } : null,
             }));
           }

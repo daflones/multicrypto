@@ -1,7 +1,7 @@
 {
-  "name": "cryptoyield-server",
+  "name": "multicrypto-server",
   "version": "1.0.0",
-  "description": "Backend server for CryptoYield with DBXBankPay webhook integration",
+  "description": "Backend server for Multi Crypto with DBXBankPay webhook integration",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

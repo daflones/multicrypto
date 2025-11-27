@@ -3,9 +3,7 @@ import {
   Users, 
   TrendingUp, 
   DollarSign, 
-  UserPlus, 
-  Lock, 
-  Unlock,
+  UserPlus,
   Search,
   Filter,
   Eye,
@@ -15,6 +13,9 @@ import { supabase } from '../../../services/supabase';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import UserDetailsModal from '../modals/UserDetailsModal';
 import EditUserModal from '../modals/EditUserModal';
+import ActivateUserModal from '../modals/ActivateUserModal';
+import CreateUserModal from '../modals/CreateUserModal';
+import Pagination from '../../ui/Pagination';
 
 interface User {
   id: string;
@@ -32,9 +33,12 @@ interface User {
   custom_yield_rate?: number;
   // Dados calculados
   total_invested?: number;
-  network_invested?: number;
   referrals_count?: number;
+  network_invested?: number;
   network_earnings?: number;
+  active_investments_count?: number;
+  has_balance?: boolean;
+  has_deposits?: boolean;
 }
 
 const UsersSection: React.FC = () => {
@@ -45,6 +49,12 @@ const UsersSection: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showActivateModal, setShowActivateModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20); // 20 usuários por página
 
   useEffect(() => {
     fetchUsers();
@@ -82,13 +92,25 @@ const UsersSection: React.FC = () => {
       // Calcular dados adicionais para cada usuário
       const usersWithStats = await Promise.all(
         usersData.map(async (user) => {
-          // Total investido pelo usuário
+          // Total investido e investimentos ativos
           const { data: investments } = await supabase
             .from('user_investments')
-            .select('amount')
+            .select('amount, status')
             .eq('user_id', user.id);
           
           const totalInvested = investments?.reduce((sum, inv) => sum + inv.amount, 0) || 0;
+          const activeInvestmentsCount = investments?.filter(inv => inv.status === 'active').length || 0;
+
+          // Verificar se já fez alguma recarga (transação de depósito aprovada)
+          const { data: deposits } = await supabase
+            .from('transactions')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('type', 'deposit')
+            .eq('status', 'approved')
+            .limit(1);
+          
+          const hasDeposits = deposits && deposits.length > 0;
 
           // Contar indicados diretos
           const { count: referralsCount } = await supabase
@@ -121,12 +143,18 @@ const UsersSection: React.FC = () => {
           
           const networkEarnings = commissions?.reduce((sum, comm) => sum + comm.amount, 0) || 0;
 
+          const hasBalance = (user.balance + user.commission_balance) > 0;
+
           return {
             ...user,
             total_invested: totalInvested,
             network_invested: networkInvested,
             referrals_count: referralsCount || 0,
-            network_earnings: networkEarnings
+            network_earnings: networkEarnings,
+            active_investments_count: activeInvestmentsCount,
+            has_balance: hasBalance,
+            has_deposits: hasDeposits || false, // Se já fez alguma recarga
+            is_active: activeInvestmentsCount > 0 // Usuário ativo = tem investimentos ativos
           };
         })
       );
@@ -140,9 +168,9 @@ const UsersSection: React.FC = () => {
   };
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.cpf.includes(searchTerm);
+    const matchesSearch = (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (user.cpf || '').includes(searchTerm);
     
     const matchesFilter = filterActive === 'all' || 
                          (filterActive === 'active' && user.is_active) ||
@@ -151,25 +179,21 @@ const UsersSection: React.FC = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const toggleUserStatus = async (userId: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('users')
-        .update({ is_active: !currentStatus })
-        .eq('id', userId);
+  // Paginação
+  const totalItems = filteredUsers.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
 
-      if (error) {
-        console.error('Error updating user status:', error);
-        return;
-      }
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-      // Atualizar estado local
-      setUsers(users.map(user => 
-        user.id === userId ? { ...user, is_active: !currentStatus } : user
-      ));
-    } catch (error) {
-      console.error('Error toggling user status:', error);
-    }
+  const handleAddProducts = (user: User) => {
+    setSelectedUser(user);
+    setShowActivateModal(true);
   };
 
   const handleViewDetails = (user: User) => {
@@ -192,7 +216,10 @@ const UsersSection: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-3">
-          <button className="flex items-center space-x-2 bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg transition-colors">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center space-x-2 bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg transition-colors"
+          >
             <UserPlus size={20} />
             <span>Novo Usuário</span>
           </button>
@@ -200,7 +227,7 @@ const UsersSection: React.FC = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
         <div className="bg-surface border border-surface-light rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -214,12 +241,12 @@ const UsersSection: React.FC = () => {
         <div className="bg-surface border border-surface-light rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Usuários Ativos</p>
+              <p className="text-gray-400 text-sm">Investidores Ativos</p>
               <p className="text-2xl font-bold text-green-400">
-                {users.filter(u => u.is_active).length}
+                {users.filter(u => u.active_investments_count && u.active_investments_count > 0).length}
               </p>
             </div>
-            <Unlock className="text-green-400" size={24} />
+            <TrendingUp className="text-green-400" size={24} />
           </div>
         </div>
         
@@ -238,12 +265,36 @@ const UsersSection: React.FC = () => {
         <div className="bg-surface border border-surface-light rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-400 text-sm">Saldo Total</p>
+              <p className="text-gray-400 text-sm">Líderes</p>
+              <p className="text-2xl font-bold text-purple-400">
+                {users.filter(u => u.commission_balance > 0).length}
+              </p>
+            </div>
+            <Users className="text-purple-400" size={24} />
+          </div>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Depositantes</p>
               <p className="text-2xl font-bold text-yellow-400">
-                {formatCurrency(users.reduce((sum, u) => sum + u.balance + u.commission_balance, 0))}
+                {users.filter(u => u.has_deposits).length}
               </p>
             </div>
             <DollarSign className="text-yellow-400" size={24} />
+          </div>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-gray-400 text-sm">Saldo Total</p>
+              <p className="text-2xl font-bold text-white">
+                {formatCurrency(users.reduce((sum, u) => sum + u.balance + u.commission_balance, 0))}
+              </p>
+            </div>
+            <DollarSign className="text-white" size={24} />
           </div>
         </div>
       </div>
@@ -256,7 +307,10 @@ const UsersSection: React.FC = () => {
             type="text"
             placeholder="Buscar por nome, email ou CPF..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1); // Reset para primeira página ao buscar
+            }}
             className="w-full pl-10 pr-4 py-2 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
           />
         </div>
@@ -265,7 +319,10 @@ const UsersSection: React.FC = () => {
           <Filter size={16} className="text-gray-400" />
           <select
             value={filterActive}
-            onChange={(e) => setFilterActive(e.target.value as typeof filterActive)}
+            onChange={(e) => {
+              setFilterActive(e.target.value as typeof filterActive);
+              setCurrentPage(1); // Reset para primeira página ao filtrar
+            }}
             className="bg-surface border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
           >
             <option value="all">Todos</option>
@@ -282,8 +339,9 @@ const UsersSection: React.FC = () => {
           <p className="text-gray-400">Carregando usuários...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-          {filteredUsers.map((user) => (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            {paginatedUsers.map((user) => (
             <div
               key={user.id}
               className="bg-surface border border-surface-light rounded-lg p-4 hover:border-primary/30 transition-colors"
@@ -297,7 +355,39 @@ const UsersSection: React.FC = () => {
                     <Users size={20} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white">{user.name}</h3>
+                    <div className="flex items-center space-x-2 flex-wrap">
+                      <h3 className="font-semibold text-white">{user.name}</h3>
+                      
+                      {/* Tags de tipo de usuário - mostrar todas que se aplicam */}
+                      <div className="flex items-center space-x-1 flex-wrap">
+                        {user.active_investments_count && user.active_investments_count > 0 && (
+                          <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">
+                            Investidor
+                          </span>
+                        )}
+                        
+                        {user.commission_balance > 0 && (
+                          <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs font-medium rounded-full">
+                            Líder
+                          </span>
+                        )}
+                        
+                        {user.has_deposits && (
+                          <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs font-medium rounded-full">
+                            Depositante
+                          </span>
+                        )}
+                        
+                        {/* Se não tem nenhuma das tags acima, mostrar "Novo" */}
+                        {(!user.active_investments_count || user.active_investments_count === 0) && 
+                         user.commission_balance === 0 && 
+                         !user.has_deposits && (
+                          <span className="px-2 py-0.5 bg-gray-500/20 text-gray-400 text-xs font-medium rounded-full">
+                            Novo
+                          </span>
+                        )}
+                      </div>
+                    </div>
                     <p className="text-sm text-gray-400">{user.email}</p>
                   </div>
                 </div>
@@ -316,14 +406,11 @@ const UsersSection: React.FC = () => {
                     <Settings size={16} />
                   </button>
                   <button
-                    onClick={() => toggleUserStatus(user.id, user.is_active)}
-                    className={`p-2 transition-colors ${
-                      user.is_active 
-                        ? 'text-green-400 hover:text-green-300' 
-                        : 'text-red-400 hover:text-red-300'
-                    }`}
+                    onClick={() => handleAddProducts(user)}
+                    className="p-2 text-primary hover:text-primary/80 transition-colors"
+                    title="Adicionar produtos ao usuário"
                   >
-                    {user.is_active ? <Unlock size={16} /> : <Lock size={16} />}
+                    <UserPlus size={16} />
                   </button>
                 </div>
               </div>
@@ -378,8 +465,23 @@ const UsersSection: React.FC = () => {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+
+          {/* Paginação */}
+          {totalPages > 1 && (
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                onPageChange={handlePageChange}
+                maxVisiblePages={10}
+              />
+            </div>
+          )}
+        </>
       )}
 
       {/* Modals */}
@@ -400,6 +502,24 @@ const UsersSection: React.FC = () => {
             setShowEditModal(false);
             setSelectedUser(null);
           }}
+          onUpdate={fetchUsers}
+        />
+      )}
+
+      {showActivateModal && selectedUser && (
+        <ActivateUserModal
+          user={selectedUser}
+          onClose={() => {
+            setShowActivateModal(false);
+            setSelectedUser(null);
+          }}
+          onUpdate={fetchUsers}
+        />
+      )}
+
+      {showCreateModal && (
+        <CreateUserModal
+          onClose={() => setShowCreateModal(false)}
           onUpdate={fetchUsers}
         />
       )}

@@ -80,7 +80,7 @@ const DepositForm: React.FC<DepositFormProps> = () => {
         
         const paymentData = {
           amount: dbxBankPayService.formatAmountToCents(amount),
-          description: `Recarga CryptoYield - ${formatCurrency(amount)}`,
+          description: `Recarga Multi Crypto - ${formatCurrency(amount)}`,
           customer_email: user?.email || '',
           customer_name: user?.email || 'Usuário',
           customer_document: user?.cpf || '',

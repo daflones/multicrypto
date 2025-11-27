@@ -4,8 +4,6 @@ import {
   TrendingUp, 
   CreditCard, 
   Package, 
-  Settings, 
-  BarChart3,
   Shield,
   LogOut,
   ChevronRight
@@ -46,25 +44,13 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeSection, onSectionCha
       label: 'Produtos',
       icon: Package,
       description: 'Gerenciar produtos'
-    },
-    {
-      id: 'analytics',
-      label: 'Analytics',
-      icon: BarChart3,
-      description: 'Relatórios e métricas'
-    },
-    {
-      id: 'settings',
-      label: 'Configurações',
-      icon: Settings,
-      description: 'Configurações do sistema'
     }
   ];
 
   const handleLogout = () => {
     if (confirm('Tem certeza que deseja sair?')) {
       logout();
-      navigate('/admin/login');
+      navigate('/admin/6785/login');
     }
   };
 
@@ -78,7 +64,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeSection, onSectionCha
           </div>
           <div>
             <h1 className="text-white font-bold text-lg">Admin Panel</h1>
-            <p className="text-gray-400 text-sm">CryptoYield</p>
+            <p className="text-gray-400 text-sm">Multi Crypto</p>
           </div>
         </div>
       </div>

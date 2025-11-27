@@ -101,7 +101,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
                   <div>
                     <p className="text-xs text-gray-400">Total Retorno</p>
                     <p className="text-sm font-semibold text-primary">
-                      {formatCurrency(investment.amount + (investment.amount * DAILY_YIELD_PERCENTAGE) * (investment.product?.duration_days || 30))}
+                      {formatCurrency(investment.amount + (investment.amount * DAILY_YIELD_PERCENTAGE) * (investment.product?.duration_days || 60))}
                     </p>
                   </div>
                 </div>

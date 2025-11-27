@@ -47,15 +47,40 @@ export class TransactionService {
         throw new Error('Você precisa ter pelo menos um investimento ativo para solicitar um saque.');
       }
 
-      // Buscar saldo do usuário
+      // Buscar dados do usuário incluindo limite de saque e status
       const { data: user, error: userError } = await supabase
         .from('users')
-        .select('balance')
+        .select('balance, commission_balance, withdrawal_limit, is_active')
         .eq('id', userId)
         .single();
 
       if (userError || !user) {
         throw new Error('Usuário não encontrado');
+      }
+
+      // Verificar se o usuário está ativo
+      if (!user.is_active) {
+        throw new Error('Sua conta está inativa. Entre em contato com o suporte.');
+      }
+
+      // Verificar limite de saque
+      const withdrawalLimit = user.withdrawal_limit;
+      
+      if (withdrawalLimit && withdrawalLimit > 0) {
+        // Se há limite personalizado definido, usar ele
+        if (data.amount > withdrawalLimit) {
+          throw new Error(`Limite de saque excedido. Seu limite atual é de R$ ${withdrawalLimit.toFixed(2)}. Para aumentar seu limite, entre em contato com o suporte.`);
+        }
+      } else {
+        // Se não há limite personalizado, usar regra padrão do site
+        // Regra padrão: pode sacar até 80% do saldo disponível
+        const defaultLimit = user.balance * 0.8; // 80% do saldo como limite padrão
+        
+        if (data.amount > defaultLimit) {
+          throw new Error(`Limite de saque padrão excedido. Você pode sacar até R$ ${defaultLimit.toFixed(2)} (80% do seu saldo). Para sacar mais, entre em contato com o suporte.`);
+        }
+        
+        console.log(`Usando regra padrão de saque - limite: R$ ${defaultLimit.toFixed(2)}`);
       }
 
       // Calcular taxa de 5% (apenas informativa para o usuário)

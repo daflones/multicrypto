@@ -1,0 +1,123 @@
+═══════════════════════════════════════════════════════════
+  SISTEMA DE LIMITE 300% - RENDIMENTO + COMISSÕES
+═══════════════════════════════════════════════════════════
+
+✅ IMPLEMENTADO COM SUCESSO!
+
+═══════════════════════════════════════════════════════════
+  PASSO 1: EXECUTAR SQL NO SUPABASE
+═══════════════════════════════════════════════════════════
+
+1. Abra o arquivo:
+   📁 database/EXECUTAR_LIMITE_300_PERCENT.sql
+
+2. Copie TODO o conteúdo do arquivo
+
+3. Acesse Supabase:
+   🌐 https://supabase.com/dashboard
+   → Seu projeto
+   → SQL Editor (menu lateral)
+
+4. Cole o código SQL completo
+
+5. Clique em RUN (ou pressione Ctrl+Enter)
+
+6. Aguarde a mensagem de sucesso
+
+═══════════════════════════════════════════════════════════
+  PASSO 2: VERIFICAR SE FUNCIONOU
+═══════════════════════════════════════════════════════════
+
+Execute esta query no Supabase SQL Editor:
+
+SELECT 
+  proname as nome_funcao,
+  pg_get_function_arguments(oid) as parametros
+FROM pg_proc 
+WHERE proname IN (
+  'get_investment_progress',
+  'process_commission_payment_with_limit',
+  'calculate_and_distribute_commissions'
+)
+ORDER BY proname;
+
+✅ Deve retornar 3 funções
+
+═══════════════════════════════════════════════════════════
+  O QUE FOI IMPLEMENTADO
+═══════════════════════════════════════════════════════════
+
+REGRA PRINCIPAL:
+Investiu R$ 1.000 → Pode ganhar até R$ 3.000 TOTAL (300%)
+
+GANHOS QUE CONTAM:
+✅ Rendimento diário (5% ao dia)
+✅ Comissões de rede (indicações)
+✅ SOMA DOS DOIS = Limite de 300%
+
+═══════════════════════════════════════════════════════════
+  EXEMPLO PRÁTICO
+═══════════════════════════════════════════════════════════
+
+Investimento: R$ 1.000
+Limite total: R$ 3.000 (300%)
+
+Dia 1-10:
+├─ Rendimento: R$ 50/dia × 10 = R$ 500
+├─ Comissões: R$ 2.500
+└─ Total: R$ 3.000 ✅ FINALIZADO!
+
+O investimento finaliza porque:
+R$ 500 (rendimento) + R$ 2.500 (comissões) = R$ 3.000 (300%)
+
+═══════════════════════════════════════════════════════════
+  FUNÇÕES CRIADAS
+═══════════════════════════════════════════════════════════
+
+1. get_investment_progress(user_id)
+   → Calcula rendimento + comissões
+   → Mostra quanto falta para 300%
+   → Mostra porcentagem completada
+
+2. process_commission_payment_with_limit(...)
+   → Aplica limite de 300% TOTAL
+   → Distribui entre produtos ativos
+   → Finaliza produtos antecipadamente
+
+3. calculate_and_distribute_commissions(user_id, amount)
+   → Distribui comissões em 7 níveis
+   → Respeita limite de 300%
+   → Compatível com código existente
+
+═══════════════════════════════════════════════════════════
+  CÓDIGO TYPESCRIPT ATUALIZADO
+═══════════════════════════════════════════════════════════
+
+✅ CommissionService.getInvestmentProgress(userId)
+   → Nova função para verificar progresso total
+
+✅ Sistema já está usando a função atualizada
+   → calculate_and_distribute_commissions
+
+═══════════════════════════════════════════════════════════
+  COMO FUNCIONA
+═══════════════════════════════════════════════════════════
+
+A cada comissão recebida:
+
+1. Verifica: rendimento + comissões já recebidas
+2. Calcula: quanto falta para 300%
+3. Se falta R$ 100 e comissão é R$ 200 → paga só R$ 100
+4. Distribui entre produtos ativos proporcionalmente
+5. Se produto atingiu 300% → marca como 'completed'
+
+═══════════════════════════════════════════════════════════
+  PRONTO PARA USAR!
+═══════════════════════════════════════════════════════════
+
+Basta executar o SQL no Supabase e o sistema já estará
+funcionando com o limite de 300% total (rendimento + comissões).
+
+Nenhuma outra alteração é necessária no código TypeScript.
+
+═══════════════════════════════════════════════════════════

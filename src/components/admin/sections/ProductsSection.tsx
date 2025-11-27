@@ -14,6 +14,7 @@ import {
 import { supabase } from '../../../services/supabase';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import ProductModal from '../modals/ProductModal';
+import Pagination from '../../ui/Pagination';
 
 interface Product {
   id: string;
@@ -36,6 +37,10 @@ const ProductsSection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  
+  // Paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20); // 20 produtos por página
 
   useEffect(() => {
     fetchProducts();
@@ -67,6 +72,18 @@ const ProductsSection: React.FC = () => {
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Paginação
+  const totalItems = filteredProducts.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const toggleProductStatus = async (productId: string, currentStatus: boolean) => {
     try {
@@ -209,7 +226,10 @@ const ProductsSection: React.FC = () => {
           type="text"
           placeholder="Buscar produtos..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
           className="w-full pl-10 pr-4 py-2 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
         />
       </div>
@@ -221,8 +241,9 @@ const ProductsSection: React.FC = () => {
           <p className="text-gray-400">Carregando produtos...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedProducts.map((product) => (
             <div
               key={product.id}
               className="bg-surface border border-surface-light rounded-lg overflow-hidden hover:border-primary/30 transition-colors"
@@ -328,15 +349,30 @@ const ProductsSection: React.FC = () => {
                 </div>
               </div>
             </div>
-          ))}
-          
-          {filteredProducts.length === 0 && !loading && (
-            <div className="col-span-full text-center py-12">
-              <Package size={48} className="text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400">Nenhum produto encontrado</p>
+            ))}
+            
+            {paginatedProducts.length === 0 && !loading && (
+              <div className="col-span-full text-center py-12">
+                <Package size={48} className="text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-400">{filteredProducts.length === 0 ? 'Nenhum produto encontrado' : 'Nenhum resultado na página atual'}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Paginação */}
+          {totalPages > 1 && (
+            <div className="mt-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                onPageChange={handlePageChange}
+                maxVisiblePages={10}
+              />
             </div>
           )}
-        </div>
+        </>
       )}
 
       {/* Product Modal */}

@@ -189,7 +189,7 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
                   className="dbxpay-button w-full py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-medium text-lg hover:opacity-90 transition-opacity"
                   data-api-key={import.meta.env.VITE_DBXPAY_API_KEY}
                   data-amount={amount.toFixed(2)}
-                  data-description={`Recarga CryptoYield - ${formatCurrency(amount)}`}
+                  data-description={`Recarga Multi Crypto - ${formatCurrency(amount)}`}
                   data-customer-email={user?.email || ''}
                   data-customer-name={user?.email || ''}
                   data-on-success="onDBXPaySuccess"

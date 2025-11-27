@@ -58,13 +58,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <span className="text-sm text-gray-400">Rendimento/dia:</span>
             <span className="text-success font-semibold flex items-center space-x-1">
               <TrendingUp size={14} />
-              <span>8%</span>
+              <span>5%</span>
             </span>
           </div>
           
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-400">Duração:</span>
-            <span className="text-white font-semibold">{product.duration_days || 30} dias</span>
+            <span className="text-white font-semibold">{product.duration_days || 60} dias</span>
           </div>
         </div>
 
@@ -80,7 +80,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="flex justify-between items-center text-sm">
               <span className="text-gray-300 text-xs">Rendimento diário:</span>
               <span className="text-success text-xs">
-                8% ao dia
+                5% ao dia
               </span>
             </div>
           </div>

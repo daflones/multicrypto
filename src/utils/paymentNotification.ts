@@ -12,7 +12,7 @@ export interface PaymentNotification {
 
 class PaymentNotificationService {
   private listeners: Map<string, (notification: PaymentNotification) => void> = new Map();
-  private storageKey = 'cryptoyield_payment_notifications';
+  private storageKey = 'multicrypto_payment_notifications';
 
   constructor() {
     // Escutar mudanças no localStorage (para simular notificações entre abas)

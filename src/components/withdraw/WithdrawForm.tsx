@@ -271,7 +271,10 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Valor do saque
             <span className="text-sm text-gray-400 ml-2">
-              (Disponível: {formatCurrency(availableBalance)})
+              {user?.withdrawal_limit && user.withdrawal_limit > 0 ? 
+                `(Limite: ${formatCurrency(user.withdrawal_limit)})` : 
+                `(Disponível: ${formatCurrency(availableBalance)})`
+              }
             </span>
           </label>
           <div className="relative">
@@ -282,7 +285,10 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
               value={formData.amount || ''}
               onChange={handleChange}
               min={APP_CONFIG.MIN_WITHDRAWAL}
-              max={Math.min(availableBalance, APP_CONFIG.MAX_WITHDRAWAL)}
+              max={user?.withdrawal_limit && user.withdrawal_limit > 0 ? 
+                Math.min(availableBalance, user.withdrawal_limit) : 
+                availableBalance
+              }
               step="0.01"
               placeholder="0,00"
               className="w-full pl-10 pr-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
@@ -385,9 +391,15 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
           <h4 className="text-amber-400 font-medium mb-2">Informações importantes:</h4>
           <ul className="text-sm text-gray-300 space-y-1">
-            <li>• Taxa de saque: 5% sobre o valor solicitado</li>
+            {user?.withdrawal_limit && user.withdrawal_limit > 0 ? (
+              <li>• <strong>Seu limite de saque: {formatCurrency(user.withdrawal_limit)}</strong></li>
+            ) : (
+              <li>• Taxa de saque: 5% sobre o valor solicitado</li>
+            )}
             <li>• Mínimo: {formatCurrency(APP_CONFIG.MIN_WITHDRAWAL)}</li>
-            <li>• Máximo: {formatCurrency(APP_CONFIG.MAX_WITHDRAWAL)}</li>
+            {!user?.withdrawal_limit || user.withdrawal_limit === 0 ? (
+              <li>• Máximo: {formatCurrency(APP_CONFIG.MAX_WITHDRAWAL)}</li>
+            ) : null}
             <li>• Saques permitidos apenas às segundas-feiras</li>
             <li>• Processamento: 1-3 dias úteis</li>
             <li>• Necessário ter investimento ativo</li>

@@ -106,6 +106,24 @@ export class NotificationService {
     }
   }
 
+  static async deleteAllNotifications(userId: string) {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('user_id', userId);
+
+      if (error) {
+        throw new Error('Erro ao apagar todas as notificações');
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Delete all notifications error:', error);
+      throw error;
+    }
+  }
+
   static async createNotification(
     userId: string,
     type: Notification['type'],

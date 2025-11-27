@@ -20,8 +20,14 @@ const AdminProtectedRoute: React.FC<Props> = ({ children }) => {
     );
   }
 
-  if (!isAuthenticated || !isAdmin) {
-    return <Navigate to="/admin/login" state={{ from: location }} replace />;
+  // Se não estiver autenticado, redireciona para login de admin
+  if (!isAuthenticated) {
+    return <Navigate to="/admin/6785/login" state={{ from: location }} replace />;
+  }
+
+  // Se estiver autenticado mas não for admin, redireciona para dashboard normal
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

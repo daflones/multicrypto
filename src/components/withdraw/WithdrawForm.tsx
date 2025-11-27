@@ -16,6 +16,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
     paymentMethod: 'pix',
     balanceType: 'main',
     pixKey: '',
+    pixKeyType: 'cpf',
     walletAddress: ''
   });
   const [errors, setErrors] = useState<Partial<WithdrawFormData>>({});
@@ -81,6 +82,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
         amount: validatedData.amount,
         paymentMethod: validatedData.paymentMethod,
         pixKey: validatedData.pixKey,
+        pixKeyType: validatedData.pixKeyType,
         walletAddress: validatedData.walletAddress
       });
 
@@ -97,6 +99,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
         paymentMethod: 'pix',
         balanceType: 'main',
         pixKey: '',
+        pixKeyType: 'cpf',
         walletAddress: ''
       });
     } catch (error: any) {
@@ -349,22 +352,49 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
         </div>
 
         {formData.paymentMethod === 'pix' && (
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Chave PIX
-            </label>
-            <input
-              type="text"
-              name="pixKey"
-              value={formData.pixKey}
-              onChange={handleChange}
-              placeholder="Digite sua chave PIX"
-              className="w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
-              disabled={isSubmitting || !canWithdraw}
-            />
-            {errors.pixKey && (
-              <p className="text-red-400 text-sm mt-1">{errors.pixKey}</p>
-            )}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Tipo da Chave PIX
+              </label>
+              <select
+                name="pixKeyType"
+                value={formData.pixKeyType}
+                onChange={handleChange}
+                className="w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white focus:outline-none focus:border-primary"
+                disabled={isSubmitting || !canWithdraw}
+              >
+                <option value="cpf">CPF</option>
+                <option value="cnpj">CNPJ</option>
+                <option value="email">E-mail</option>
+                <option value="phone">Telefone</option>
+                <option value="random">Chave Aleatória</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Chave PIX
+              </label>
+              <input
+                type="text"
+                name="pixKey"
+                value={formData.pixKey}
+                onChange={handleChange}
+                placeholder={
+                  formData.pixKeyType === 'cpf' ? 'Digite seu CPF' :
+                  formData.pixKeyType === 'cnpj' ? 'Digite seu CNPJ' :
+                  formData.pixKeyType === 'email' ? 'Digite seu e-mail' :
+                  formData.pixKeyType === 'phone' ? 'Digite seu telefone' :
+                  'Digite sua chave aleatória'
+                }
+                className="w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
+                disabled={isSubmitting || !canWithdraw}
+              />
+              {errors.pixKey && (
+                <p className="text-red-400 text-sm mt-1">{errors.pixKey}</p>
+              )}
+            </div>
           </div>
         )}
 

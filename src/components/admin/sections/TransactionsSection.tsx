@@ -15,7 +15,6 @@ import {
 import { supabase } from '../../../services/supabase';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import Pagination from '../../ui/Pagination';
-import WithdrawApprovalModal from '../modals/WithdrawApprovalModal';
 
 interface Transaction {
   id: string;
@@ -39,8 +38,6 @@ const TransactionsSection: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'deposit' | 'withdraw' | 'investment' | 'commission' | 'yield'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'completed'>('all');
-  const [selectedWithdraw, setSelectedWithdraw] = useState<Transaction | null>(null);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   
   // Paginação
   const [currentPage, setCurrentPage] = useState(1);

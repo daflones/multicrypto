@@ -6,7 +6,7 @@ import { useUserStore } from '../../store/userStore';
 import { formatCurrency } from '../../utils/formatters';
 import { NotificationService } from '../../services/notification.service';
 import { useNavigate } from 'react-router-dom';
-import { INVESTMENT_LIMITS, calculateDailyYield, calculateMonthlyYield, calculateMonthlyROI } from '../../constants/investment';
+import { INVESTMENT_LIMITS, calculateDailyYield, calculateTotalYield, calculateTotalROI, calculateDaysToMaxReturn } from '../../constants/investment';
 import { useToastContext } from '../../contexts/ToastContext';
 
 interface InvestmentModalProps {
@@ -134,10 +134,11 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
   const sliderMin = productMin;
   const sliderMax = productMax;
   
-  // Cálculos de rendimento (5% ao dia)
+  // Cálculos de rendimento (5% ao dia, máximo 300% em 60 dias)
   const dailyReturn = calculateDailyYield(investAmount);
-  const monthlyReturn = calculateMonthlyYield(investAmount);
-  const roi = calculateMonthlyROI(investAmount);
+  const totalReturn = calculateTotalYield(investAmount);
+  const totalROI = calculateTotalROI(investAmount);
+  const daysToComplete = calculateDaysToMaxReturn(investAmount);
   
   // Usar saldo total (principal + comissão)
   const totalBalance = (user.balance || 0) + (user.commission_balance || 0);
@@ -281,16 +282,23 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Rendimento mensal:</span>
+                <span className="text-gray-400">Retorno total (300%):</span>
                 <span className="text-success font-semibold">
-                  {formatCurrency(monthlyReturn)}
+                  {formatCurrency(totalReturn)}
                 </span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">ROI mensal:</span>
+                <span className="text-gray-400">Dias para completar:</span>
+                <span className="text-amber-400 font-semibold">
+                  {daysToComplete} dias
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-gray-400">ROI total:</span>
                 <span className="text-success font-semibold">
-                  {roi.toFixed(1)}%
+                  {totalROI.toFixed(0)}%
                 </span>
               </div>
             </div>

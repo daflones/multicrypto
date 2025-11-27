@@ -92,9 +92,10 @@ export const withdrawSchema = z.object({
   paymentMethod: z.enum(['pix', 'crypto']),
   balanceType: z.enum(['main', 'commission']),
   pixKey: z.string().optional(),
+  pixKeyType: z.enum(['cpf', 'cnpj', 'email', 'phone', 'random']).optional(),
   walletAddress: z.string().optional(),
 }).refine((data) => {
-  if (data.paymentMethod === 'pix' && !data.pixKey) {
+  if (data.paymentMethod === 'pix' && (!data.pixKey || !data.pixKeyType)) {
     return false;
   }
   if (data.paymentMethod === 'crypto' && !data.walletAddress) {

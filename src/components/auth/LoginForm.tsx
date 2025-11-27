@@ -95,76 +95,76 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className="w-full">
-      {/* Mensagem de boas-vindas */}
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-white mb-2">Bem-vindo de volta!</h2>
-        <p className="text-gray-400">Entre na sua conta para continuar</p>
-      </div>
-
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Global Error */}
         {error && (
-          <div className="bg-error/10 border border-error/20 rounded-lg p-4">
-            <p className="text-error text-sm">{error}</p>
+          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 backdrop-blur-sm">
+            <p className="text-red-300 text-sm">{error}</p>
           </div>
         )}
 
         {/* Email */}
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-medium text-white/80">
             Email
           </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <div className="relative group">
+            <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40 group-focus-within:text-white/60 transition-colors" size={20} />
             <input
               type="email"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full pl-10 pr-4 py-3 bg-surface border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
-                errors.email ? 'border-error' : 'border-surface-light'
+              className={`w-full pl-12 pr-4 py-4 bg-white/5 border backdrop-blur-sm rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30 transition-all duration-300 ${
+                errors.email ? 'border-red-400/50 focus:ring-red-400/20' : 'border-white/10 hover:border-white/20'
               }`}
-              placeholder="seu@email.com"
+              placeholder="contato@exemplo.com"
               disabled={isLoading}
             />
           </div>
           {errors.email && (
-            <p className="text-error text-sm mt-1">{errors.email}</p>
+            <p className="text-red-300 text-sm flex items-center space-x-1">
+              <span>⚠️</span>
+              <span>{errors.email}</span>
+            </p>
           )}
         </div>
 
         {/* Password */}
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+        <div className="space-y-2">
+          <label htmlFor="password" className="block text-sm font-medium text-white/80">
             Senha
           </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <div className="relative group">
+            <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40 group-focus-within:text-white/60 transition-colors" size={20} />
             <input
               type={showPassword ? 'text' : 'password'}
               id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className={`w-full pl-10 pr-12 py-3 bg-surface border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
-                errors.password ? 'border-error' : 'border-surface-light'
+              className={`w-full pl-12 pr-14 py-4 bg-white/5 border backdrop-blur-sm rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30 transition-all duration-300 ${
+                errors.password ? 'border-red-400/50 focus:ring-red-400/20' : 'border-white/10 hover:border-white/20'
               }`}
-              placeholder="Sua senha"
+              placeholder="••••••••"
               disabled={isLoading}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/40 hover:text-white/60 transition-colors p-1 rounded-lg hover:bg-white/5"
               disabled={isLoading}
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
           {errors.password && (
-            <p className="text-error text-sm mt-1">{errors.password}</p>
+            <p className="text-red-300 text-sm flex items-center space-x-1">
+              <span>⚠️</span>
+              <span>{errors.password}</span>
+            </p>
           )}
         </div>
 
@@ -172,10 +172,10 @@ const LoginForm: React.FC = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg"
+          className="w-full bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-500 hover:from-yellow-300 hover:via-yellow-400 hover:to-amber-400 text-gray-900 py-4 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
         >
           {isLoading ? (
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
           ) : (
             <>
               <LogIn size={20} />
@@ -186,17 +186,20 @@ const LoginForm: React.FC = () => {
       </form>
 
       {/* Register Link */}
-      <div className="text-center mt-8">
-        <p className="text-gray-400">
+      <div className="text-center mt-6 space-y-3">
+        <p className="text-white/60">
           Não tem uma conta?{' '}
-          <Link to="/register" className="text-primary hover:text-primary/80 transition-colors font-medium">
+          <Link 
+            to="/register" 
+            className="text-yellow-400 hover:text-yellow-300 transition-colors font-medium underline underline-offset-2 decoration-yellow-400/50 hover:decoration-yellow-300"
+          >
             Cadastre-se
           </Link>
         </p>
         <button
           type="button"
           onClick={() => { setForgotOpen(true); setForgotStatus({ type: 'idle' }); }}
-          className="mt-4 text-sm text-gray-400 hover:text-white underline underline-offset-4"
+          className="text-sm text-white/50 hover:text-white/70 transition-colors underline underline-offset-2 decoration-white/30 hover:decoration-white/50"
         >
           Esqueceu a senha?
         </button>
@@ -204,56 +207,62 @@ const LoginForm: React.FC = () => {
 
       {/* Forgot Password Modal */}
       {forgotOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md bg-surface border border-surface-light rounded-xl p-6 shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-white">Redefinir senha</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-white">Redefinir senha</h3>
               <button
                 onClick={() => setForgotOpen(false)}
-                className="text-gray-400 hover:text-white"
+                className="text-white/60 hover:text-white/80 transition-colors p-1 rounded-lg hover:bg-white/10"
                 aria-label="Fechar"
               >
-                ✕
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
-            <p className="text-sm text-gray-400 mb-4">Digite o email cadastrado. Enviaremos um link para redefinição de senha.</p>
+            <p className="text-sm text-white/70 mb-6">Digite o email cadastrado. Enviaremos um link para redefinição de senha.</p>
 
             <form onSubmit={handleForgotSubmit} className="space-y-4">
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white/60 transition-colors" size={20} />
                 <input
                   type="email"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-background border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-300"
                   placeholder="seu@email.com"
                   autoFocus
                 />
               </div>
 
               {forgotStatus.type === 'error' && (
-                <div className="bg-error/10 border border-error/20 rounded-lg p-3 text-error text-sm">{forgotStatus.message}</div>
+                <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-300 text-sm backdrop-blur-sm">
+                  {forgotStatus.message}
+                </div>
               )}
               {forgotStatus.type === 'success' && (
-                <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-green-400 text-sm">{forgotStatus.message}</div>
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-emerald-300 text-sm backdrop-blur-sm">
+                  {forgotStatus.message}
+                </div>
               )}
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setForgotOpen(false)}
-                  className="flex-1 py-3 rounded-lg border border-surface-light text-gray-300 hover:bg-background"
+                  className="flex-1 py-3 rounded-xl border border-white/20 text-white/70 hover:bg-white/5 hover:text-white/90 transition-all duration-300"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={forgotStatus.type === 'loading'}
-                  className="flex-1 bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-500 hover:from-yellow-300 hover:via-yellow-400 hover:to-amber-400 text-gray-900 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
                 >
                   {forgotStatus.type === 'loading' ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <>
                       <Send size={18} />

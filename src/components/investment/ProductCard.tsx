@@ -72,9 +72,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-lg p-3">
           <div className="space-y-1">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-300">ROI mensal:</span>
+              <span className="text-gray-300">ROI total:</span>
               <span className="text-success font-semibold text-lg">
-                240%
+                300%
               </span>
             </div>
             <div className="flex justify-between items-center text-sm">

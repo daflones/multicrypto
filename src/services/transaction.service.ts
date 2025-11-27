@@ -4,6 +4,7 @@ export interface WithdrawalData {
   amount: number;
   paymentMethod: 'pix' | 'crypto';
   pixKey?: string;
+  pixKeyType?: 'cpf' | 'cnpj' | 'email' | 'phone' | 'random';
   walletAddress?: string;
 }
 
@@ -109,7 +110,16 @@ export class TransactionService {
             originalAmount: data.amount,
             fee: fee,
             netAmount: netAmount,
-            totalDeducted: data.amount
+            totalDeducted: data.amount,
+            // Dados PIX específicos
+            ...(data.paymentMethod === 'pix' && {
+              pix_key: data.pixKey,
+              pix_key_type: data.pixKeyType
+            }),
+            // Dados Crypto específicos
+            ...(data.paymentMethod === 'crypto' && {
+              wallet_address: data.walletAddress
+            })
           }
         })
         .select()

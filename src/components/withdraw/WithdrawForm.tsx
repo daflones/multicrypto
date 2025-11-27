@@ -14,6 +14,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
   const [formData, setFormData] = useState<WithdrawFormData>({
     amount: 0,
     paymentMethod: 'pix',
+    balanceType: 'main',
     pixKey: '',
     walletAddress: ''
   });
@@ -94,6 +95,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
       setFormData({
         amount: 0,
         paymentMethod: 'pix',
+        balanceType: 'main',
         pixKey: '',
         walletAddress: ''
       });
@@ -130,8 +132,16 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
     );
   }
 
-  const availableBalance = user.balance || 0;
-  const canWithdraw = availableBalance >= APP_CONFIG.MIN_WITHDRAWAL && hasActiveProducts;
+  // Calcular saldo disponível baseado no tipo selecionado
+  const mainBalance = user.balance || 0;
+  const commissionBalance = user.commission_balance || 0;
+  const availableBalance = formData.balanceType === 'main' ? mainBalance : commissionBalance;
+  
+  // Verificar se é segunda-feira (0 = domingo, 1 = segunda, ..., 6 = sábado)
+  const today = new Date();
+  const isMonday = today.getDay() === 1;
+  
+  const canWithdraw = availableBalance >= APP_CONFIG.MIN_WITHDRAWAL && hasActiveProducts && isMonday;
   
   // Taxa de conversão USD (exemplo: 1 USD = 5.20 BRL)
   const USD_TO_BRL = 5.20;
@@ -200,10 +210,69 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
         </div>
       )}
 
+      {hasActiveProducts && availableBalance >= APP_CONFIG.MIN_WITHDRAWAL && !isMonday && (
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+          <div className="flex items-center space-x-2">
+            <AlertCircle className="text-yellow-400" size={20} />
+            <div>
+              <p className="text-yellow-400 font-medium">Saques disponíveis apenas às segundas-feiras</p>
+              <p className="text-yellow-300 text-sm">
+                Você poderá solicitar seu saque na próxima segunda-feira.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Seleção do tipo de saldo */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Tipo de saldo para saque
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({ ...prev, balanceType: 'main' }))}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                formData.balanceType === 'main'
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-gray-600 bg-surface text-gray-300 hover:border-gray-500'
+              }`}
+              disabled={isSubmitting}
+            >
+              <div className="text-center">
+                <p className="font-medium">Saldo Principal</p>
+                <p className="text-sm opacity-80">{formatCurrency(mainBalance)}</p>
+                <p className="text-xs opacity-60 mt-1">Depósitos + Rendimentos</p>
+              </div>
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({ ...prev, balanceType: 'commission' }))}
+              className={`p-4 rounded-lg border-2 transition-colors ${
+                formData.balanceType === 'commission'
+                  ? 'border-green-500 bg-green-500/10 text-green-400'
+                  : 'border-gray-600 bg-surface text-gray-300 hover:border-gray-500'
+              }`}
+              disabled={isSubmitting}
+            >
+              <div className="text-center">
+                <p className="font-medium">Saldo de Comissão</p>
+                <p className="text-sm opacity-80">{formatCurrency(commissionBalance)}</p>
+                <p className="text-xs opacity-60 mt-1">Comissões de Indicação</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Valor do saque
+            <span className="text-sm text-gray-400 ml-2">
+              (Disponível: {formatCurrency(availableBalance)})
+            </span>
           </label>
           <div className="relative">
             <Wallet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -319,6 +388,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
             <li>• Taxa de saque: 5% sobre o valor solicitado</li>
             <li>• Mínimo: {formatCurrency(APP_CONFIG.MIN_WITHDRAWAL)}</li>
             <li>• Máximo: {formatCurrency(APP_CONFIG.MAX_WITHDRAWAL)}</li>
+            <li>• Saques permitidos apenas às segundas-feiras</li>
             <li>• Processamento: 1-3 dias úteis</li>
             <li>• Necessário ter investimento ativo</li>
           </ul>

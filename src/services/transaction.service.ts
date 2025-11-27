@@ -33,6 +33,14 @@ export class TransactionService {
   // Criar solicitação de saque com taxa de 5%
   static async createWithdrawal(userId: string, data: WithdrawalData) {
     try {
+      // Verificar se é segunda-feira (0 = domingo, 1 = segunda, ..., 6 = sábado)
+      const today = new Date();
+      const isMonday = today.getDay() === 1;
+      
+      if (!isMonday) {
+        throw new Error('Saques são permitidos apenas às segundas-feiras.');
+      }
+
       // Verificar se o usuário tem produtos ativos
       const hasProducts = await this.userHasActiveProducts(userId);
       if (!hasProducts) {

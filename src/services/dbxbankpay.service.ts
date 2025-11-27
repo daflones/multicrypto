@@ -3,6 +3,8 @@ interface DBXPaymentRequest {
   description?: string;
   customer_email?: string;
   customer_name?: string;
+  customer_document?: string;
+  customer_phone?: string;
   external_reference?: string;
   webhook_url?: string;
 }
@@ -61,7 +63,6 @@ class DBXBankPayService {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('❌ Resposta de erro da API:', errorText);
       throw new Error(`Erro na API DBXPay: ${response.status} - ${errorText}`);
     }
 
@@ -72,20 +73,15 @@ class DBXBankPayService {
    * Criar um novo pagamento PIX
    */
   async createPayment(paymentData: DBXPaymentRequest): Promise<DBXPaymentResponse> {
-    console.log('🔄 Criando pagamento DBXPay:', paymentData);
-
     const payload = {
       amount: paymentData.amount / 100, // Converter de centavos para reais
       customer_email: paymentData.customer_email,
       customer_name: paymentData.customer_name,
-      customer_document: '17239089754', // CPF válido
-      customer_phone: '11999999999', // Telefone
+      customer_document: paymentData.customer_document, // CPF do usuário logado
+      customer_phone: paymentData.customer_phone || '11999999999', // Telefone do usuário ou padrão
       external_reference: paymentData.external_reference,
       webhook_url: import.meta.env.VITE_WEBHOOK_URL || 'https://multicrypto.com.br/api/webhooks/dbxbankpay'
     };
-
-    console.log('📤 Payload enviado:', payload);
-    console.log('🔑 API Key:', this.apiKey ? `${this.apiKey.substring(0, 10)}...` : 'NÃO CONFIGURADA');
 
     try {
       const response = await this.makeRequest<DBXPaymentResponse>('/v1/deposits/create', {
@@ -93,10 +89,8 @@ class DBXBankPayService {
         body: JSON.stringify(payload),
       });
 
-      console.log('✅ Pagamento criado com sucesso:', response);
       return response;
     } catch (error) {
-      console.error('❌ Erro ao criar pagamento:', error);
       throw error;
     }
   }
@@ -105,14 +99,10 @@ class DBXBankPayService {
    * Consultar status de um pagamento
    */
   async getPayment(paymentId: string): Promise<DBXPaymentResponse> {
-    console.log('🔍 Consultando pagamento:', paymentId);
-
     try {
       const response = await this.makeRequest<DBXPaymentResponse>(`/v1/deposits/${paymentId}`);
-      console.log('✅ Status do pagamento:', response);
       return response;
     } catch (error) {
-      console.error('❌ Erro ao consultar pagamento:', error);
       throw error;
     }
   }
@@ -121,21 +111,15 @@ class DBXBankPayService {
    * Validar webhook signature (HMAC)
    */
   validateWebhookSignature(
-    payload: string,
-    timestamp: string,
-    signature: string,
+    _payload: string,
+    _timestamp: string,
+    _signature: string,
     _secret: string
   ): boolean {
     try {
       // Implementação básica - validação real está no backend
-      console.log('🔐 Validando webhook signature:', { 
-        timestamp, 
-        signature: signature.substring(0, 10) + '...',
-        payloadLength: payload.length 
-      });
       return true; // Validação real no backend Express
     } catch (error) {
-      console.error('❌ Erro na validação do webhook:', error);
       return false;
     }
   }

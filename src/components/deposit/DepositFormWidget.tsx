@@ -33,8 +33,7 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
     document.head.appendChild(script);
 
     // Função global para callback de sucesso
-    (window as any).onDBXPaySuccess = (dados: any) => {
-      console.log('✅ Pagamento confirmado via widget:', dados);
+    (window as any).onDBXPaySuccess = () => {
       
       // Mostrar mensagem de sucesso
       alert(`Recarga de ${formatCurrency(parseFloat(formData.amount))} efetuada com sucesso! 🎉`);

@@ -10,6 +10,7 @@ interface User {
   phone: string;
   referral_code: string;
   balance: number;
+  commission_balance: number;
   created_at: string;
   role: string;
 }
@@ -201,14 +202,18 @@ export const useAuthStore = create<AuthState>()(
         try {
           const { data: userData, error } = await supabase
             .from('users')
-            .select('balance')
+            .select('balance, commission_balance')
             .eq('id', user.id)
             .single();
 
           if (error) throw error;
           if (userData) {
             set((state) => ({
-              user: state.user ? { ...state.user, balance: userData.balance } : null,
+              user: state.user ? { 
+                ...state.user, 
+                balance: userData.balance,
+                commission_balance: userData.commission_balance || 0
+              } : null,
             }));
           }
         } catch (error) {

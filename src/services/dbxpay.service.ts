@@ -55,7 +55,6 @@ class DBXPayService {
    */
   async createPayment(paymentData: DBXPaymentRequest): Promise<DBXPaymentResponse> {
     try {
-      console.log('🏦 Criando pagamento DBXPay:', paymentData);
 
       const response = await fetch(`${this.baseURL}/deposits/create`, {
         method: 'POST',
@@ -76,7 +75,6 @@ class DBXPayService {
       }
 
       const result: DBXPaymentResponse = await response.json();
-      console.log('✅ Pagamento DBXPay criado:', result.id);
       
       return result;
     } catch (error) {
@@ -128,7 +126,6 @@ class DBXPayService {
         throw new Error(`DBXPay API Error: ${response.status} - ${errorData.message || response.statusText}`);
       }
 
-      console.log('✅ Pagamento cancelado:', paymentId);
     } catch (error) {
       console.error('❌ Erro ao cancelar pagamento DBXPay:', error);
       throw new Error(`Erro ao cancelar pagamento: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
@@ -157,16 +154,9 @@ class DBXPayService {
    */
   async processWebhook(webhookPayload: DBXWebhookPayload): Promise<boolean> {
     try {
-      console.log('🔔 Processando webhook DBXPay:', webhookPayload.event, webhookPayload.transaction_id);
 
       // Processar apenas pagamentos aprovados
       if (webhookPayload.status === 'approved') {
-        console.log('💰 Pagamento aprovado via webhook:', {
-          transactionId: webhookPayload.transaction_id,
-          externalReference: webhookPayload.external_reference,
-          amount: webhookPayload.amount,
-          customerEmail: webhookPayload.customer_email,
-        });
 
         // TODO: Integrar com a função process_payment_webhook do Supabase
         // Exemplo de como chamar:
@@ -183,7 +173,6 @@ class DBXPayService {
         return true;
       }
 
-      console.log('ℹ️ Webhook recebido mas não processado:', webhookPayload.status);
       return true;
     } catch (error) {
       console.error('❌ Erro ao processar webhook DBXPay:', error);

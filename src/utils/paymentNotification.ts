@@ -27,7 +27,6 @@ class PaymentNotificationService {
    */
   onPaymentUpdate(paymentId: string, callback: (notification: PaymentNotification) => void) {
     this.listeners.set(paymentId, callback);
-    console.log(`🔔 Listener registrado para pagamento: ${paymentId}`);
   }
 
   /**
@@ -35,14 +34,12 @@ class PaymentNotificationService {
    */
   removeListener(paymentId: string) {
     this.listeners.delete(paymentId);
-    console.log(`🔕 Listener removido para pagamento: ${paymentId}`);
   }
 
   /**
    * Simular recebimento de notificação (seria chamado pelo webhook)
    */
   notifyPaymentUpdate(notification: PaymentNotification) {
-    console.log('📢 Notificação de pagamento recebida:', notification);
     
     // Salvar no localStorage
     const notifications = this.getStoredNotifications();
@@ -71,7 +68,6 @@ class PaymentNotificationService {
     recentNotifications.forEach(notification => {
       const listener = this.listeners.get(notification.paymentId);
       if (listener) {
-        console.log('📬 Processando notificação pendente:', notification.paymentId);
         listener(notification);
       }
     });
@@ -98,7 +94,6 @@ class PaymentNotificationService {
         if (latestNotification) {
           const listener = this.listeners.get(latestNotification.paymentId);
           if (listener) {
-            console.log('📨 Notificação recebida de outra aba:', latestNotification.paymentId);
             listener(latestNotification);
           }
         }
@@ -126,14 +121,12 @@ class PaymentNotificationService {
    */
   clearNotifications() {
     localStorage.removeItem(this.storageKey);
-    console.log('🗑️ Notificações limpas');
   }
 
   /**
    * Simular webhook (para testes)
    */
   simulateWebhook(paymentId: string, status: 'aprovado' | 'cancelado' | 'expirado', amount: number) {
-    console.log(`🧪 Simulando webhook para pagamento ${paymentId} com status ${status}`);
     
     setTimeout(() => {
       this.notifyPaymentUpdate({

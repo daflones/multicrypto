@@ -18,12 +18,154 @@ function verifyDbxSignature(rawBody, ts, sig, secret) {
   return expected === sig.replace(/^v1=/, "");
 }
 
-// Endpoint DBXBankPay - Formato REAL do payload
-router.post('/dbxbankpay', (req, res) => {
+// Função para creditar saldo do usuário usando external_reference
+async function creditUserBalanceByReference(externalReference, amount, customerEmail, paymentId) {
   try {
-    console.log('📥 DBXBankPay webhook recebido');
-    console.log('🔍 Payload completo:', JSON.stringify(req.body, null, 2));
+    // Extrair user_id da external_reference (formato: user_{userId}_{timestamp})
+    const userIdMatch = externalReference.match(/^user_([^_]+)_/);
+    if (!userIdMatch) {
+      return false;
+    }
     
+    const userId = userIdMatch[1];
+    
+    // Buscar usuário por ID
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('id, email, balance')
+      .eq('id', userId)
+      .single();
+    
+    if (userError || !user) {
+      return false;
+    }
+    
+    // Verificar se já foi processado (idempotência)
+    const { data: existingTransaction } = await supabase
+      .from('transactions')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('type', 'deposit')
+      .contains('data', { payment_id: paymentId })
+      .limit(1);
+    
+    if (existingTransaction && existingTransaction.length > 0) {
+      return true;
+    }
+    
+    // Calcular novo saldo
+    const newBalance = (user.balance || 0) + amount;
+    
+    // Atualizar saldo do usuário
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ balance: newBalance })
+      .eq('id', user.id);
+    
+    if (updateError) {
+      return false;
+    }
+    
+    // Registrar transação
+    const { error: transactionError } = await supabase
+      .from('transactions')
+      .insert({
+        user_id: user.id,
+        type: 'deposit',
+        amount: amount,
+        payment_method: 'pix',
+        status: 'approved',
+        data: {
+          payment_id: paymentId,
+          external_reference: externalReference,
+          customer_email: customerEmail,
+          gateway: 'dbxbankpay',
+          processed_at: new Date().toISOString()
+        }
+      });
+    
+    if (transactionError) {
+      return false;
+    }
+    
+    return true;
+    
+  } catch (error) {
+    return false;
+  }
+}
+
+// Função para creditar saldo do usuário (método antigo - manter para compatibilidade)
+async function creditUserBalance(email, amount, reference, paymentId) {
+  try {
+    // Buscar usuário por email
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('id, balance')
+      .eq('email', email)
+      .single();
+    
+    if (userError || !user) {
+      return false;
+    }
+    
+    // Verificar se já foi processado (idempotência)
+    const { data: existingTransaction } = await supabase
+      .from('transactions')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('type', 'deposit')
+      .contains('data', { payment_id: paymentId })
+      .limit(1);
+    
+    if (existingTransaction && existingTransaction.length > 0) {
+      return true;
+    }
+    
+    // Calcular novo saldo
+    const newBalance = (user.balance || 0) + amount;
+    
+    // Atualizar saldo do usuário
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ balance: newBalance })
+      .eq('id', user.id);
+    
+    if (updateError) {
+      return false;
+    }
+    
+    // Registrar transação
+    const { error: transactionError } = await supabase
+      .from('transactions')
+      .insert({
+        user_id: user.id,
+        type: 'deposit',
+        amount: amount,
+        payment_method: 'pix',
+        status: 'approved',
+        data: {
+          payment_id: paymentId,
+          external_reference: reference,
+          gateway: 'dbxbankpay',
+          processed_at: new Date().toISOString()
+        }
+      });
+    
+    if (transactionError) {
+      return false;
+    }
+    
+    return true;
+    
+  } catch (error) {
+    return false;
+  }
+}
+
+// Endpoint DBXBankPay - Formato REAL do payload
+router.post('/dbxbankpay', async (req, res) => {
+  try {
     // Verificar assinatura HMAC
     const rawBody = JSON.stringify(req.body);
     const timestamp = req.headers['x-dbxpay-timestamp'];
@@ -39,20 +181,14 @@ router.post('/dbxbankpay', (req, res) => {
       );
 
       if (!isValid) {
-        console.log('❌ Assinatura inválida');
         return res.status(401).json({ error: "Invalid signature" });
       }
-      
-      console.log('✅ Assinatura válida');
-    } else {
-      console.log('⚠️ Headers de assinatura não encontrados (modo teste)');
     }
     
     // Processar payload REAL do DBXBankPay
     const { event, timestamp: eventTimestamp, data } = req.body;
     
     if (!data) {
-      console.log('❌ Payload inválido - campo "data" não encontrado');
       return res.status(200).json({ received: true, error: 'Invalid payload' });
     }
     
@@ -68,46 +204,16 @@ router.post('/dbxbankpay', (req, res) => {
       paid_at
     } = data;
     
-    console.log('📊 Dados do pagamento:', {
-      event,
-      id,
-      status,
-      amount,
-      net_amount,
-      customer_email,
-      external_reference,
-      paid_at
-    });
-    
     // Processar eventos baseado no formato real
     if (event === 'payment.approved' && status === 'approved') {
-      console.log('✅ Pagamento aprovado!');
-      console.log(`💰 Valor: R$ ${amount} (líquido: R$ ${net_amount})`);
-      console.log(`👤 Cliente: ${customer_name} (${customer_email})`);
-      console.log(`📝 Referência: ${external_reference}`);
-      console.log(`⏰ Pago em: ${paid_at}`);
-      
-      // Aqui você pode integrar com seu banco de dados
-      // Exemplo: creditUserBalance(customer_email, net_amount, external_reference);
-      
-    } else if (event === 'payment.failed') {
-      console.log('❌ Pagamento falhou:', external_reference);
-      
-    } else if (event === 'payment.expired') {
-      console.log('⏰ Pagamento expirou:', external_reference);
-      
-    } else if (event === 'payment.pending') {
-      console.log('⏳ Pagamento pendente:', external_reference);
-      
-    } else {
-      console.log('ℹ️ Evento não processado:', { event, status });
+      // Creditar saldo do usuário automaticamente
+      await creditUserBalanceByReference(external_reference, amount, customer_email, id);
     }
     
     // Sempre responder com 200 OK rapidamente
     res.status(200).json({ received: true });
     
   } catch (error) {
-    console.error('❌ Erro no webhook:', error);
     res.status(200).json({ received: true, error: error.message });
   }
 });

@@ -45,14 +45,10 @@ app.get('*', (req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error('❌ Erro no servidor:', err);
   res.status(500).json({
     error: 'Erro interno do servidor',
     message: err.message
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
-  console.log(`📡 Webhook URL: https://multicrypto.com.br/api/webhooks/dbxbankpay`);
-});
+app.listen(PORT);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users, TrendingUp, Calendar, ChevronDown, ChevronRight } from 'lucide-react';
+import { Users, TrendingUp, Calendar, ChevronDown, ChevronRight, MessageCircle } from 'lucide-react';
 import { AuthService } from '../../services/auth.service';
 import { CommissionService } from '../../services/commission.service';
 import { useAuthStore } from '../../store/authStore';
@@ -8,6 +8,7 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 interface TeamMember {
   id: string;
   email: string;
+  phone: string;
   referral_code: string;
   created_at: string;
   balance: number;
@@ -41,6 +42,7 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
     6: false,
     7: false
   });
+  const [cacheTimestamp, setCacheTimestamp] = useState<number>(0);
 
   const { user } = useAuthStore();
   const currentUserId = userId || user?.id;
@@ -51,25 +53,36 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
     }
   }, [currentUserId]);
 
-  const loadTeamData = async () => {
+  const loadTeamData = async (forceRefresh = false) => {
     if (!currentUserId) return;
+
+    // ✅ Cache: Evitar recarregar se dados são recentes (5 minutos)
+    const now = Date.now();
+    const cacheAge = now - cacheTimestamp;
+    const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+    if (!forceRefresh && cacheAge < CACHE_DURATION && teamData.level1.length > 0) {
+      return; // Usar dados em cache
+    }
 
     try {
       setIsLoading(true);
       
-      // Load team tree
-      const referralTree = await AuthService.getReferralTree(currentUserId);
+      // ✅ OTIMIZAÇÃO: Carregar dados em paralelo
+      const [referralTree, teamStatsData, commissionStatsData] = await Promise.all([
+        AuthService.getReferralTree(currentUserId),
+        CommissionService.getTeamStats(currentUserId),
+        CommissionService.getCommissionStats(currentUserId)
+      ]);
+
       setTeamData(referralTree);
-
-      // Load team stats
-      const teamStatsData = await CommissionService.getTeamStats(currentUserId);
       setTeamStats(teamStatsData);
-
-      // Load commission stats
-      const commissionStatsData = await CommissionService.getCommissionStats(currentUserId);
       setCommissionStats(commissionStatsData);
+      setCacheTimestamp(now);
     } catch (error) {
       console.error('Error loading team data:', error);
+      // ✅ Mostrar erro mais amigável
+      setTeamData({ level1: [], level2: [], level3: [], level4: [], level5: [], level6: [], level7: [] });
     } finally {
       setIsLoading(false);
     }
@@ -80,6 +93,29 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
       ...prev,
       [level]: !prev[level]
     }));
+  };
+
+  // Função para abrir WhatsApp com o número do membro
+  const openWhatsApp = (phone: string, memberName: string) => {
+    if (!phone) {
+      alert('Número de telefone não disponível para este membro.');
+      return;
+    }
+
+    // Limpar o número (remover caracteres especiais)
+    const cleanPhone = phone.replace(/\D/g, '');
+    
+    // Adicionar código do país se não tiver (assumindo Brasil +55)
+    const formattedPhone = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+    
+    // Mensagem padrão
+    const message = encodeURIComponent(`Olá ${memberName}! Vim através da nossa rede de indicações da Multi Crypto. Como você está?`);
+    
+    // URL do WhatsApp
+    const whatsappUrl = `https://wa.me/${formattedPhone}?text=${message}`;
+    
+    // Abrir em nova aba
+    window.open(whatsappUrl, '_blank');
   };
 
   const renderTeamLevel = (members: TeamMember[], level: number, title: string, color: string) => {
@@ -142,6 +178,17 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
                         <span>{formatCurrency(member.total_invested || 0)}</span>
                       </div>
                     </div>
+                  </div>
+                  
+                  {/* Botão do WhatsApp */}
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => openWhatsApp(member.phone, member.email.split('@')[0])}
+                      className="w-10 h-10 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center transition-colors group"
+                      title={`Enviar mensagem no WhatsApp para ${member.email.split('@')[0]}`}
+                    >
+                      <MessageCircle size={16} className="text-white" />
+                    </button>
                   </div>
                 </div>
               </div>

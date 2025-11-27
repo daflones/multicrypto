@@ -2,8 +2,8 @@
  * Constantes do sistema de investimentos
  */
 
-// Taxa de rendimento diário fixa: 8% ao dia
-export const DAILY_YIELD_PERCENTAGE = 0.08;
+// Taxa de rendimento diário fixa: 5% ao dia
+export const DAILY_YIELD_PERCENTAGE = 0.05;
 
 // Limites de investimento
 export const INVESTMENT_LIMITS = {
@@ -13,8 +13,8 @@ export const INVESTMENT_LIMITS = {
 } as const;
 
 // Cálculos derivados
-export const MONTHLY_YIELD_PERCENTAGE = DAILY_YIELD_PERCENTAGE * 30; // 240% (2.4)
-export const MONTHLY_ROI_PERCENTAGE = MONTHLY_YIELD_PERCENTAGE * 100; // 240%
+export const MONTHLY_YIELD_PERCENTAGE = DAILY_YIELD_PERCENTAGE * 30; // 150% (1.5)
+export const MONTHLY_ROI_PERCENTAGE = MONTHLY_YIELD_PERCENTAGE * 100; // 150%
 
 /**
  * Calcula o rendimento diário baseado no valor investido
@@ -37,7 +37,7 @@ export function calculateMonthlyYield(investedAmount: number): number {
 /**
  * Calcula o ROI mensal em percentual
  * @param investedAmount - Valor investido em reais
- * @returns ROI mensal em percentual (sempre 240%)
+ * @returns ROI mensal em percentual (sempre 150%)
  */
 export function calculateMonthlyROI(investedAmount: number): number {
   if (investedAmount <= 0) return 0;

@@ -2,6 +2,7 @@ import { supabase } from './supabase';
 import { DAILY_YIELD_PERCENTAGE } from '../constants/investment';
 import { PRODUCTS } from '../utils/constants';
 import { todayInSaoPauloYMD, nowInSaoPauloISO, addDaysPreserveTimeISO } from '../utils/date';
+import { CommissionService } from './commission.service';
 
 export class InvestmentService {
   static async getProducts() {
@@ -68,7 +69,6 @@ export class InvestmentService {
 
   static async createInvestment(userId: string, productId: string, amount: number) {
     try {
-      console.log('Creating investment:', { userId, productId, amount });
 
       // Validate input
       if (!userId || !productId || !amount || amount <= 0) {
@@ -102,10 +102,10 @@ export class InvestmentService {
 
       // Sem limite de compras - usuário pode comprar quantas vezes quiser
 
-      // Get user balance
+      // Get user balances (both main and commission)
       const { data: user, error: userError } = await supabase
         .from('users')
-        .select('balance')
+        .select('balance, commission_balance')
         .eq('id', userId)
         .single();
 
@@ -118,8 +118,12 @@ export class InvestmentService {
         throw new Error('Usuário não encontrado');
       }
 
-      if (user.balance < amount) {
-        throw new Error(`Saldo insuficiente. Disponível: R$ ${user.balance.toFixed(2)}, Necessário: R$ ${amount.toFixed(2)}`);
+      const mainBalance = user.balance || 0;
+      const commissionBalance = user.commission_balance || 0;
+      const totalBalance = mainBalance + commissionBalance;
+
+      if (totalBalance < amount) {
+        throw new Error(`Saldo insuficiente. Disponível: R$ ${totalBalance.toFixed(2)}, Necessário: R$ ${amount.toFixed(2)}`);
       }
 
       // Datas baseadas no horário de São Paulo
@@ -149,11 +153,30 @@ export class InvestmentService {
         throw new Error('Erro ao criar investimento: ' + investmentError.message);
       }
 
-      // Update user balance
-      const newBalance = user.balance - amount;
+      // ✅ LÓGICA: Usar saldo de comissão primeiro, depois saldo principal
+      let remainingAmount = amount;
+      let newCommissionBalance = commissionBalance;
+      let newMainBalance = mainBalance;
+
+      // 1. Primeiro, usar saldo de comissão
+      if (remainingAmount > 0 && commissionBalance > 0) {
+        const commissionUsed = Math.min(remainingAmount, commissionBalance);
+        newCommissionBalance = commissionBalance - commissionUsed;
+        remainingAmount -= commissionUsed;
+      }
+
+      // 2. Depois, usar saldo principal para o restante
+      if (remainingAmount > 0) {
+        newMainBalance = mainBalance - remainingAmount;
+      }
+
+      // Update both balances
       const { error: balanceError } = await supabase
         .from('users')
-        .update({ balance: newBalance })
+        .update({ 
+          balance: newMainBalance,
+          commission_balance: newCommissionBalance
+        })
         .eq('id', userId);
 
       if (balanceError) {
@@ -161,10 +184,44 @@ export class InvestmentService {
         throw new Error('Erro ao atualizar saldo: ' + balanceError.message);
       }
 
-      // Não criar registro na tabela transactions para compras de investimentos
-      // Comissões e notificações serão tratadas exclusivamente no backend (trigger/RPC/func).
+      // Registrar transação de investimento com detalhes dos saldos usados
+      const commissionUsed = commissionBalance - newCommissionBalance;
+      const mainUsed = mainBalance - newMainBalance;
 
-      console.log('Investment created successfully:', investment);
+      const { error: transactionError } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: userId,
+          type: 'investment',
+          amount: amount,
+          payment_method: 'balance',
+          status: 'approved',
+          data: {
+            investment_id: investment.id,
+            product_id: productId,
+            commission_used: commissionUsed,
+            main_balance_used: mainUsed,
+            total_amount: amount,
+            breakdown: {
+              commission_balance: commissionUsed,
+              main_balance: mainUsed
+            }
+          }
+        });
+
+      if (transactionError) {
+        console.error('Transaction error:', transactionError);
+        // Não falhar o investimento se a transação falhar
+      }
+
+      // Calcular e pagar comissões para a rede de indicação
+      try {
+        await CommissionService.calculateCommissions(userId, amount, investment.id);
+      } catch (commissionError) {
+        console.error('Erro ao calcular comissões:', commissionError);
+        // Não falhar o investimento se as comissões falharem
+      }
+
       return investment;
     } catch (error) {
       console.error('Create investment error:', error);
@@ -205,7 +262,7 @@ export class InvestmentService {
           continue;
         }
 
-        // Calcula 8% ao dia sobre o valor investido
+        // Calcula 5% ao dia sobre o valor investido
         const dailyYield = (investment.amount || 0) * DAILY_YIELD_PERCENTAGE;
         if (!dailyYield || dailyYield <= 0) continue;
 

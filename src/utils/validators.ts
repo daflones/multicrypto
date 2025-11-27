@@ -90,6 +90,7 @@ export const withdrawSchema = z.object({
     .min(50, 'Valor mínimo de R$ 50,00')
     .max(10000, 'Valor máximo de R$ 10.000,00'),
   paymentMethod: z.enum(['pix', 'crypto']),
+  balanceType: z.enum(['main', 'commission']),
   pixKey: z.string().optional(),
   walletAddress: z.string().optional(),
 }).refine((data) => {

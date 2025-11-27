@@ -128,7 +128,12 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
   }
 
   const availableBalance = user.balance || 0;
-  const canWithdraw = availableBalance >= APP_CONFIG.MIN_WITHDRAWAL && hasActiveProducts;
+  
+  // Verificar se é segunda-feira (0 = domingo, 1 = segunda, ..., 6 = sábado)
+  const today = new Date();
+  const isMonday = today.getDay() === 1;
+  
+  const canWithdraw = availableBalance >= APP_CONFIG.MIN_WITHDRAWAL && hasActiveProducts && isMonday;
   const fee = formData.amount * 0.05;
   const totalDeducted = formData.amount + fee;
 
@@ -170,6 +175,20 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
               <p className="text-red-400 font-medium">Saldo insuficiente</p>
               <p className="text-red-300 text-sm">
                 Mínimo: {formatCurrency(APP_CONFIG.MIN_WITHDRAWAL)}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {hasActiveProducts && availableBalance >= APP_CONFIG.MIN_WITHDRAWAL && !isMonday && (
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+          <div className="flex items-center space-x-2">
+            <AlertCircle className="text-yellow-400" size={20} />
+            <div>
+              <p className="text-yellow-400 font-medium">Saques disponíveis apenas às segundas-feiras</p>
+              <p className="text-yellow-300 text-sm">
+                Você poderá solicitar seu saque na próxima segunda-feira.
               </p>
             </div>
           </div>
@@ -282,6 +301,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
             <li>• Taxa de saque: 5% sobre o valor solicitado</li>
             <li>• Mínimo: {formatCurrency(APP_CONFIG.MIN_WITHDRAWAL)}</li>
             <li>• Máximo: {formatCurrency(APP_CONFIG.MAX_WITHDRAWAL)}</li>
+            <li>• Saques permitidos apenas às segundas-feiras</li>
             <li>• Processamento: 1-3 dias úteis</li>
             <li>• Necessário ter investimento ativo</li>
           </ul>

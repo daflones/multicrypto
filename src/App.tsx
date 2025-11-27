@@ -5,6 +5,7 @@ import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
 import AdminLayout from './components/layout/AdminLayout';
+import { ToastProvider } from './contexts/ToastContext';
 
 // Pages
 import Home from './pages/Home';
@@ -57,9 +58,10 @@ function App() {
   // A verificação é feita apenas dentro do componente ProtectedRoutes
 
   return (
-    <Router>
-      <div className="App">
-        <Routes>
+    <ToastProvider>
+      <Router>
+        <div className="App">
+          <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -99,9 +101,10 @@ function App() {
           
           {/* Redirect unknown routes */}
           <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
-    </Router>
+          </Routes>
+        </div>
+      </Router>
+    </ToastProvider>
   );
 }
 

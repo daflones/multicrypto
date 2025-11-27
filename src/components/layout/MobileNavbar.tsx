@@ -28,9 +28,9 @@ const MobileNavbar: React.FC = () => {
         <div className="flex items-center space-x-3">
           {user && (
             <div className="text-right">
-              <p className="text-xs text-gray-400">Saldo</p>
+              <p className="text-xs text-gray-400">Saldo Total</p>
               <p className="text-sm font-semibold text-success">
-                {formatCurrency(user.balance)}
+                {formatCurrency((user.balance || 0) + (user.commission_balance || 0))}
               </p>
             </div>
           )}

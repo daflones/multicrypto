@@ -7,7 +7,6 @@ export class InvestmentExpirationService {
   // Processar investimentos expirados
   static async processExpiredInvestments() {
     try {
-      console.log('Processing expired investments...');
 
       // Buscar investimentos ativos que expiraram
       // Se end_date for TIMESTAMPTZ, comparar com nowInSaoPauloISO();
@@ -31,11 +30,9 @@ export class InvestmentExpirationService {
       }
 
       if (!expiredInvestments || expiredInvestments.length === 0) {
-        console.log('No expired investments found');
         return;
       }
 
-      console.log(`Found ${expiredInvestments.length} expired investments`);
 
       // Processar cada investimento expirado
       for (const investment of expiredInvestments) {
@@ -52,7 +49,6 @@ export class InvestmentExpirationService {
   // Completar um investimento específico
   static async completeInvestment(investment: any) {
     try {
-      console.log(`Completing investment ${investment.id} for user ${investment.user_id}`);
 
       // Devolver APENAS o principal. Rendimentos já foram pagos diariamente.
       const principalToReturn = investment.amount;
@@ -138,7 +134,6 @@ export class InvestmentExpirationService {
         console.error('Error creating completion notification:', notifyErr);
       }
 
-      console.log(`Investment ${investment.id} completed successfully. Returned principal ${principalToReturn} to user ${investment.user_id}`);
       
       return {
         investmentId: investment.id,
@@ -226,7 +221,7 @@ export class InvestmentExpirationService {
     // Não pode passar da duração total
     const effectiveDays = Math.min(daysPassed, investment.products?.duration_days || 0);
     
-    // Calcula 8% ao dia sobre o valor investido
+    // Calcula 5% ao dia sobre o valor investido
     return effectiveDays * ((investment.amount || 0) * DAILY_YIELD_PERCENTAGE);
   }
 }

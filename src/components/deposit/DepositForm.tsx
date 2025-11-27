@@ -39,8 +39,7 @@ const DepositForm: React.FC<DepositFormProps> = ({ onSuccess }) => {
 
   // Função global para callback de sucesso
   useEffect(() => {
-    (window as any).quandoPagar = (dados: any) => {
-      console.log('✅ Pagamento confirmado via widget:', dados);
+    (window as any).quandoPagar = () => {
       
       // Mostrar mensagem de sucesso
       alert(`Recarga de ${formatCurrency(parseFloat(formData.amount))} efetuada com sucesso! 🎉`);

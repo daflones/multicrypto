@@ -1,97 +1,20 @@
-import { supabase, Commission } from './supabase';
-import { COMMISSION_RATES } from '../utils/constants';
+import { supabase } from './supabase';
 
 export class CommissionService {
-  static async calculateCommissions(userId: string, investmentAmount: number, investmentId: string) {
+  static async calculateCommissions(userId: string, investmentAmount: number, _investmentId?: string) {
     try {
-      const commissions: Commission[] = [];
+      // Usar a função existente do Supabase para calcular e distribuir comissões
+      const { data, error } = await supabase.rpc('calculate_and_distribute_commissions', {
+        buyer_user_id: userId,
+        investment_amount: investmentAmount
+      });
 
-      // Get user's referrer chain
-      const referrerChain = await this.getReferrerChain(userId);
-
-      // Notificações serão tratadas por trigger/RPC no backend
-
-      // Calculate commissions for each level (up to 7 levels)
-      for (let level = 1; level <= 7; level++) {
-        const referrerId = referrerChain[level - 1];
-        if (!referrerId) continue;
-
-        let commissionRate = 0;
-        switch (level) {
-          case 1:
-            commissionRate = COMMISSION_RATES.LEVEL_1;
-            break;
-          case 2:
-            commissionRate = COMMISSION_RATES.LEVEL_2;
-            break;
-          case 3:
-            commissionRate = COMMISSION_RATES.LEVEL_3;
-            break;
-          case 4:
-            commissionRate = COMMISSION_RATES.LEVEL_4;
-            break;
-          case 5:
-            commissionRate = COMMISSION_RATES.LEVEL_5;
-            break;
-          case 6:
-            commissionRate = COMMISSION_RATES.LEVEL_6;
-            break;
-          case 7:
-            commissionRate = COMMISSION_RATES.LEVEL_7;
-            break;
-        }
-
-        const commissionAmount = investmentAmount * commissionRate;
-
-        // Create commission record
-        const { data: commission, error: commissionError } = await supabase
-          .from('commissions')
-          .insert({
-            beneficiary_id: referrerId,
-            source_user_id: userId,
-            investment_id: investmentId,
-            level: level as 1 | 2 | 3 | 4 | 5 | 6 | 7,
-            percentage: commissionRate,
-            amount: commissionAmount
-          })
-          .select()
-          .single();
-
-        if (commissionError) {
-          console.error(`Error creating level ${level} commission:`, commissionError);
-          continue;
-        }
-
-        // Update beneficiary balance
-        const { data: beneficiary, error: beneficiaryError } = await supabase
-          .from('users')
-          .select('balance')
-          .eq('id', referrerId)
-          .single();
-
-        if (beneficiaryError || !beneficiary) {
-          console.error(`Error getting beneficiary ${referrerId}:`, beneficiaryError);
-          continue;
-        }
-
-        const newBalance = beneficiary.balance + commissionAmount;
-        const { error: updateError } = await supabase
-          .from('users')
-          .update({ balance: newBalance })
-          .eq('id', referrerId);
-
-        if (updateError) {
-          console.error(`Error updating balance for ${referrerId}:`, updateError);
-          continue;
-        }
-
-        // Create commission transaction
-        commissions.push(commission);
-
-        // Notificações de comissão: delegar ao backend/trigger para evitar duplicidade e problemas de RLS
+      if (error) {
+        console.error('Error calling calculate_and_distribute_commissions:', error);
+        throw error;
       }
 
-      return commissions;
+      return data;
     } catch (error) {
       console.error('Calculate commissions error:', error);
       throw error;
@@ -222,6 +145,53 @@ export class CommissionService {
 
   static async getTeamStats(userId: string) {
     try {
+      // ✅ OTIMIZAÇÃO: Usar função RPC otimizada
+      const { data: statsData, error } = await supabase.rpc('get_team_stats_optimized', {
+        root_user_id: userId
+      });
+
+      if (error) {
+        console.error('Error calling get_team_stats_optimized:', error);
+        // Fallback para método antigo se RPC falhar
+        return this.getTeamStatsFallback(userId);
+      }
+
+      if (!statsData || statsData.length === 0) {
+        return {
+          level1Count: 0,
+          level2Count: 0,
+          level3Count: 0,
+          level4Count: 0,
+          level5Count: 0,
+          level6Count: 0,
+          level7Count: 0,
+          totalTeamSize: 0,
+          totalTeamInvested: 0
+        };
+      }
+
+      const stats = statsData[0];
+      return {
+        level1Count: stats.level1_count || 0,
+        level2Count: stats.level2_count || 0,
+        level3Count: stats.level3_count || 0,
+        level4Count: stats.level4_count || 0,
+        level5Count: stats.level5_count || 0,
+        level6Count: stats.level6_count || 0,
+        level7Count: stats.level7_count || 0,
+        totalTeamSize: stats.total_team_size || 0,
+        totalTeamInvested: stats.total_team_invested || 0
+      };
+    } catch (error) {
+      console.error('Get team stats error:', error);
+      // Fallback para método antigo
+      return this.getTeamStatsFallback(userId);
+    }
+  }
+
+  // Método fallback caso a RPC falhe
+  private static async getTeamStatsFallback(userId: string) {
+    try {
       const stats = {
         level1Count: 0,
         level2Count: 0,
@@ -230,14 +200,16 @@ export class CommissionService {
         level5Count: 0,
         level6Count: 0,
         level7Count: 0,
-        totalTeamSize: 0
+        totalTeamSize: 0,
+        totalTeamInvested: 0
       };
 
-      // Get level 1 (direct referrals)
+      // Get level 1 (direct referrals) - limitado para performance
       const { data: level1Users, error: level1Error } = await supabase
         .from('users')
         .select('id')
-        .eq('referred_by', userId);
+        .eq('referred_by', userId)
+        .limit(100); // ✅ Limitar resultados
 
       if (level1Error) {
         throw new Error('Erro ao buscar estatísticas da equipe');
@@ -250,14 +222,13 @@ export class CommissionService {
       stats.level1Count = level1Users.length;
       let currentLevelIds = level1Users.map(u => u.id);
 
-      // Iterate through levels 2-7
-      for (let level = 2; level <= 7; level++) {
-        if (currentLevelIds.length === 0) break;
-
+      // Iterate through levels 2-7 (limitado para performance)
+      for (let level = 2; level <= 7 && currentLevelIds.length > 0; level++) {
         const { data: nextLevelUsers, error } = await supabase
           .from('users')
           .select('id')
-          .in('referred_by', currentLevelIds);
+          .in('referred_by', currentLevelIds)
+          .limit(200); // ✅ Limitar por nível
 
         if (error || !nextLevelUsers || nextLevelUsers.length === 0) {
           break;
@@ -281,7 +252,7 @@ export class CommissionService {
 
       return stats;
     } catch (error) {
-      console.error('Get team stats error:', error);
+      console.error('Get team stats fallback error:', error);
       throw error;
     }
   }

@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUpRight, ArrowDownLeft, ShoppingCart, Users, Calendar, Filter } from 'lucide-react';
+import { ArrowUpRight, ArrowDownLeft, ShoppingCart, Users, Calendar, Filter, TrendingUp, DollarSign } from 'lucide-react';
 import { supabase } from '../../services/supabase';
 import { useAuthStore } from '../../store/authStore';
 import { formatCurrency, formatDate } from '../../utils/formatters';
 
 interface Transaction {
   id: string;
-  type: 'deposit' | 'withdraw' | 'investment' | 'commission';
+  type: 'deposit' | 'withdraw' | 'investment' | 'commission' | 'yield';
   amount: number;
   status: 'pending' | 'approved' | 'rejected' | 'completed';
   payment_method?: string;
+  balance_type?: 'main' | 'commission';
   created_at: string;
   product?: {
     name: string;
+    price?: number;
   };
+  data?: any;
   description?: string;
 }
 
@@ -21,7 +24,7 @@ const TransactionHistory: React.FC = () => {
   const { user } = useAuthStore();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'deposit' | 'withdraw' | 'investment' | 'commission'>('all');
+  const [filter, setFilter] = useState<'all' | 'deposit' | 'withdraw' | 'investment' | 'commission' | 'yield'>('all');
 
   useEffect(() => {
     if (user?.id) {
@@ -35,10 +38,13 @@ const TransactionHistory: React.FC = () => {
     try {
       setLoading(true);
       
-      // Buscar transações regulares
+      // Buscar transações regulares com mais detalhes
       let transactionsQuery = supabase
         .from('transactions')
-        .select('*')
+        .select(`
+          *,
+          data
+        `)
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50);
@@ -54,7 +60,7 @@ const TransactionHistory: React.FC = () => {
         return;
       }
 
-      // Buscar investimentos
+      // Buscar investimentos com detalhes do produto
       const { data: investmentsData, error: investmentsError } = await supabase
         .from('user_investments')
         .select(`
@@ -62,7 +68,8 @@ const TransactionHistory: React.FC = () => {
           amount,
           status,
           purchase_date,
-          product:products(name)
+          created_at,
+          product:products(name, price)
         `)
         .eq('user_id', user.id)
         .order('purchase_date', { ascending: false })
@@ -95,8 +102,10 @@ const TransactionHistory: React.FC = () => {
           amount: t.amount,
           status: t.status as Transaction['status'],
           payment_method: t.payment_method,
+          balance_type: t.balance_type,
           created_at: t.created_at,
-          description: getTransactionDescription(t.type, t.payment_method, t.status)
+          data: t.data,
+          description: getTransactionDescription(t.type, t.payment_method, t.status, t.data, t.balance_type)
         })));
       }
 
@@ -106,16 +115,22 @@ const TransactionHistory: React.FC = () => {
           ...investmentsData.map(inv => {
             // Supabase retorna o alias product:products(name). Pode vir como array ou objeto.
             const productField: unknown = (inv as any).product;
-            const productName = Array.isArray(productField)
-              ? (productField as any[])[0]?.name as string | undefined
-              : (productField as any)?.name as string | undefined;
+            const productData = Array.isArray(productField)
+              ? (productField as any[])[0]
+              : (productField as any);
+            const productName = productData?.name as string | undefined;
+            const productPrice = productData?.price as number | undefined;
+            
             return {
               id: inv.id,
               type: 'investment' as const,
               amount: inv.amount,
               status: inv.status as Transaction['status'],
-              created_at: inv.purchase_date,
-              product: { name: productName || 'Produto' },
+              created_at: inv.purchase_date || inv.created_at,
+              product: { 
+                name: productName || 'Produto',
+                price: productPrice
+              },
               description: `Investimento em ${productName || 'Produto'}`
             };
           })
@@ -145,12 +160,28 @@ const TransactionHistory: React.FC = () => {
     }
   };
 
-  const getTransactionDescription = (type: string, paymentMethod?: string, _status?: string) => {
+  const getTransactionDescription = (
+    type: string, 
+    paymentMethod?: string, 
+    _status?: string, 
+    data?: any, 
+    balanceType?: string
+  ) => {
     switch (type) {
       case 'deposit':
         return `Recarga via ${paymentMethod?.toUpperCase() || 'PIX'}`;
       case 'withdraw':
-        return `Saque via ${paymentMethod?.toUpperCase() || 'PIX'}`;
+        const balanceText = balanceType === 'commission' ? ' (Saldo de Comissão)' : ' (Saldo Principal)';
+        return `Saque via ${paymentMethod?.toUpperCase() || 'PIX'}${balanceText}`;
+      case 'investment':
+        if (data?.commission_used && data?.main_balance_used) {
+          return `Investimento (Comissão: ${formatCurrency(data.commission_used)} + Principal: ${formatCurrency(data.main_balance_used)})`;
+        }
+        return 'Investimento';
+      case 'yield':
+        return `Rendimento diário (${data?.investment_id ? 'Investimento' : 'Yield'})`;
+      case 'commission':
+        return `Comissão nível ${data?.level || '?'} - ${data?.percentage || '?'}%`;
       default:
         return type;
     }
@@ -166,8 +197,10 @@ const TransactionHistory: React.FC = () => {
         return <ShoppingCart className="text-amber-400" size={20} />;
       case 'commission':
         return <Users className="text-yellow-400" size={20} />;
+      case 'yield':
+        return <TrendingUp className="text-blue-400" size={20} />;
       default:
-        return <Calendar className="text-gray-400" size={20} />;
+        return <DollarSign className="text-gray-400" size={20} />;
     }
   };
 
@@ -204,6 +237,7 @@ const TransactionHistory: React.FC = () => {
     switch (type) {
       case 'deposit':
       case 'commission':
+      case 'yield':
         return 'text-green-400';
       case 'withdraw':
       case 'investment':
@@ -217,6 +251,7 @@ const TransactionHistory: React.FC = () => {
     switch (type) {
       case 'deposit':
       case 'commission':
+      case 'yield':
         return '+';
       case 'withdraw':
       case 'investment':
@@ -245,6 +280,7 @@ const TransactionHistory: React.FC = () => {
             <option value="withdraw">Saques</option>
             <option value="investment">Investimentos</option>
             <option value="commission">Comissões</option>
+            <option value="yield">Rendimentos</option>
           </select>
         </div>
       </div>
@@ -270,7 +306,7 @@ const TransactionHistory: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   {getTransactionIcon(transaction.type)}
-                  <div>
+                  <div className="flex-1">
                     <h4 className="text-white font-medium">
                       {transaction.description}
                     </h4>
@@ -281,16 +317,38 @@ const TransactionHistory: React.FC = () => {
                         {getStatusText(transaction.status)}
                       </span>
                     </div>
+                    
+                    {/* Detalhes adicionais */}
+                    {transaction.product && (
+                      <div className="mt-1 text-xs text-gray-500">
+                        <span>Produto: {transaction.product.name}</span>
+                        {transaction.product.price && (
+                          <span> • Preço: {formatCurrency(transaction.product.price)}</span>
+                        )}
+                      </div>
+                    )}
+                    
+                    {transaction.data?.breakdown && (
+                      <div className="mt-1 text-xs text-gray-500">
+                        Usado: Comissão {formatCurrency(transaction.data.breakdown.commission_balance)} + 
+                        Principal {formatCurrency(transaction.data.breakdown.main_balance)}
+                      </div>
+                    )}
                   </div>
                 </div>
                 
                 <div className="text-right">
-                  <p className={`font-semibold ${getAmountColor(transaction.type)}`}>
+                  <p className={`font-semibold text-lg ${getAmountColor(transaction.type)}`}>
                     {getAmountPrefix(transaction.type)}{formatCurrency(transaction.amount)}
                   </p>
                   {transaction.payment_method && (
                     <p className="text-xs text-gray-400 uppercase">
                       {transaction.payment_method}
+                    </p>
+                  )}
+                  {transaction.balance_type && (
+                    <p className="text-xs text-gray-500">
+                      {transaction.balance_type === 'commission' ? 'Comissão' : 'Principal'}
                     </p>
                   )}
                 </div>

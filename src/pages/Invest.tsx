@@ -10,7 +10,6 @@ import { Product } from '../services/supabase';
 const Invest: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'basic' | 'premium'>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [userInvestmentCounts, setUserInvestmentCounts] = useState<{ [key: string]: number }>({});
 
@@ -58,10 +57,9 @@ const Invest: React.FC = () => {
   };
 
   const filteredProducts = products.filter(product => {
-    const matchesFilter = filter === 'all' || product.product_type === filter;
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
-    return matchesFilter && matchesSearch;
+    return matchesSearch;
   });
 
   return (
@@ -86,39 +84,6 @@ const Invest: React.FC = () => {
           />
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setFilter('all')}
-            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-              filter === 'all'
-                ? 'bg-primary text-white'
-                : 'bg-surface text-gray-400 hover:text-white'
-            }`}
-          >
-            Todos
-          </button>
-          <button
-            onClick={() => setFilter('basic')}
-            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-              filter === 'basic'
-                ? 'bg-primary text-white'
-                : 'bg-surface text-gray-400 hover:text-white'
-            }`}
-          >
-            Básico
-          </button>
-          <button
-            onClick={() => setFilter('premium')}
-            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-              filter === 'premium'
-                ? 'bg-primary text-white'
-                : 'bg-surface text-gray-400 hover:text-white'
-            }`}
-          >
-            Premium
-          </button>
-        </div>
       </div>
 
       {/* Products Grid */}

@@ -32,7 +32,6 @@ export class AuthService {
       if (error) throw error;
       return true;
     } catch (error) {
-      console.error('Update phone error:', error);
       throw error;
     }
   }
@@ -71,12 +70,11 @@ export class AuthService {
       const { error: authErr } = await supabase.auth.updateUser({ password: next });
       if (authErr) {
         // Não falhar duro se auth update falhar; mas logar
-        console.warn('Falha ao atualizar senha no Supabase Auth:', authErr);
+        throw new Error('Falha ao atualizar senha no Supabase Auth');
       }
 
       return true;
     } catch (error) {
-      console.error('Update password error:', error);
       throw error;
     }
   }
@@ -88,7 +86,6 @@ export class AuthService {
       }
 
       // Verifica código de convite apenas se fornecido
-      console.log('🔍 Verificando código de convite (opcional):', data.referralCode);
       let referrer: any = null;
       if (data.referralCode && data.referralCode.trim() !== '') {
         const { data: refUser, error: refError } = await supabase
@@ -99,7 +96,6 @@ export class AuthService {
         if (!refError && refUser) {
           referrer = refUser;
         } else {
-          console.error('❌ Código não encontrado:', data.referralCode);
           throw new Error('Código de convite inválido');
         }
       }
@@ -111,7 +107,6 @@ export class AuthService {
         .or(`and(cpf.eq.${data.cpf.replace(/\D/g, '')},email.eq.${data.email})`);
 
       if (existingError) {
-        console.error('Erro ao verificar usuários existentes:', existingError);
         throw new Error('Erro ao verificar usuário existente');
       }
 
@@ -194,23 +189,19 @@ export class AuthService {
             { new_user_id: newUser.id, new_user_email: data.email }
           );
         } catch (notifyErr) {
-          console.error('Erro ao criar notificação de cadastro:', notifyErr);
+          throw new Error('Erro ao criar notificação de cadastro');
         }
       }
 
       return { user: newUser, success: true };
     } catch (error) {
-      console.error('Registration error:', error);
       throw error;
     }
   }
 
   static async login(data: LoginData) {
     try {
-      console.log('🔑 [1/5] Iniciando login para:', data.email);
-      
       // 1. Busca o usuário na tabela users
-      console.log('🔍 [2/5] Buscando usuário no banco de dados...');
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('*')
@@ -218,55 +209,36 @@ export class AuthService {
         .single();
 
       if (userError || !userData) {
-        console.error('❌ [ERRO] Usuário não encontrado na tabela users:', userError);
         throw new Error('Email ou senha incorretos');
       }
-      console.log('✅ [2/5] Usuário encontrado na tabela users');
 
       // 2. Verifica a senha usando bcrypt
-      console.log('🔐 [3/5] Verificando senha com bcrypt...');
       const isValidPassword = await bcrypt.compare(data.password, userData.password_hash);
       
       if (!isValidPassword) {
-        console.error('❌ [ERRO] Senha incorreta para o usuário:', userData.email);
         throw new Error('Email ou senha incorretos');
       }
-      console.log('✅ [3/5] Senha válida');
 
       // 3. Tenta autenticar com o Supabase Auth
-      console.log('🔑 [4/5] Tentando autenticar com Supabase Auth...');
-      console.log('   - Email:', data.email);
-      console.log('   - Senha fornecida:', data.password ? '***' : 'vazia');
       
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      const { error: authError } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password
       });
 
-      console.log('   - Resposta do Supabase Auth:', { authData, authError });
-
       if (authError) {
         if (authError.message.includes('Email not confirmed')) {
-          console.log('ℹ️  [INFO] E-mail não confirmado, mas continuando...');
+          // E-mail não confirmado, mas continuando...
         } else {
-          console.error('❌ [ERRO] Falha na autenticação Supabase:', {
-            message: authError.message,
-            status: authError.status,
-            name: authError.name
-          });
-          throw new Error('Erro ao fazer login. Verifique suas credenciais.');
+          throw new Error('Erro na autenticação');
         }
       }
-
-      console.log('✅ [4/5] Autenticação concluída com sucesso');
       
       // Remove o hash da senha antes de retornar
       const { password_hash, ...userWithoutPassword } = userData;
       
-      console.log('✅ [5/5] Login finalizado com sucesso para:', userData.email);
       return { user: userWithoutPassword, success: true };
     } catch (error) {
-      console.error('Erro no login:', error);
       throw error;
     }
   }
@@ -376,35 +348,76 @@ export class AuthService {
 
   static async getReferralTree(userId: string) {
     try {
-      // Helper function to add total_invested to users
-      const addTotalInvested = async (users: any[]) => {
-        if (!users || users.length === 0) return users;
-        
-        const userIds = users.map(user => user.id);
-        const { data: investments } = await supabase
-          .from('user_investments')
-          .select('user_id, amount')
-          .in('user_id', userIds);
-        
-        return users.map(user => {
-          const userInvestments = investments?.filter(inv => inv.user_id === user.id) || [];
-          const total_invested = userInvestments.reduce((sum, inv) => sum + inv.amount, 0);
-          return { ...user, total_invested };
-        });
+      // ✅ OTIMIZAÇÃO: Uma única query recursiva com CTE
+      const { data: allReferrals, error } = await supabase.rpc('get_referral_tree_optimized', {
+        root_user_id: userId
+      });
+
+      if (error) {
+        console.error('Error calling get_referral_tree_optimized:', error);
+        // Fallback para método antigo se RPC falhar
+        return this.getReferralTreeFallback(userId);
+      }
+
+      // Organizar por níveis
+      const referralTree = {
+        level1: [] as any[],
+        level2: [] as any[],
+        level3: [] as any[],
+        level4: [] as any[],
+        level5: [] as any[],
+        level6: [] as any[],
+        level7: [] as any[]
       };
 
-      // Get direct referrals (level 1)
+      if (allReferrals) {
+        allReferrals.forEach((user: any) => {
+          const level = user.level;
+          if (level >= 1 && level <= 7) {
+            referralTree[`level${level}` as keyof typeof referralTree].push({
+              id: user.id,
+              email: user.email,
+              phone: user.phone,
+              referral_code: user.referral_code,
+              created_at: user.created_at,
+              balance: user.balance,
+              total_invested: user.total_invested || 0,
+              referred_by: user.referred_by
+            });
+          }
+        });
+      }
+
+      return referralTree;
+    } catch (error) {
+      console.error('Get referral tree error:', error);
+      // Fallback para método antigo
+      return this.getReferralTreeFallback(userId);
+    }
+  }
+
+  // Método fallback (antigo) caso a RPC falhe
+  private static async getReferralTreeFallback(userId: string) {
+    try {
+      // Buscar apenas nível 1 inicialmente para melhor UX
       const { data: level1Raw, error: level1Error } = await supabase
         .from('users')
-        .select('id, email, referral_code, created_at, balance')
-        .eq('referred_by', userId);
+        .select(`
+          id, email, phone, referral_code, created_at, balance,
+          user_investments!inner(amount)
+        `)
+        .eq('referred_by', userId)
+        .limit(50); // ✅ Limitar resultados
 
       if (level1Error) {
         throw new Error('Erro ao buscar equipe');
       }
 
-      // Add total_invested to level 1
-      const level1 = await addTotalInvested(level1Raw || []);
+      // Calcular total_invested de forma mais eficiente
+      const level1 = (level1Raw || []).map(user => ({
+        ...user,
+        total_invested: user.user_investments?.reduce((sum: number, inv: any) => sum + inv.amount, 0) || 0
+      }));
 
       const referralTree = {
         level1,
@@ -416,36 +429,44 @@ export class AuthService {
         level7: [] as any[]
       };
 
-      // Get levels 2-7 iteratively
-      let currentLevelIds = level1.map(user => user.id);
-      
-      for (let level = 2; level <= 7; level++) {
-        if (currentLevelIds.length === 0) break;
-
-        const { data: levelRaw, error: levelError } = await supabase
-          .from('users')
-          .select('id, email, referral_code, created_at, balance, referred_by')
-          .in('referred_by', currentLevelIds);
-
-        if (levelError || !levelRaw || levelRaw.length === 0) break;
-
-        const levelData = await addTotalInvested(levelRaw);
+      // ✅ Carregar outros níveis apenas se nível 1 tiver membros
+      if (level1.length > 0) {
+        // Buscar níveis 2-7 de forma mais eficiente (apenas se necessário)
+        let currentLevelIds = level1.map(user => user.id);
         
-        switch (level) {
-          case 2: referralTree.level2 = levelData; break;
-          case 3: referralTree.level3 = levelData; break;
-          case 4: referralTree.level4 = levelData; break;
-          case 5: referralTree.level5 = levelData; break;
-          case 6: referralTree.level6 = levelData; break;
-          case 7: referralTree.level7 = levelData; break;
-        }
+        for (let level = 2; level <= 7 && currentLevelIds.length > 0; level++) {
+          const { data: levelRaw } = await supabase
+            .from('users')
+            .select(`
+              id, email, phone, referral_code, created_at, balance, referred_by,
+              user_investments(amount)
+            `)
+            .in('referred_by', currentLevelIds)
+            .limit(100); // ✅ Limitar por nível
 
-        currentLevelIds = levelData.map(user => user.id);
+          if (!levelRaw || levelRaw.length === 0) break;
+
+          const levelData = levelRaw.map(user => ({
+            ...user,
+            total_invested: user.user_investments?.reduce((sum: number, inv: any) => sum + inv.amount, 0) || 0
+          }));
+          
+          switch (level) {
+            case 2: referralTree.level2 = levelData; break;
+            case 3: referralTree.level3 = levelData; break;
+            case 4: referralTree.level4 = levelData; break;
+            case 5: referralTree.level5 = levelData; break;
+            case 6: referralTree.level6 = levelData; break;
+            case 7: referralTree.level7 = levelData; break;
+          }
+
+          currentLevelIds = levelData.map(user => user.id);
+        }
       }
 
       return referralTree;
     } catch (error) {
-      console.error('Get referral tree error:', error);
+      console.error('Get referral tree fallback error:', error);
       throw error;
     }
   }

@@ -38,15 +38,48 @@ const Home: React.FC = () => {
         </p>
       </div>
 
-      {/* Balance Card */}
-      <div className="bg-gradient-to-r from-primary to-secondary rounded-xl p-6 text-white">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-white/80 text-sm">Saldo Total</p>
-            <p className="text-3xl font-bold">{formatCurrency(user.balance)}</p>
+      {/* Balance Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Saldo Principal */}
+        <div className="bg-gradient-to-r from-primary to-secondary rounded-xl p-6 text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-white/80 text-sm">Saldo Principal</p>
+              <p className="text-2xl font-bold">{formatCurrency(user.balance || 0)}</p>
+              <p className="text-white/60 text-xs mt-1">Depósitos + Rendimentos</p>
+            </div>
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Wallet size={24} />
+            </div>
           </div>
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-            <Wallet size={24} />
+        </div>
+
+        {/* Saldo de Comissão */}
+        <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-xl p-6 text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-white/80 text-sm">Saldo de Comissão</p>
+              <p className="text-2xl font-bold">{formatCurrency(user.commission_balance || 0)}</p>
+              <p className="text-white/60 text-xs mt-1">Comissões de Indicação</p>
+            </div>
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Users size={24} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Saldo Total */}
+      <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-gray-400 text-sm">Saldo Total Disponível</p>
+            <p className="text-xl font-bold text-white">
+              {formatCurrency((user.balance || 0) + (user.commission_balance || 0))}
+            </p>
+          </div>
+          <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+            <DollarSign size={20} className="text-primary" />
           </div>
         </div>
         

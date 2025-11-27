@@ -82,9 +82,11 @@ const DepositForm: React.FC<DepositFormProps> = () => {
           amount: dbxBankPayService.formatAmountToCents(amount),
           description: `Recarga CryptoYield - ${formatCurrency(amount)}`,
           customer_email: user?.email || '',
-          customer_name: user?.email || '',
+          customer_name: user?.email || 'Usuário',
+          customer_document: user?.cpf || '',
+          customer_phone: user?.phone || '11999999999',
           external_reference: externalReference,
-          webhook_url: `${import.meta.env.VITE_APP_URL}/functions/v1/dbxpay-webhook`
+          webhook_url: import.meta.env.VITE_WEBHOOK_URL || 'https://multicrypto.com.br/api/webhooks/dbxbankpay'
         };
 
         const newPayment = await dbxBankPayService.createPayment(paymentData);

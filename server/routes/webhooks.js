@@ -18,12 +18,13 @@ function verifyDbxSignature(rawBody, ts, sig, secret) {
   return expected === sig.replace(/^v1=/, "");
 }
 
-// Endpoint DBXBankPay - EXATAMENTE como na documentação
+// Endpoint DBXBankPay - Formato REAL do payload
 router.post('/dbxbankpay', (req, res) => {
   try {
     console.log('📥 DBXBankPay webhook recebido');
+    console.log('🔍 Payload completo:', JSON.stringify(req.body, null, 2));
     
-    // Verificar assinatura HMAC (exatamente como na documentação)
+    // Verificar assinatura HMAC
     const rawBody = JSON.stringify(req.body);
     const timestamp = req.headers['x-dbxpay-timestamp'];
     const signature = req.headers['x-dbxpay-signature'];
@@ -43,35 +44,63 @@ router.post('/dbxbankpay', (req, res) => {
       }
       
       console.log('✅ Assinatura válida');
+    } else {
+      console.log('⚠️ Headers de assinatura não encontrados (modo teste)');
     }
     
-    // Processar payload (formato exato da documentação)
-    const { id, type, data } = req.body;
+    // Processar payload REAL do DBXBankPay
+    const { event, timestamp: eventTimestamp, data } = req.body;
     
-    console.log('Webhook payload:', {
+    if (!data) {
+      console.log('❌ Payload inválido - campo "data" não encontrado');
+      return res.status(200).json({ received: true, error: 'Invalid payload' });
+    }
+    
+    const {
       id,
-      type,
-      transaction_id: data?.transaction_id,
-      external_reference: data?.external_reference,
-      amount: data?.amount,
-      status: data?.status
+      status,
+      amount,
+      net_amount,
+      customer_name,
+      customer_email,
+      customer_document,
+      external_reference,
+      paid_at
+    } = data;
+    
+    console.log('📊 Dados do pagamento:', {
+      event,
+      id,
+      status,
+      amount,
+      net_amount,
+      customer_email,
+      external_reference,
+      paid_at
     });
     
-    // Processar eventos
-    if (type === 'payment.approved' && data?.status === 'approved') {
-      console.log('✅ Pagamento aprovado! Liberar pedido:', data.external_reference);
+    // Processar eventos baseado no formato real
+    if (event === 'payment.approved' && status === 'approved') {
+      console.log('✅ Pagamento aprovado!');
+      console.log(`💰 Valor: R$ ${amount} (líquido: R$ ${net_amount})`);
+      console.log(`👤 Cliente: ${customer_name} (${customer_email})`);
+      console.log(`📝 Referência: ${external_reference}`);
+      console.log(`⏰ Pago em: ${paid_at}`);
       
-      // Integrar com seu banco de dados aqui
-      // updateOrderStatus(data.external_reference, 'paid');
+      // Aqui você pode integrar com seu banco de dados
+      // Exemplo: creditUserBalance(customer_email, net_amount, external_reference);
       
-    } else if (type === 'payment.failed') {
-      console.log('❌ Pagamento falhou:', data?.external_reference);
+    } else if (event === 'payment.failed') {
+      console.log('❌ Pagamento falhou:', external_reference);
       
-    } else if (type === 'payment.expired') {
-      console.log('⏰ Pagamento expirou:', data?.external_reference);
+    } else if (event === 'payment.expired') {
+      console.log('⏰ Pagamento expirou:', external_reference);
       
-    } else if (type === 'payment.pending') {
-      console.log('⏳ Pagamento pendente:', data?.external_reference);
+    } else if (event === 'payment.pending') {
+      console.log('⏳ Pagamento pendente:', external_reference);
+      
+    } else {
+      console.log('ℹ️ Evento não processado:', { event, status });
     }
     
     // Sempre responder com 200 OK rapidamente

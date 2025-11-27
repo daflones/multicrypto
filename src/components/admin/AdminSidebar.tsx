@@ -6,7 +6,8 @@ import {
   Package, 
   Shield,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  DollarSign
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
@@ -38,6 +39,12 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeSection, onSectionCha
       label: 'Transações',
       icon: CreditCard,
       description: 'Histórico de transações'
+    },
+    {
+      id: 'withdrawals',
+      label: 'Saques',
+      icon: DollarSign,
+      description: 'Aprovar/Recusar saques'
     },
     {
       id: 'products',

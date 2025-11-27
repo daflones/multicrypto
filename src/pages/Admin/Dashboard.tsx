@@ -3,6 +3,7 @@ import AdminSidebar from '../../components/admin/AdminSidebar';
 import UsersSection from '../../components/admin/sections/UsersSection';
 import InvestmentsSection from '../../components/admin/sections/InvestmentsSection';
 import TransactionsSection from '../../components/admin/sections/TransactionsSection';
+import WithdrawalsSection from '../../components/admin/sections/WithdrawalsSection';
 import ProductsSection from '../../components/admin/sections/ProductsSection';
 import AnalyticsSection from '../../components/admin/sections/AnalyticsSection';
 import SettingsSection from '../../components/admin/sections/SettingsSection';
@@ -18,6 +19,8 @@ const AdminDashboard: React.FC = () => {
         return <InvestmentsSection />;
       case 'transactions':
         return <TransactionsSection />;
+      case 'withdrawals':
+        return <WithdrawalsSection />;
       case 'products':
         return <ProductsSection />;
       case 'analytics':

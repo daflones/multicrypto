@@ -1,0 +1,129 @@
+{
+  "common": {
+    "loading": "در حال بارگذاری...",
+    "save": "ذخیره",
+    "cancel": "لغو",
+    "confirm": "تأیید",
+    "delete": "حذف",
+    "edit": "ویرایش",
+    "close": "بستن",
+    "back": "بازگشت",
+    "next": "بعدی",
+    "submit": "ارسال",
+    "search": "جستجو",
+    "filter": "فیلتر",
+    "clear": "پاک کردن",
+    "select": "انتخاب",
+    "currency": "ریال",
+    "yes": "بله",
+    "no": "خیر"
+  },
+  "auth": {
+    "login": {
+      "title": "خوش آمدید!",
+      "subtitle": "برای ادامه وارد حساب کاربری خود شوید",
+      "email": "ایمیل",
+      "emailPlaceholder": "contact@example.com",
+      "password": "رمز عبور",
+      "passwordPlaceholder": "••••••••",
+      "loginButton": "ورود",
+      "forgotPassword": "رمز عبور را فراموش کرده‌اید؟",
+      "noAccount": "حساب کاربری ندارید؟",
+      "signUp": "ثبت نام"
+    },
+    "register": {
+      "title": "حساب کاربری خود را ایجاد کنید",
+      "subtitle": "به پلتفرم سرمایه‌گذاری ما بپیوندید",
+      "document": "کد ملی",
+      "documentPlaceholder": "0000000000",
+      "email": "ایمیل",
+      "emailPlaceholder": "your@email.com",
+      "phone": "شماره تلفن",
+      "phonePlaceholder": "+98 00 0000 0000",
+      "password": "رمز عبور",
+      "passwordPlaceholder": "••••••••",
+      "confirmPassword": "تأیید رمز عبور",
+      "confirmPasswordPlaceholder": "••••••••",
+      "referralCode": "کد معرف (اختیاری)",
+      "referralCodePlaceholder": "اگر دارید، کد معرف را وارد کنید",
+      "createAccount": "ایجاد حساب",
+      "hasAccount": "قبلاً حساب دارید؟",
+      "signIn": "ورود"
+    },
+    "forgotPassword": {
+      "title": "بازنشانی رمز عبور",
+      "subtitle": "ایمیل ثبت شده خود را وارد کنید. لینک بازنشانی رمز عبور برای شما ارسال خواهد شد.",
+      "sendLink": "ارسال لینک"
+    }
+  },
+  "investment": {
+    "title": "سرمایه‌گذاری‌ها",
+    "dailyYield": "بازده روزانه (5%)",
+    "totalReturn": "بازده کل (300%)",
+    "daysToComplete": "روزهای باقی‌مانده",
+    "totalROI": "کل ROI",
+    "duration": "مدت زمان",
+    "days": "روز",
+    "invest": "سرمایه‌گذاری",
+    "amount": "مبلغ",
+    "balance": "موجودی قابل استفاده",
+    "insufficientBalance": "موجودی ناکافی",
+    "minimumAmount": "حداقل مبلغ"
+  },
+  "countries": {
+    "BR": {
+      "name": "برزیل",
+      "documentType": "CPF",
+      "documentPlaceholder": "000.000.000-00",
+      "phoneFormat": "+55 (00) 00000-0000"
+    },
+    "US": {
+      "name": "ایالات متحده",
+      "documentType": "SSN",
+      "documentPlaceholder": "000-00-0000",
+      "phoneFormat": "(000) 000-0000"
+    },
+    "ES": {
+      "name": "اسپانیا",
+      "documentType": "DNI",
+      "documentPlaceholder": "00000000A",
+      "phoneFormat": "+34 000 000 000"
+    },
+    "VN": {
+      "name": "ویتنام",
+      "documentType": "CCCD",
+      "documentPlaceholder": "000000000000",
+      "phoneFormat": "+84 00 0000 0000"
+    },
+    "SA": {
+      "name": "عربستان سعودی",
+      "documentType": "کارت ملی",
+      "documentPlaceholder": "0000000000",
+      "phoneFormat": "+966 00 000 0000"
+    },
+    "RU": {
+      "name": "روسیه",
+      "documentType": "پاسپورت",
+      "documentPlaceholder": "0000 000000",
+      "phoneFormat": "+7 000 000 00 00"
+    },
+    "PL": {
+      "name": "لهستان",
+      "documentType": "PESEL",
+      "documentPlaceholder": "00000000000",
+      "phoneFormat": "+48 000 000 000"
+    },
+    "PK": {
+      "name": "پاکستان",
+      "documentType": "CNIC",
+      "documentPlaceholder": "00000-0000000-0",
+      "phoneFormat": "+92 000 0000000"
+    },
+    "IR": {
+      "name": "ایران",
+      "documentType": "کد ملی",
+      "documentPlaceholder": "0000000000",
+      "phoneFormat": "+98 00 0000 0000"
+    }
+  }
+}

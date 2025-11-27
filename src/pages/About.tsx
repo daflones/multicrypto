@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { TrendingUp, Shield, Users, Award, ArrowRight } from 'lucide-react';
 
 type AboutProps = {
@@ -11,6 +12,7 @@ const INTERVAL_MS = 60_000; // 1 minuto
 const GROWTH = 1.03; // +3% por intervalo
 
 const About: React.FC<AboutProps> = ({ onBack }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   // base: 500 investidores, 250k BRL
   const [investors, setInvestors] = useState(500);
@@ -66,23 +68,22 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
         <div className="w-16 h-16 rounded-full overflow-hidden mx-auto mb-4">
           <img src="/images/logo.png" alt="Multi Crypto" className="w-full h-full object-cover" />
         </div>
-        <h1 className="text-3xl font-bold mb-2">Multi Crypto</h1>
-        <p className="text-white/80">Plataforma de Investimentos em Criptomoedas</p>
+        <h1 className="text-3xl font-bold mb-2">{t('about.title')}</h1>
+        <p className="text-white/80">{t('about.subtitle')}</p>
       </div>
 
       <div className="p-6 space-y-8">
         {/* Mission */}
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">Nossa Missão</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">{t('about.mission')}</h2>
           <p className="text-gray-300 leading-relaxed">
-            Democratizar o acesso aos investimentos em criptomoedas, oferecendo uma plataforma 
-            segura, transparente e rentável para todos os brasileiros construírem seu patrimônio digital.
+            {t('about.missionText')}
           </p>
         </div>
 
         {/* Features */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-white text-center mb-6">Por que escolher a Multi Crypto?</h2>
+          <h2 className="text-2xl font-bold text-white text-center mb-6">{t('about.whyChoose')}</h2>
           
           <div className="space-y-4">
             <div className="bg-surface rounded-lg p-4 flex items-start space-x-4">
@@ -90,10 +91,9 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
                 <TrendingUp className="text-success" size={24} />
               </div>
               <div>
-                <h3 className="text-white font-semibold mb-2">Rendimentos Diários</h3>
+                <h3 className="text-white font-semibold mb-2">{t('about.dailyReturns')}</h3>
                 <p className="text-gray-400 text-sm">
-                  Receba rendimentos todos os dias automaticamente em sua conta, 
-                  com transparência total sobre seus investimentos.
+                  {t('about.dailyReturnsText')}
                 </p>
               </div>
             </div>
@@ -103,10 +103,9 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
                 <Shield className="text-primary" size={24} />
               </div>
               <div>
-                <h3 className="text-white font-semibold mb-2">Segurança Garantida</h3>
+                <h3 className="text-white font-semibold mb-2">{t('about.guaranteedSecurity')}</h3>
                 <p className="text-gray-400 text-sm">
-                  Utilizamos as melhores práticas de segurança para proteger seus dados 
-                  e investimentos com criptografia de ponta.
+                  {t('about.guaranteedSecurityText')}
                 </p>
               </div>
             </div>
@@ -116,10 +115,9 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
                 <Users className="text-secondary" size={24} />
               </div>
               <div>
-                <h3 className="text-white font-semibold mb-2">Sistema de Referência</h3>
+                <h3 className="text-white font-semibold mb-2">{t('about.referralSystem')}</h3>
                 <p className="text-gray-400 text-sm">
-                  Ganhe comissões sobre os investimentos da sua equipe 
-                  em até 7 níveis de profundidade.
+                  {t('about.referralSystemText')}
                 </p>
               </div>
             </div>
@@ -129,10 +127,9 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
                 <Award className="text-warning" size={24} />
               </div>
               <div>
-                <h3 className="text-white font-semibold mb-2">Suporte Especializado</h3>
+                <h3 className="text-white font-semibold mb-2">{t('about.specializedSupport')}</h3>
                 <p className="text-gray-400 text-sm">
-                  Nossa equipe está sempre disponível para ajudar você a maximizar 
-                  seus resultados e esclarecer dúvidas.
+                  {t('about.specializedSupportText')}
                 </p>
               </div>
             </div>
@@ -141,30 +138,30 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
 
         {/* Stats (com crescimento persistente) */}
         <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-lg p-6">
-          <h2 className="text-xl font-bold text-white text-center mb-6">Nossos Números</h2>
+          <h2 className="text-xl font-bold text-white text-center mb-6">{t('about.ourNumbers')}</h2>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
               <p className="text-2xl font-bold text-primary mb-1">{investors.toLocaleString('pt-BR')}</p>
-              <p className="text-gray-400 text-sm">Investidores Ativos</p>
+              <p className="text-gray-400 text-sm">{t('about.activeInvestors')}</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-success mb-1">{formatBRL(volume)}</p>
-              <p className="text-gray-400 text-sm">Volume Investido</p>
+              <p className="text-gray-400 text-sm">{t('about.investedVolume')}</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-secondary mb-1">99.9%</p>
-              <p className="text-gray-400 text-sm">Uptime</p>
+              <p className="text-gray-400 text-sm">{t('about.uptime')}</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-warning mb-1">24/7</p>
-              <p className="text-gray-400 text-sm">Suporte</p>
+              <p className="text-gray-400 text-sm">{t('about.support')}</p>
             </div>
           </div>
         </div>
 
         {/* How it Works */}
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-white text-center">Como Funciona</h2>
+          <h2 className="text-2xl font-bold text-white text-center">{t('about.howItWorks')}</h2>
           
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
@@ -172,8 +169,8 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
                 <span className="text-white font-bold text-sm">1</span>
               </div>
               <div>
-                <h3 className="text-white font-medium">Cadastre-se</h3>
-                <p className="text-gray-400 text-sm">Crie sua conta com um código de convite</p>
+                <h3 className="text-white font-medium">{t('about.step1')}</h3>
+                <p className="text-gray-400 text-sm">{t('about.step1Text')}</p>
               </div>
             </div>
 
@@ -182,8 +179,8 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
                 <span className="text-white font-bold text-sm">2</span>
               </div>
               <div>
-                <h3 className="text-white font-medium">Faça um Depósito</h3>
-                <p className="text-gray-400 text-sm">Adicione fundos via PIX ou criptomoedas</p>
+                <h3 className="text-white font-medium">{t('about.step2')}</h3>
+                <p className="text-gray-400 text-sm">{t('about.step2Text')}</p>
               </div>
             </div>
 
@@ -192,8 +189,8 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
                 <span className="text-white font-bold text-sm">3</span>
               </div>
               <div>
-                <h3 className="text-white font-medium">Escolha um Plano</h3>
-                <p className="text-gray-400 text-sm">Selecione o produto que melhor se adequa ao seu perfil</p>
+                <h3 className="text-white font-medium">{t('about.step3')}</h3>
+                <p className="text-gray-400 text-sm">{t('about.step3Text')}</p>
               </div>
             </div>
 
@@ -202,8 +199,8 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
                 <span className="text-white font-bold text-sm">4</span>
               </div>
               <div>
-                <h3 className="text-white font-medium">Receba Rendimentos</h3>
-                <p className="text-gray-400 text-sm">Ganhe rendimentos diários automaticamente</p>
+                <h3 className="text-white font-medium">{t('about.step4')}</h3>
+                <p className="text-gray-400 text-sm">{t('about.step4Text')}</p>
               </div>
             </div>
           </div>
@@ -211,23 +208,23 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
 
         {/* CTA */}
         <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold text-white">Pronto para Começar?</h2>
+          <h2 className="text-2xl font-bold text-white">{t('about.readyToStart')}</h2>
           <p className="text-gray-400">
-            Junte-se a milhares de investidores que já estão construindo seu futuro financeiro.
+            {t('about.readyToStartText')}
           </p>
           <div className="space-y-3">
             <Link
               to="/register"
               className="block w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
             >
-              <span>Criar Conta Grátis</span>
+              <span>{t('about.createAccountFree')}</span>
               <ArrowRight size={20} />
             </Link>
             <button
               onClick={handleBackToLogin}
               className="block w-full bg-surface text-white py-3 rounded-lg font-medium hover:bg-surface-light transition-colors"
             >
-              Já tenho uma conta
+              {t('about.alreadyHaveAccount')}
             </button>
           </div>
         </div>
@@ -235,7 +232,7 @@ const About: React.FC<AboutProps> = ({ onBack }) => {
         {/* Footer */}
         <div className="text-center pt-8 border-t border-surface-light">
           <p className="text-gray-400 text-sm">
-            © 2024 Multi Crypto. Todos os direitos reservados.
+            © 2024 Multi Crypto. {t('footer.rights')}.
           </p>
           <p className="text-gray-500 text-xs mt-2">
             Investimentos envolvem riscos. Invista com responsabilidade.

@@ -1,14 +1,17 @@
 import React from 'react';
 import { Home, TrendingUp, Users, User, Wallet } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const BottomNavigation: React.FC = () => {
+  const { t } = useTranslation();
+  
   const navItems = [
-    { path: '/', icon: Home, label: 'Início' },
-    { path: '/invest', icon: TrendingUp, label: 'Investir' },
-    { path: '/team', icon: Users, label: 'Equipe' },
-    { path: '/withdraw', icon: Wallet, label: 'Sacar' },
-    { path: '/profile', icon: User, label: 'Perfil' },
+    { path: '/', icon: Home, label: t('navigation.home') },
+    { path: '/invest', icon: TrendingUp, label: t('navigation.invest') },
+    { path: '/team', icon: Users, label: t('navigation.team') },
+    { path: '/withdraw', icon: Wallet, label: t('navigation.withdraw') },
+    { path: '/profile', icon: User, label: t('navigation.profile') },
   ];
 
   return (

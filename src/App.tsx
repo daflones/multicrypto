@@ -5,6 +5,7 @@ import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminProtectedRoute from './components/auth/AdminProtectedRoute';
 import { ToastProvider } from './contexts/ToastContext';
+import './i18n'; // Initialize i18n
 
 // Pages
 import Home from './pages/Home';

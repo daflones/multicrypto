@@ -26,10 +26,13 @@ export const validateCPF = (cpf: string): boolean => {
   return true;
 };
 
-// Phone validation
+// Phone validation - aceita formato nacional e internacional
 export const validatePhone = (phone: string): boolean => {
   const cleanPhone = phone.replace(/\D/g, '');
-  return cleanPhone.length === 10 || cleanPhone.length === 11;
+  // Aceita:
+  // - 10 ou 11 dígitos (formato nacional BR)
+  // - 12-15 dígitos (formato internacional com código do país)
+  return cleanPhone.length >= 10 && cleanPhone.length <= 15;
 };
 
 // Email validation
@@ -51,7 +54,7 @@ export const registerSchema = z.object({
   email: z.string()
     .email('Email inválido'),
   phone: z.string()
-    .min(10, 'Telefone inválido')
+    .min(1, 'Telefone é obrigatório')
     .refine(validatePhone, 'Telefone inválido'),
   password: z.string()
     .min(6, 'Senha deve ter pelo menos 6 caracteres'),

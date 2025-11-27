@@ -1,0 +1,129 @@
+{
+  "common": {
+    "loading": "Загрузка...",
+    "save": "Сохранить",
+    "cancel": "Отменить",
+    "confirm": "Подтвердить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "close": "Закрыть",
+    "back": "Назад",
+    "next": "Далее",
+    "submit": "Отправить",
+    "search": "Поиск",
+    "filter": "Фильтр",
+    "clear": "Очистить",
+    "select": "Выбрать",
+    "currency": "₽",
+    "yes": "Да",
+    "no": "Нет"
+  },
+  "auth": {
+    "login": {
+      "title": "Добро пожаловать!",
+      "subtitle": "Войдите в свой аккаунт, чтобы продолжить",
+      "email": "Электронная почта",
+      "emailPlaceholder": "contact@example.com",
+      "password": "Пароль",
+      "passwordPlaceholder": "••••••••",
+      "loginButton": "Войти",
+      "forgotPassword": "Забыли пароль?",
+      "noAccount": "Нет аккаунта?",
+      "signUp": "Зарегистрироваться"
+    },
+    "register": {
+      "title": "Создайте свой аккаунт",
+      "subtitle": "Присоединяйтесь к нашей инвестиционной платформе",
+      "document": "Паспорт",
+      "documentPlaceholder": "0000 000000",
+      "email": "Электронная почта",
+      "emailPlaceholder": "your@email.com",
+      "phone": "Телефон",
+      "phonePlaceholder": "+7 000 000 00 00",
+      "password": "Пароль",
+      "passwordPlaceholder": "••••••••",
+      "confirmPassword": "Подтвердите пароль",
+      "confirmPasswordPlaceholder": "••••••••",
+      "referralCode": "Реферальный код (необязательно)",
+      "referralCodePlaceholder": "Если есть, вставьте реферальный код",
+      "createAccount": "Создать аккаунт",
+      "hasAccount": "Уже есть аккаунт?",
+      "signIn": "Войти"
+    },
+    "forgotPassword": {
+      "title": "Сброс пароля",
+      "subtitle": "Введите зарегистрированный email. Мы отправим вам ссылку для сброса пароля.",
+      "sendLink": "Отправить ссылку"
+    }
+  },
+  "investment": {
+    "title": "Инвестиции",
+    "dailyYield": "Дневная доходность (5%)",
+    "totalReturn": "Общая доходность (300%)",
+    "daysToComplete": "Дней до завершения",
+    "totalROI": "Общий ROI",
+    "duration": "Длительность",
+    "days": "дней",
+    "invest": "Инвестировать",
+    "amount": "Сумма",
+    "balance": "Доступный баланс",
+    "insufficientBalance": "Недостаточно средств",
+    "minimumAmount": "Минимальная сумма"
+  },
+  "countries": {
+    "BR": {
+      "name": "Бразилия",
+      "documentType": "CPF",
+      "documentPlaceholder": "000.000.000-00",
+      "phoneFormat": "+55 (00) 00000-0000"
+    },
+    "US": {
+      "name": "США",
+      "documentType": "SSN",
+      "documentPlaceholder": "000-00-0000",
+      "phoneFormat": "(000) 000-0000"
+    },
+    "ES": {
+      "name": "Испания",
+      "documentType": "DNI",
+      "documentPlaceholder": "00000000A",
+      "phoneFormat": "+34 000 000 000"
+    },
+    "VN": {
+      "name": "Вьетнам",
+      "documentType": "CCCD",
+      "documentPlaceholder": "000000000000",
+      "phoneFormat": "+84 00 0000 0000"
+    },
+    "SA": {
+      "name": "Саудовская Аравия",
+      "documentType": "Национальный ID",
+      "documentPlaceholder": "0000000000",
+      "phoneFormat": "+966 00 000 0000"
+    },
+    "RU": {
+      "name": "Россия",
+      "documentType": "Паспорт",
+      "documentPlaceholder": "0000 000000",
+      "phoneFormat": "+7 000 000 00 00"
+    },
+    "PL": {
+      "name": "Польша",
+      "documentType": "PESEL",
+      "documentPlaceholder": "00000000000",
+      "phoneFormat": "+48 000 000 000"
+    },
+    "PK": {
+      "name": "Пакистан",
+      "documentType": "CNIC",
+      "documentPlaceholder": "00000-0000000-0",
+      "phoneFormat": "+92 000 0000000"
+    },
+    "IR": {
+      "name": "Иран",
+      "documentType": "Национальный код",
+      "documentPlaceholder": "0000000000",
+      "phoneFormat": "+98 00 0000 0000"
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, DollarSign, Copy, CheckCircle, Clock, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
 import { PAYMENT_METHODS } from '../../utils/constants';
 import { formatCurrency } from '../../utils/formatters';
@@ -10,6 +11,7 @@ interface DepositFormProps {
 }
 
 const DepositForm: React.FC<DepositFormProps> = () => {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     amount: '',
@@ -153,13 +155,13 @@ const DepositForm: React.FC<DepositFormProps> = () => {
       {step === 1 && (
         <div className="space-y-6">
           <div className="text-center">
-            <h2 className="text-xl font-bold text-white mb-2">Fazer Depósito</h2>
-            <p className="text-gray-400">Escolha o valor e método de pagamento</p>
+            <h2 className="text-xl font-bold text-white mb-2">{t('deposit.title')}</h2>
+            <p className="text-gray-400">{t('deposit.subtitle')}</p>
           </div>
 
           {/* Payment Method Selection */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-300">Método de Pagamento</label>
+            <label className="block text-sm font-medium text-gray-300">{t('deposit.selectMethod')}</label>
             <div className="grid grid-cols-1 gap-3">
               {PAYMENT_METHODS.map((method) => (
                 <button
@@ -186,7 +188,7 @@ const DepositForm: React.FC<DepositFormProps> = () => {
           {/* Amount Input */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-300">
-              Valor (R$)
+              {t('deposit.amount')}
             </label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -194,7 +196,7 @@ const DepositForm: React.FC<DepositFormProps> = () => {
                 type="text"
                 value={formData.amount}
                 onChange={(e) => handleAmountChange(e.target.value)}
-                placeholder="0,00"
+                placeholder={t('deposit.amountPlaceholder')}
                 className="w-full pl-10 pr-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:border-primary focus:outline-none"
               />
             </div>
@@ -220,10 +222,10 @@ const DepositForm: React.FC<DepositFormProps> = () => {
             {isLoading ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                <span>Processando...</span>
+                <span>{t('withdraw.processing')}</span>
               </>
             ) : (
-              <span>Continuar</span>
+              <span>{t('common.next')}</span>
             )}
           </button>
         </div>

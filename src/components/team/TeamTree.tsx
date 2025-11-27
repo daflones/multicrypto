@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Users, TrendingUp, Calendar, ChevronDown, ChevronRight, MessageCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { AuthService } from '../../services/auth.service';
 import { CommissionService } from '../../services/commission.service';
 import { useAuthStore } from '../../store/authStore';
@@ -21,6 +22,7 @@ interface TeamTreeProps {
 }
 
 const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
+  const { t } = useTranslation();
   const [teamData, setTeamData] = useState<{
     level1: TeamMember[];
     level2: TeamMember[];
@@ -133,7 +135,7 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
             </div>
             <div className="text-left">
               <h3 className="text-white font-semibold">{title}</h3>
-              <p className="text-gray-400 text-sm">{members.length} membros</p>
+              <p className="text-gray-400 text-sm">{members.length} {t('team.members')}</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -199,7 +201,7 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
         {isExpanded && members.length === 0 && (
           <div className="p-8 text-center border-t border-surface-light">
             <Users className="text-gray-400 mx-auto mb-2" size={24} />
-            <p className="text-gray-400 text-sm">Nenhum membro neste nível ainda</p>
+            <p className="text-gray-400 text-sm">{t('team.noMembersYet')}</p>
           </div>
         )}
       </div>
@@ -233,14 +235,14 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
             <div className="text-2xl font-bold text-white mb-1">
               {teamStats.totalTeamSize}
             </div>
-            <div className="text-sm text-gray-400">Total da Equipe</div>
+            <div className="text-sm text-gray-400">{t('team.totalReferrals')}</div>
           </div>
           
           <div className="bg-surface rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-success mb-1">
               {commissionStats ? formatCurrency(commissionStats.totalCommissions) : 'R$ 0,00'}
             </div>
-            <div className="text-sm text-gray-400">Comissões Totais</div>
+            <div className="text-sm text-gray-400">{t('team.totalCommissions')}</div>
           </div>
         </div>
       )}
@@ -248,7 +250,7 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
       {/* Commission Stats */}
       {commissionStats && (
         <div className="bg-surface rounded-lg p-4">
-          <h3 className="text-lg font-semibold text-white mb-4">Resumo de Comissões</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">{t('team.commissionSummary')}</h3>
           <div className="grid grid-cols-3 gap-3 text-center mb-3">
             <div>
               <div className="text-base font-bold text-primary mb-1">

@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { User, LogOut, CreditCard, Phone, Mail, Copy, Check, Settings } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
 import { formatCPF, formatPhone, formatDate } from '../utils/formatters';
+import { useCountry } from '../hooks/useCountry';
 import TransactionHistory from '../components/profile/TransactionHistory';
 import ChangePhoneModal from '../components/profile/ChangePhoneModal';
 import ChangePasswordModal from '../components/profile/ChangePasswordModal';
 
 const Profile: React.FC = () => {
+  const { t } = useTranslation();
+  const { countryInfo } = useCountry();
   const [copied, setCopied] = useState(false);
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -25,7 +29,7 @@ const Profile: React.FC = () => {
   };
 
   const handleLogout = () => {
-    if (confirm('Tem certeza que deseja sair?')) {
+    if (confirm(t('profile.logout') + '?')) {
       logout();
     }
   };
@@ -37,13 +41,13 @@ const Profile: React.FC = () => {
         <div className="w-20 h-20 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4">
           <User className="text-white" size={32} />
         </div>
-        <h1 className="text-2xl font-bold text-white mb-2">Meu Perfil</h1>
-        <p className="text-gray-400">Gerencie suas informações pessoais</p>
+        <h1 className="text-2xl font-bold text-white mb-2">{t('profile.title')}</h1>
+        <p className="text-gray-400">{t('profile.subtitle')}</p>
       </div>
 
       {/* User Info */}
       <div className="bg-surface rounded-lg p-4 space-y-4">
-        <h2 className="text-lg font-semibold text-white mb-4">Informações Pessoais</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">{t('profile.personalInfo')}</h2>
         
         {/* Email */}
         <div className="flex items-center space-x-3">
@@ -51,7 +55,7 @@ const Profile: React.FC = () => {
             <Mail className="text-primary" size={20} />
           </div>
           <div className="flex-1">
-            <p className="text-gray-400 text-sm">Email</p>
+            <p className="text-gray-400 text-sm">{t('profile.email')}</p>
             <p className="text-white font-medium">{user.email}</p>
           </div>
         </div>

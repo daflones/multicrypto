@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import LoginForm from '../components/auth/LoginForm';
 import About from './About';
+import LanguageSelector from '../components/common/LanguageSelector';
 import { ArrowLeft, Info, CheckCircle } from 'lucide-react';
 
 const Login: React.FC = () => {
+  const { t } = useTranslation();
   const [showAbout, setShowAbout] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const location = useLocation();
@@ -45,7 +48,7 @@ const Login: React.FC = () => {
               className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-surface-light/50"
             >
               <ArrowLeft size={20} />
-              <span className="font-medium">Voltar ao Login</span>
+              <span className="font-medium">{t('common.back')} ao Login</span>
             </button>
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-full overflow-hidden shadow-lg">
@@ -82,6 +85,11 @@ const Login: React.FC = () => {
         <div className="absolute top-1/2 right-1/3 w-1.5 h-1.5 bg-purple-400/60 rounded-full animate-bounce delay-1000"></div>
       </div>
 
+      {/* Language Selector - Top Right */}
+      <div className="absolute top-6 right-6 z-20">
+        <LanguageSelector />
+      </div>
+
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-md mx-auto px-6">
         {/* Modern Card Container */}
@@ -104,10 +112,10 @@ const Login: React.FC = () => {
             {/* Welcome Text */}
             <div className="space-y-2">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
-                Bem-vindo de volta!
+                {t('auth.login.title')}
               </h1>
               <p className="text-gray-300 text-sm">
-                Entre na sua conta para continuar
+                {t('auth.login.subtitle')}
               </p>
             </div>
             
@@ -131,7 +139,7 @@ const Login: React.FC = () => {
             className="inline-flex items-center justify-center space-x-2 text-white/70 hover:text-white transition-all duration-300 px-4 py-2 rounded-xl hover:bg-white/5 backdrop-blur-sm group"
           >
             <Info size={16} className="group-hover:rotate-12 transition-transform duration-300" />
-            <span className="font-medium">Quem somos?</span>
+            <span className="font-medium">{t('common.about', 'Quem somos?')}</span>
           </button>
           
           <div className="text-xs text-white/40">

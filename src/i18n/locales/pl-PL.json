@@ -1,0 +1,129 @@
+{
+  "common": {
+    "loading": "Ładowanie...",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "close": "Zamknij",
+    "back": "Wstecz",
+    "next": "Dalej",
+    "submit": "Wyślij",
+    "search": "Szukaj",
+    "filter": "Filtruj",
+    "clear": "Wyczyść",
+    "select": "Wybierz",
+    "currency": "zł",
+    "yes": "Tak",
+    "no": "Nie"
+  },
+  "auth": {
+    "login": {
+      "title": "Witamy z powrotem!",
+      "subtitle": "Zaloguj się do swojego konta, aby kontynuować",
+      "email": "Email",
+      "emailPlaceholder": "kontakt@example.com",
+      "password": "Hasło",
+      "passwordPlaceholder": "••••••••",
+      "loginButton": "Zaloguj się",
+      "forgotPassword": "Zapomniałeś hasła?",
+      "noAccount": "Nie masz konta?",
+      "signUp": "Zarejestruj się"
+    },
+    "register": {
+      "title": "Utwórz swoje konto",
+      "subtitle": "Dołącz do naszej platformy inwestycyjnej",
+      "document": "PESEL",
+      "documentPlaceholder": "00000000000",
+      "email": "Email",
+      "emailPlaceholder": "twoj@email.com",
+      "phone": "Telefon",
+      "phonePlaceholder": "+48 000 000 000",
+      "password": "Hasło",
+      "passwordPlaceholder": "••••••••",
+      "confirmPassword": "Potwierdź hasło",
+      "confirmPasswordPlaceholder": "••••••••",
+      "referralCode": "Kod polecający (opcjonalnie)",
+      "referralCodePlaceholder": "Jeśli masz, wklej kod polecający",
+      "createAccount": "Utwórz konto",
+      "hasAccount": "Masz już konto?",
+      "signIn": "Zaloguj się"
+    },
+    "forgotPassword": {
+      "title": "Resetuj hasło",
+      "subtitle": "Wprowadź swój zarejestrowany email. Wyślemy Ci link do resetowania hasła.",
+      "sendLink": "Wyślij link"
+    }
+  },
+  "investment": {
+    "title": "Inwestycje",
+    "dailyYield": "Dzienny zysk (5%)",
+    "totalReturn": "Całkowity zwrot (300%)",
+    "daysToComplete": "Dni do ukończenia",
+    "totalROI": "Całkowity ROI",
+    "duration": "Czas trwania",
+    "days": "dni",
+    "invest": "Inwestuj",
+    "amount": "Kwota",
+    "balance": "Dostępne saldo",
+    "insufficientBalance": "Niewystarczające saldo",
+    "minimumAmount": "Minimalna kwota"
+  },
+  "countries": {
+    "BR": {
+      "name": "Brazylia",
+      "documentType": "CPF",
+      "documentPlaceholder": "000.000.000-00",
+      "phoneFormat": "+55 (00) 00000-0000"
+    },
+    "US": {
+      "name": "Stany Zjednoczone",
+      "documentType": "SSN",
+      "documentPlaceholder": "000-00-0000",
+      "phoneFormat": "(000) 000-0000"
+    },
+    "ES": {
+      "name": "Hiszpania",
+      "documentType": "DNI",
+      "documentPlaceholder": "00000000A",
+      "phoneFormat": "+34 000 000 000"
+    },
+    "VN": {
+      "name": "Wietnam",
+      "documentType": "CCCD",
+      "documentPlaceholder": "000000000000",
+      "phoneFormat": "+84 00 0000 0000"
+    },
+    "SA": {
+      "name": "Arabia Saudyjska",
+      "documentType": "Dowód tożsamości",
+      "documentPlaceholder": "0000000000",
+      "phoneFormat": "+966 00 000 0000"
+    },
+    "RU": {
+      "name": "Rosja",
+      "documentType": "Paszport",
+      "documentPlaceholder": "0000 000000",
+      "phoneFormat": "+7 000 000 00 00"
+    },
+    "PL": {
+      "name": "Polska",
+      "documentType": "PESEL",
+      "documentPlaceholder": "00000000000",
+      "phoneFormat": "+48 000 000 000"
+    },
+    "PK": {
+      "name": "Pakistan",
+      "documentType": "CNIC",
+      "documentPlaceholder": "00000-0000000-0",
+      "phoneFormat": "+92 000 0000000"
+    },
+    "IR": {
+      "name": "Iran",
+      "documentType": "Kod narodowy",
+      "documentPlaceholder": "0000000000",
+      "phoneFormat": "+98 00 0000 0000"
+    }
+  }
+}

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Mail, Lock, LogIn, Send } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { loginSchema, LoginFormData, validateEmail } from '../../utils/validators';
 import { supabase } from '../../services/supabase';
 
 const LoginForm: React.FC = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: ''
@@ -107,7 +109,7 @@ const LoginForm: React.FC = () => {
         {/* Email */}
         <div className="space-y-2">
           <label htmlFor="email" className="block text-sm font-medium text-white/80">
-            Email
+            {t('auth.login.email')}
           </label>
           <div className="relative group">
             <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40 group-focus-within:text-white/60 transition-colors" size={20} />
@@ -120,7 +122,7 @@ const LoginForm: React.FC = () => {
               className={`w-full pl-12 pr-4 py-4 bg-white/5 border backdrop-blur-sm rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30 transition-all duration-300 ${
                 errors.email ? 'border-red-400/50 focus:ring-red-400/20' : 'border-white/10 hover:border-white/20'
               }`}
-              placeholder="contato@exemplo.com"
+              placeholder={t('auth.login.emailPlaceholder')}
               disabled={isLoading}
             />
           </div>
@@ -135,7 +137,7 @@ const LoginForm: React.FC = () => {
         {/* Password */}
         <div className="space-y-2">
           <label htmlFor="password" className="block text-sm font-medium text-white/80">
-            Senha
+            {t('auth.login.password')}
           </label>
           <div className="relative group">
             <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40 group-focus-within:text-white/60 transition-colors" size={20} />
@@ -148,7 +150,7 @@ const LoginForm: React.FC = () => {
               className={`w-full pl-12 pr-14 py-4 bg-white/5 border backdrop-blur-sm rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30 transition-all duration-300 ${
                 errors.password ? 'border-red-400/50 focus:ring-red-400/20' : 'border-white/10 hover:border-white/20'
               }`}
-              placeholder="••••••••"
+              placeholder={t('auth.login.passwordPlaceholder')}
               disabled={isLoading}
             />
             <button
@@ -179,7 +181,7 @@ const LoginForm: React.FC = () => {
           ) : (
             <>
               <LogIn size={20} />
-              <span>Entrar</span>
+              <span>{t('auth.login.loginButton')}</span>
             </>
           )}
         </button>
@@ -188,12 +190,12 @@ const LoginForm: React.FC = () => {
       {/* Register Link */}
       <div className="text-center mt-6 space-y-3">
         <p className="text-white/60">
-          Não tem uma conta?{' '}
+          {t('auth.login.noAccount')}{' '}
           <Link 
             to="/register" 
             className="text-yellow-400 hover:text-yellow-300 transition-colors font-medium underline underline-offset-2 decoration-yellow-400/50 hover:decoration-yellow-300"
           >
-            Cadastre-se
+            {t('auth.login.signUp')}
           </Link>
         </p>
         <button
@@ -201,7 +203,7 @@ const LoginForm: React.FC = () => {
           onClick={() => { setForgotOpen(true); setForgotStatus({ type: 'idle' }); }}
           className="text-sm text-white/50 hover:text-white/70 transition-colors underline underline-offset-2 decoration-white/30 hover:decoration-white/50"
         >
-          Esqueceu a senha?
+          {t('auth.login.forgotPassword')}
         </button>
       </div>
 
@@ -210,7 +212,7 @@ const LoginForm: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-white">Redefinir senha</h3>
+              <h3 className="text-xl font-semibold text-white">{t('auth.forgotPassword.title')}</h3>
               <button
                 onClick={() => setForgotOpen(false)}
                 className="text-white/60 hover:text-white/80 transition-colors p-1 rounded-lg hover:bg-white/10"
@@ -222,7 +224,7 @@ const LoginForm: React.FC = () => {
               </button>
             </div>
 
-            <p className="text-sm text-white/70 mb-6">Digite o email cadastrado. Enviaremos um link para redefinição de senha.</p>
+            <p className="text-sm text-white/70 mb-6">{t('auth.forgotPassword.subtitle')}</p>
 
             <form onSubmit={handleForgotSubmit} className="space-y-4">
               <div className="relative group">
@@ -232,7 +234,7 @@ const LoginForm: React.FC = () => {
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-300"
-                  placeholder="seu@email.com"
+                  placeholder={t('auth.login.emailPlaceholder')}
                   autoFocus
                 />
               </div>
@@ -254,7 +256,7 @@ const LoginForm: React.FC = () => {
                   onClick={() => setForgotOpen(false)}
                   className="flex-1 py-3 rounded-xl border border-white/20 text-white/70 hover:bg-white/5 hover:text-white/90 transition-all duration-300"
                 >
-                  Cancelar
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -266,7 +268,7 @@ const LoginForm: React.FC = () => {
                   ) : (
                     <>
                       <Send size={18} />
-                      <span>Enviar link</span>
+                      <span>{t('auth.forgotPassword.sendLink')}</span>
                     </>
                   )}
                 </button>

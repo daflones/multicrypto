@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { TrendingUp, Users, Wallet, DollarSign, Plus, Eye } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useUserStore } from '../store/userStore';
 import { formatCurrency } from '../utils/formatters';
 
 const Home: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const { 
     investmentStats, 
@@ -31,10 +33,10 @@ const Home: React.FC = () => {
       {/* Welcome Section */}
       <div className="text-center">
         <h1 className="text-2xl font-bold text-white mb-2">
-          Olá, {user.email.split('@')[0]}! 👋
+          {t('dashboard.welcome')}, {user.email.split('@')[0]}! 👋
         </h1>
         <p className="text-gray-400">
-          Bem-vindo à sua dashboard de investimentos
+          {t('dashboard.overview')}
         </p>
       </div>
 
@@ -44,9 +46,9 @@ const Home: React.FC = () => {
         <div className="bg-gradient-to-r from-primary to-secondary rounded-xl p-6 text-white">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-white/80 text-sm">Saldo Principal</p>
+              <p className="text-white/80 text-sm">{t('dashboard.availableBalance')}</p>
               <p className="text-2xl font-bold">{formatCurrency(user.balance || 0)}</p>
-              <p className="text-white/60 text-xs mt-1">Depósitos + Rendimentos</p>
+              <p className="text-white/60 text-xs mt-1">{t('deposit.title')} + {t('investment.totalEarned')}</p>
             </div>
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
               <Wallet size={24} />
@@ -58,9 +60,9 @@ const Home: React.FC = () => {
         <div className="bg-gradient-to-r from-green-600 to-green-500 rounded-xl p-6 text-white">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-white/80 text-sm">Saldo de Comissão</p>
+              <p className="text-white/80 text-sm">{t('dashboard.profitBalance')}</p>
               <p className="text-2xl font-bold">{formatCurrency(user.commission_balance || 0)}</p>
-              <p className="text-white/60 text-xs mt-1">Comissões de Indicação</p>
+              <p className="text-white/60 text-xs mt-1">{t('team.referralEarnings')}</p>
             </div>
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
               <Users size={24} />
@@ -73,7 +75,7 @@ const Home: React.FC = () => {
       <div className="bg-gray-800 rounded-xl p-4 border border-gray-700">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-gray-400 text-sm">Saldo Total Disponível</p>
+            <p className="text-gray-400 text-sm">{t('dashboard.totalBalance')}</p>
             <p className="text-xl font-bold text-white">
               {formatCurrency((user.balance || 0) + (user.commission_balance || 0))}
             </p>
@@ -89,14 +91,14 @@ const Home: React.FC = () => {
             className="flex-1 bg-white/20 hover:bg-white/30 rounded-lg py-2 px-4 text-center text-sm font-medium transition-colors flex items-center justify-center space-x-2"
           >
             <Plus size={16} />
-            <span>Depositar</span>
+            <span>{t('dashboard.deposit')}</span>
           </Link>
           <Link
             to="/withdraw"
             className="flex-1 bg-white/20 hover:bg-white/30 rounded-lg py-2 px-4 text-center text-sm font-medium transition-colors flex items-center justify-center space-x-2"
           >
             <Wallet size={16} />
-            <span>Sacar</span>
+            <span>{t('dashboard.withdraw')}</span>
           </Link>
         </div>
       </div>
@@ -110,21 +112,21 @@ const Home: React.FC = () => {
               <TrendingUp className="text-success" size={20} />
             </div>
             <div>
-              <p className="text-white font-semibold">Investimentos</p>
+              <p className="text-white font-semibold">{t('investment.title')}</p>
               <p className="text-gray-400 text-sm">
-                {investmentStats?.activeInvestments || 0} ativos
+                {investmentStats?.activeInvestments || 0} {t('investment.active')}
               </p>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Investido:</span>
+              <span className="text-gray-400">{t('investment.totalInvested')}:</span>
               <span className="text-white">
                 {formatCurrency(investmentStats?.totalInvested || 0)}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Rendimento:</span>
+              <span className="text-gray-400">{t('investment.totalEarned')}:</span>
               <span className="text-success">
                 {formatCurrency(investmentStats?.totalEarned || 0)}
               </span>

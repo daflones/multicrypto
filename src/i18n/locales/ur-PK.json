@@ -1,0 +1,129 @@
+{
+  "common": {
+    "loading": "لوڈ ہو رہا ہے...",
+    "save": "محفوظ کریں",
+    "cancel": "منسوخ کریں",
+    "confirm": "تصدیق کریں",
+    "delete": "ڈیلیٹ کریں",
+    "edit": "ترمیم کریں",
+    "close": "بند کریں",
+    "back": "واپس",
+    "next": "اگلا",
+    "submit": "جمع کریں",
+    "search": "تلاش کریں",
+    "filter": "فلٹر کریں",
+    "clear": "صاف کریں",
+    "select": "منتخب کریں",
+    "currency": "₨",
+    "yes": "ہاں",
+    "no": "نہیں"
+  },
+  "auth": {
+    "login": {
+      "title": "واپس آپ کا خیر مقدم!",
+      "subtitle": "جاری رکھنے کے لیے اپنے اکاؤنٹ میں لاگ ان کریں",
+      "email": "ای میل",
+      "emailPlaceholder": "contact@example.com",
+      "password": "پاس ورڈ",
+      "passwordPlaceholder": "••••••••",
+      "loginButton": "لاگ ان کریں",
+      "forgotPassword": "پاس ورڈ بھول گئے؟",
+      "noAccount": "اکاؤنٹ نہیں ہے؟",
+      "signUp": "سائن اپ کریں"
+    },
+    "register": {
+      "title": "اپنا اکاؤنٹ بنائیں",
+      "subtitle": "ہمارے سرمایہ کاری کے پلیٹ فارم میں شامل ہوں",
+      "document": "CNIC",
+      "documentPlaceholder": "00000-0000000-0",
+      "email": "ای میل",
+      "emailPlaceholder": "aap@email.com",
+      "phone": "فون نمبر",
+      "phonePlaceholder": "+92 000 0000000",
+      "password": "پاس ورڈ",
+      "passwordPlaceholder": "••••••••",
+      "confirmPassword": "پاس ورڈ کی تصدیق کریں",
+      "confirmPasswordPlaceholder": "••••••••",
+      "referralCode": "ریفرل کوڈ (اختیاری)",
+      "referralCodePlaceholder": "اگر آپ کے پاس ہے تو، ریفرل کوڈ پیسٹ کریں",
+      "createAccount": "اکاؤنٹ بنائیں",
+      "hasAccount": "پہلے سے اکاؤنٹ ہے؟",
+      "signIn": "لاگ ان کریں"
+    },
+    "forgotPassword": {
+      "title": "پاس ورڈ ری سیٹ کریں",
+      "subtitle": "اپنا رجسٹرڈ ای میل داخل کریں۔ ہم آپ کو پاس ورڈ ری سیٹ کا لنک بھیجیں گے۔",
+      "sendLink": "لنک بھیجیں"
+    }
+  },
+  "investment": {
+    "title": "سرمایہ کاری",
+    "dailyYield": "روزانہ منافع (5%)",
+    "totalReturn": "کل واپسی (300%)",
+    "daysToComplete": "مکمل ہونے کے دن",
+    "totalROI": "کل ROI",
+    "duration": "مدت",
+    "days": "دن",
+    "invest": "سرمایہ کاری کریں",
+    "amount": "رقم",
+    "balance": "دستیاب بیلنس",
+    "insufficientBalance": "ناکافی بیلنس",
+    "minimumAmount": "کم سے کم رقم"
+  },
+  "countries": {
+    "BR": {
+      "name": "برازیل",
+      "documentType": "CPF",
+      "documentPlaceholder": "000.000.000-00",
+      "phoneFormat": "+55 (00) 00000-0000"
+    },
+    "US": {
+      "name": "امریکہ",
+      "documentType": "SSN",
+      "documentPlaceholder": "000-00-0000",
+      "phoneFormat": "(000) 000-0000"
+    },
+    "ES": {
+      "name": "سپین",
+      "documentType": "DNI",
+      "documentPlaceholder": "00000000A",
+      "phoneFormat": "+34 000 000 000"
+    },
+    "VN": {
+      "name": "ویتنام",
+      "documentType": "CCCD",
+      "documentPlaceholder": "000000000000",
+      "phoneFormat": "+84 00 0000 0000"
+    },
+    "SA": {
+      "name": "سعودی عرب",
+      "documentType": "قومی شناختی کارڈ",
+      "documentPlaceholder": "0000000000",
+      "phoneFormat": "+966 00 000 0000"
+    },
+    "RU": {
+      "name": "روس",
+      "documentType": "پاسپورٹ",
+      "documentPlaceholder": "0000 000000",
+      "phoneFormat": "+7 000 000 00 00"
+    },
+    "PL": {
+      "name": "پولینڈ",
+      "documentType": "PESEL",
+      "documentPlaceholder": "00000000000",
+      "phoneFormat": "+48 000 000 000"
+    },
+    "PK": {
+      "name": "پاکستان",
+      "documentType": "CNIC",
+      "documentPlaceholder": "00000-0000000-0",
+      "phoneFormat": "+92 000 0000000"
+    },
+    "IR": {
+      "name": "ایران",
+      "documentType": "قومی کوڈ",
+      "documentPlaceholder": "0000000000",
+      "phoneFormat": "+98 00 0000 0000"
+    }
+  }
+}

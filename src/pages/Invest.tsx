@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Filter, Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useUserStore } from '../store/userStore';
 import { useAuthStore } from '../store/authStore';
 import { InvestmentService } from '../services/investment.service';
@@ -8,6 +9,7 @@ import InvestmentModal from '../components/investment/InvestmentModal';
 import { Product } from '../services/supabase';
 
 const Invest: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -66,8 +68,8 @@ const Invest: React.FC = () => {
     <div className="p-4 space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-white mb-2">Produtos de Investimento</h1>
-        <p className="text-gray-400">Escolha o melhor plano para você</p>
+        <h1 className="text-2xl font-bold text-white mb-2">{t('investment.title')}</h1>
+        <p className="text-gray-400">{t('investment.makeFirstInvestment')}</p>
       </div>
 
       {/* Search and Filter */}
@@ -79,7 +81,7 @@ const Invest: React.FC = () => {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar produtos..."
+            placeholder={t('common.search') + '...'}
             className="w-full pl-10 pr-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
@@ -116,11 +118,11 @@ const Invest: React.FC = () => {
           <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mx-auto mb-4">
             <Filter className="text-gray-400" size={24} />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">Nenhum produto encontrado</h3>
+          <h3 className="text-lg font-semibold text-white mb-2">{t('investment.noInvestments')}</h3>
           <p className="text-gray-400">
             {searchTerm 
-              ? 'Tente ajustar sua busca ou filtros'
-              : 'Não há produtos disponíveis no momento'
+              ? t('common.filter')
+              : t('investment.noInvestments')
             }
           </p>
         </div>
@@ -135,10 +137,9 @@ const Invest: React.FC = () => {
 
       {/* Info Banner */}
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
-        <h3 className="text-primary font-semibold mb-2">💡 Dica Importante</h3>
+        <h3 className="text-primary font-semibold mb-2">💡 {t('common.about')}</h3>
         <p className="text-gray-300 text-sm">
-          Diversifique seus investimentos para maximizar seus rendimentos. 
-          Você pode investir em múltiplos produtos respeitando o limite de cada um.
+          {t('investment.makeFirstInvestment')}
         </p>
       </div>
     </div>

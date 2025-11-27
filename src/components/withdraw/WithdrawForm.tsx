@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Wallet, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
 import { formatCurrency } from '../../utils/formatters';
 import { APP_CONFIG } from '../../utils/constants';
@@ -11,6 +12,7 @@ interface WithdrawFormProps {
 }
 
 const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<WithdrawFormData>({
     amount: 0,
     paymentMethod: 'pix',
@@ -121,7 +123,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
     return (
       <div className="p-6 text-center">
         <AlertCircle className="mx-auto mb-4 text-red-400" size={48} />
-        <p className="text-gray-400">Usuário não encontrado</p>
+        <p className="text-gray-400">{t('withdraw.error')}</p>
       </div>
     );
   }
@@ -130,7 +132,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
     return (
       <div className="p-6 text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-        <p className="text-gray-400">Verificando investimentos...</p>
+        <p className="text-gray-400">{t('common.loading')}</p>
       </div>
     );
   }
@@ -172,13 +174,13 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
   return (
     <div className="p-6 space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">Solicitar Saque</h2>
-        <p className="text-gray-400">Retire seus ganhos com segurança</p>
+        <h2 className="text-2xl font-bold text-white mb-2">{t('withdraw.title')}</h2>
+        <p className="text-gray-400">{t('withdraw.subtitle')}</p>
       </div>
 
       <div className="bg-surface rounded-lg p-4">
         <div className="flex items-center justify-between">
-          <span className="text-gray-400">Saldo disponível:</span>
+          <span className="text-gray-400">{t('withdraw.availableBalance')}:</span>
           <span className="text-xl font-bold text-primary">
             {formatCurrency(availableBalance)}
           </span>
@@ -190,9 +192,9 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
           <div className="flex items-center space-x-2">
             <AlertCircle className="text-red-400" size={20} />
             <div>
-              <p className="text-red-400 font-medium">Investimento necessário</p>
+              <p className="text-red-400 font-medium">{t('investment.title')}</p>
               <p className="text-red-300 text-sm">
-                Você precisa ter pelo menos um investimento ativo para solicitar saques.
+                {t('investment.makeFirstInvestment')}
               </p>
             </div>
           </div>

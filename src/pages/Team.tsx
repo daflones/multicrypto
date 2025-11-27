@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Users, Share2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import ReferralLink from '../components/team/ReferralLink';
 import TeamTree from '../components/team/TeamTree';
 
 const Team: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'referral' | 'tree'>('referral');
 
   return (
     <div className="p-4 space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-white mb-2">Minha Equipe</h1>
-        <p className="text-gray-400">Convide amigos e ganhe comissões</p>
+        <h1 className="text-2xl font-bold text-white mb-2">{t('team.title')}</h1>
+        <p className="text-gray-400">{t('team.subtitle')}</p>
       </div>
 
       {/* Tab Navigation */}
@@ -25,7 +27,7 @@ const Team: React.FC = () => {
           }`}
         >
           <Share2 size={16} />
-          <span>Convidar</span>
+          <span>{t('team.shareLink')}</span>
         </button>
         <button
           onClick={() => setActiveTab('tree')}
@@ -36,7 +38,7 @@ const Team: React.FC = () => {
           }`}
         >
           <Users size={16} />
-          <span>Minha Rede</span>
+          <span>{t('team.title')}</span>
         </button>
       </div>
 

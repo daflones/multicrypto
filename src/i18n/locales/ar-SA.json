@@ -1,0 +1,129 @@
+{
+  "common": {
+    "loading": "جاري التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "submit": "إرسال",
+    "search": "بحث",
+    "filter": "تصفية",
+    "clear": "مسح",
+    "select": "اختيار",
+    "currency": "ر.س",
+    "yes": "نعم",
+    "no": "لا"
+  },
+  "auth": {
+    "login": {
+      "title": "مرحباً بعودتك!",
+      "subtitle": "سجل الدخول إلى حسابك للمتابعة",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "contact@example.com",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "••••••••",
+      "loginButton": "تسجيل الدخول",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "noAccount": "ليس لديك حساب؟",
+      "signUp": "إنشاء حساب"
+    },
+    "register": {
+      "title": "إنشاء حسابك",
+      "subtitle": "انضم إلى منصة الاستثمار الخاصة بنا",
+      "document": "الهوية الوطنية",
+      "documentPlaceholder": "0000000000",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "your@email.com",
+      "phone": "رقم الهاتف",
+      "phonePlaceholder": "+966 00 000 0000",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "••••••••",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "confirmPasswordPlaceholder": "••••••••",
+      "referralCode": "كود الإحالة (اختياري)",
+      "referralCodePlaceholder": "إذا كان لديك واحد، الصق كود الإحالة",
+      "createAccount": "إنشاء حساب",
+      "hasAccount": "لديك حساب بالفعل؟",
+      "signIn": "تسجيل الدخول"
+    },
+    "forgotPassword": {
+      "title": "إعادة تعيين كلمة المرور",
+      "subtitle": "أدخل بريدك الإلكتروني المسجل. سنرسل لك رابط إعادة تعيين كلمة المرور.",
+      "sendLink": "إرسال الرابط"
+    }
+  },
+  "investment": {
+    "title": "الاستثمارات",
+    "dailyYield": "العائد اليومي (5%)",
+    "totalReturn": "إجمالي العائد (300%)",
+    "daysToComplete": "أيام الإكمال",
+    "totalROI": "إجمالي العائد على الاستثمار",
+    "duration": "المدة",
+    "days": "أيام",
+    "invest": "استثمار",
+    "amount": "المبلغ",
+    "balance": "الرصيد المتاح",
+    "insufficientBalance": "رصيد غير كافي",
+    "minimumAmount": "الحد الأدنى للمبلغ"
+  },
+  "countries": {
+    "BR": {
+      "name": "البرازيل",
+      "documentType": "CPF",
+      "documentPlaceholder": "000.000.000-00",
+      "phoneFormat": "+55 (00) 00000-0000"
+    },
+    "US": {
+      "name": "الولايات المتحدة",
+      "documentType": "رقم الضمان الاجتماعي",
+      "documentPlaceholder": "000-00-0000",
+      "phoneFormat": "(000) 000-0000"
+    },
+    "ES": {
+      "name": "إسبانيا",
+      "documentType": "DNI",
+      "documentPlaceholder": "00000000A",
+      "phoneFormat": "+34 000 000 000"
+    },
+    "VN": {
+      "name": "فيتنام",
+      "documentType": "CCCD",
+      "documentPlaceholder": "000000000000",
+      "phoneFormat": "+84 00 0000 0000"
+    },
+    "SA": {
+      "name": "المملكة العربية السعودية",
+      "documentType": "الهوية الوطنية",
+      "documentPlaceholder": "0000000000",
+      "phoneFormat": "+966 00 000 0000"
+    },
+    "RU": {
+      "name": "روسيا",
+      "documentType": "جواز السفر",
+      "documentPlaceholder": "0000 000000",
+      "phoneFormat": "+7 000 000 00 00"
+    },
+    "PL": {
+      "name": "بولندا",
+      "documentType": "PESEL",
+      "documentPlaceholder": "00000000000",
+      "phoneFormat": "+48 000 000 000"
+    },
+    "PK": {
+      "name": "باكستان",
+      "documentType": "CNIC",
+      "documentPlaceholder": "00000-0000000-0",
+      "phoneFormat": "+92 000 0000000"
+    },
+    "IR": {
+      "name": "إيران",
+      "documentType": "الكود الوطني",
+      "documentPlaceholder": "0000000000",
+      "phoneFormat": "+98 00 0000 0000"
+    }
+  }
+}

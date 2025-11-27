@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { TrendingUp, BarChart3, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useUserStore } from '../store/userStore';
 import { useAuthStore } from '../store/authStore';
 import InvestmentList from '../components/investment/InvestmentList';
 import { formatCurrency } from '../utils/formatters';
 
 const MyInvestments: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const { 
     investments, 
@@ -26,8 +28,8 @@ const MyInvestments: React.FC = () => {
     <div className="p-4 space-y-6">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-white mb-2">Meus Investimentos</h1>
-        <p className="text-gray-400">Acompanhe seus rendimentos</p>
+        <h1 className="text-2xl font-bold text-white mb-2">{t('investment.myInvestments')}</h1>
+        <p className="text-gray-400">{t('investment.totalEarned')}</p>
       </div>
 
       {/* Stats Cards */}
@@ -38,7 +40,7 @@ const MyInvestments: React.FC = () => {
               <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
                 <TrendingUp className="text-primary" size={16} />
               </div>
-              <span className="text-gray-400 text-sm">Total Investido</span>
+              <span className="text-gray-400 text-sm">{t('investment.totalInvested')}</span>
             </div>
             <p className="text-xl font-bold text-white">
               {formatCurrency(investmentStats.totalInvested)}
@@ -50,7 +52,7 @@ const MyInvestments: React.FC = () => {
               <div className="w-8 h-8 bg-success/20 rounded-lg flex items-center justify-center">
                 <BarChart3 className="text-success" size={16} />
               </div>
-              <span className="text-gray-400 text-sm">Total Ganho</span>
+              <span className="text-gray-400 text-sm">{t('investment.totalEarned')}</span>
             </div>
             <p className="text-xl font-bold text-success">
               {formatCurrency(investmentStats.totalEarned)}
@@ -62,7 +64,7 @@ const MyInvestments: React.FC = () => {
               <div className="w-8 h-8 bg-secondary/20 rounded-lg flex items-center justify-center">
                 <Calendar className="text-secondary" size={16} />
               </div>
-              <span className="text-gray-400 text-sm">Rendimento/Dia</span>
+              <span className="text-gray-400 text-sm">{t('investment.dailyYield')}</span>
             </div>
             <p className="text-xl font-bold text-secondary">
               {formatCurrency(investmentStats.dailyYield)}
@@ -74,7 +76,7 @@ const MyInvestments: React.FC = () => {
               <div className="w-8 h-8 bg-warning/20 rounded-lg flex items-center justify-center">
                 <span className="text-warning font-bold text-sm">#</span>
               </div>
-              <span className="text-gray-400 text-sm">Investimentos</span>
+              <span className="text-gray-400 text-sm">{t('investment.title')}</span>
             </div>
             <p className="text-xl font-bold text-warning">
               {investmentStats.activeInvestments}

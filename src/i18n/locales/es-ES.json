@@ -406,7 +406,25 @@
       ]
     },
     "faq": {
-      "title": "Preguntas Frecuentes"
+      "title": "Preguntas Frecuentes",
+      "list": [
+        {
+          "question": "¿Cómo empiezo?",
+          "answer": "Simplemente crea tu cuenta gratis, haz un depósito vía PIX o Cripto, y elige uno de los planes de inversión disponibles."
+        },
+        {
+          "question": "¿Cuál es el monto mínimo para invertir?",
+          "answer": "Puedes empezar a invertir con tan solo R$ 50,00. Es accesible para todos."
+        },
+        {
+          "question": "¿Cómo funcionan los retiros?",
+          "answer": "Los retiros pueden solicitarse en cualquier momento y se procesan rápidamente vía PIX o a tu billetera cripto."
+        },
+        {
+          "question": "¿Es seguro invertir?",
+          "answer": "Sí, utilizamos tecnología de punta y cifrado avanzado para proteger tus datos y activos las 24 horas del día."
+        }
+      ]
     },
     "cta_footer": {
       "title": "¿Listo para cambiar tu vida financiera?",

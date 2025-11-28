@@ -406,7 +406,25 @@
       ]
     },
     "faq": {
-      "title": "Frequently Asked Questions"
+      "title": "Frequently Asked Questions",
+      "list": [
+        {
+          "question": "How do I start?",
+          "answer": "Simply create your free account, make a deposit via PIX or Crypto, and choose one of the available investment plans."
+        },
+        {
+          "question": "What is the minimum investment amount?",
+          "answer": "You can start investing with as little as R$ 50.00. It's accessible to everyone."
+        },
+        {
+          "question": "How do withdrawals work?",
+          "answer": "Withdrawals can be requested at any time and are processed quickly via PIX or to your crypto wallet."
+        },
+        {
+          "question": "Is investing safe?",
+          "answer": "Yes, we use cutting-edge technology and advanced encryption to protect your data and assets 24/7."
+        }
+      ]
     },
     "cta_footer": {
       "title": "Ready to change your financial life?",

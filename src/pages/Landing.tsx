@@ -431,22 +431,13 @@ const Landing: React.FC = () => {
           </div>
 
           <div className="space-y-4">
-            <FAQItem 
-              question="Como faço para começar?"
-              answer="Basta criar sua conta gratuitamente, fazer um depósito via PIX ou Criptomoeda e escolher um dos planos de investimento disponíveis."
-            />
-            <FAQItem 
-              question="Qual o valor mínimo para investir?"
-              answer="Você pode começar a investir com apenas R$ 50,00. É acessível para todos os bolsos."
-            />
-            <FAQItem 
-              question="Como funcionam os saques?"
-              answer="Os saques podem ser solicitados a qualquer momento e são processados rapidamente via PIX ou para sua carteira de criptomoedas."
-            />
-            <FAQItem 
-              question="É seguro investir?"
-              answer="Sim, utilizamos tecnologia de ponta e criptografia avançada para proteger seus dados e seus ativos 24 horas por dia."
-            />
+            {(t('landing.faq.list', { returnObjects: true }) as Array<{ question: string, answer: string }>).map((faq, index) => (
+              <FAQItem 
+                key={index}
+                question={faq.question}
+                answer={faq.answer}
+              />
+            ))}
           </div>
         </div>
       </section>

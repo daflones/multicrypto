@@ -389,7 +389,25 @@
       ]
     },
     "faq": {
-      "title": "Câu hỏi thường gặp"
+      "title": "Câu hỏi thường gặp",
+      "list": [
+        {
+          "question": "Tôi bắt đầu như thế nào?",
+          "answer": "Chỉ cần tạo tài khoản miễn phí, nạp tiền qua PIX hoặc Tiền điện tử và chọn một trong các gói đầu tư có sẵn."
+        },
+        {
+          "question": "Số tiền đầu tư tối thiểu là bao nhiêu?",
+          "answer": "Bạn có thể bắt đầu đầu tư chỉ với R$ 50,00. Nó dễ tiếp cận với mọi người."
+        },
+        {
+          "question": "Rút tiền hoạt động như thế nào?",
+          "answer": "Bạn có thể yêu cầu rút tiền bất kỳ lúc nào và được xử lý nhanh chóng qua PIX hoặc ví tiền điện tử của bạn."
+        },
+        {
+          "question": "Đầu tư có an toàn không?",
+          "answer": "Có, chúng tôi sử dụng công nghệ tiên tiến và mã hóa nâng cao để bảo vệ dữ liệu và tài sản của bạn 24/7."
+        }
+      ]
     },
     "cta_footer": {
       "title": "Sẵn sàng thay đổi cuộc sống tài chính của bạn?",

@@ -303,7 +303,83 @@
       "subtitle": "Prawdziwe historie tych, którzy już zarabiają"
     },
     "faq": {
-      "title": "Często zadawane pytania"
+      "title": "Często zadawane pytania",
+      "list": [
+        {
+          "question": "Jak zacząć?",
+          "answer": "Wystarczy utworzyć darmowe konto, dokonać wpłaty przez PIX lub Crypto i wybrać jeden z dostępnych planów inwestycyjnych."
+        },
+        {
+          "question": "Jaka jest minimalna kwota inwestycji?",
+          "answer": "Możesz zacząć inwestować już od 50 R$. Jest to dostępne dla każdego."
+        },
+        {
+          "question": "Jak działają wypłaty?",
+          "answer": "Wypłaty można zlecać w dowolnym momencie i są one szybko przetwarzane przez PIX lub na Twój portfel krypto."
+        },
+        {
+          "question": "Czy inwestowanie jest bezpieczne?",
+          "answer": "Tak, używamy najnowocześniejszej technologii i zaawansowanego szyfrowania, aby chronić Twoje dane i aktywa 24/7."
+        }
+      ]
+    },
+    "multicoin": {
+      "title": "Poznaj Multi Coin",
+      "desc": "Nasz ekskluzywny token, który maksymalizuje Twoje zarobki poprzez arbitraż kryptowalut z najnowocześniejszą technologią i zautomatyzowanym botem handlowym.",
+      "arbitrage": {
+        "title": "Arbitraż kryptowalut",
+        "desc": "Codzienne zautomatyzowane operacje na wielu giełdach, wykorzystujące różnice cen do generowania stałych zysków od poniedziałku do piątku."
+      },
+      "bot": {
+        "title": "Bot handlowy 24h",
+        "desc": "Nasza SI działa od poniedziałku do piątku, generując dla Ciebie codzienne zyski. W sobotę i niedzielę bot pracuje dla firmy, zapewniając zrównoważony rozwój."
+      },
+      "sustainability": {
+        "title": "W 100% zrównoważony model",
+        "desc": "Zyski z weekendów zapewniają zdrowie finansowe platformy. Biznes zorganizowany pod kątem długowieczności i bezpieczeństwa inwestorów."
+      },
+      "token": "Oficjalny token platformy",
+      "return": "Całkowity zwrot z inwestycji",
+      "minInvest": "Minimalna inwestycja",
+      "maxInvest": "Maksimum na pakiet",
+      "yields": "Zyski",
+      "weekdays": "Od poniedziałku do piątku",
+      "withdrawYields": "Wypłata zysków",
+      "mondays": "W każdy poniedziałek",
+      "withdrawNetwork": "Wypłata sieciowa",
+      "everyday": "Codziennie (min. 50 USD)",
+      "fee": "Opłata za wypłatę"
+    },
+    "howItWorks": {
+      "title": "Jak to działa",
+      "subtitle": "Zacznij zarabiać w 3 prostych krokach",
+      "step1": {
+        "title": "Utwórz konto",
+        "desc": "Szybka i darmowa rejestracja. W mniej niż 2 minuty jesteś gotowy do inwestowania."
+      },
+      "step2": {
+        "title": "Zainwestuj",
+        "desc": "Wybierz pakiet od 50 USD i zacznij otrzymywać codzienne zyski."
+      },
+      "step3": {
+        "title": "Odbierz swoje zyski",
+        "desc": "Śledź swoje codzienne zarobki i wypłacaj zyski w każdy poniedziałek."
+      }
+    },
+    "benefits": {
+      "dailyYields": "Zyski od poniedziałku do piątku",
+      "weeklyWithdraw": "Wypłaty zysków w poniedziałki",
+      "referralBonus": "Bonus polecający do 10%",
+      "lowFees": "Tylko 5% opłaty za wypłatę"
+    },
+    "referral": {
+      "badge": "Program polecający",
+      "title": "Zarabiaj, zapraszając znajomych",
+      "subtitle": "Buduj swoją sieć i otrzymuj prowizje do 7 poziomów głębokości. Łącznie 20% prowizji!",
+      "level": "Poziom",
+      "direct": "Bezpośredni",
+      "total": "Łączna prowizja",
+      "note": "* Prowizje są wypłacane natychmiast na Twoje saldo sieciowe."
     },
     "cta_footer": {
       "title": "Gotowy na zmianę swojego życia finansowego?",

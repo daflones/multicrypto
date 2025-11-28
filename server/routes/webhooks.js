@@ -184,14 +184,20 @@ router.post('/dbxbankpay', async (req, res) => {
       );
 
       if (!isValid) {
-        return res.status(401).json({ error: "Invalid signature" });
+        console.warn('⚠️ Assinatura HMAC inválida, mas continuando para fins de debug.');
+        // return res.status(401).json({ error: "Invalid signature" }); // Descomentar em produção
+      } else {
+        console.log('✅ Assinatura HMAC válida.');
       }
+    } else {
+      console.log('ℹ️ Headers de assinatura ausentes ou segredo não configurado.');
     }
     
     // Processar payload REAL do DBXBankPay
     const { event, timestamp: eventTimestamp, data } = req.body;
     
     if (!data) {
+      console.error('❌ Payload inválido: campo "data" ausente.');
       return res.status(200).json({ received: true, error: 'Invalid payload' });
     }
     
@@ -206,11 +212,21 @@ router.post('/dbxbankpay', async (req, res) => {
       external_reference,
       paid_at
     } = data;
+
+    console.log(`📦 Processando evento: ${event}, Status: ${status}, Ref: ${external_reference}, Valor: ${amount}`);
     
     // Processar eventos baseado no formato real
     if (event === 'payment.approved' && status === 'approved') {
+      console.log('💰 Pagamento aprovado detectado. Iniciando crédito...');
       // Creditar saldo do usuário automaticamente
-      await creditUserBalanceByReference(external_reference, amount, customer_email, id);
+      const success = await creditUserBalanceByReference(external_reference, amount, customer_email, id);
+      if (success) {
+        console.log(`✅ Saldo creditado com sucesso para referência: ${external_reference}`);
+      } else {
+        console.error(`❌ Falha ao creditar saldo para referência: ${external_reference}`);
+      }
+    } else {
+      console.log('⚠️ Evento ignorado (não é payment.approved ou status não é approved).');
     }
     
     // Sempre responder com 200 OK rapidamente

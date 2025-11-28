@@ -264,6 +264,56 @@
     "withdrawals": "Rút tiền",
     "investments": "Đầu tư"
   },
+  "landing": {
+    "hero": {
+      "title": "Nhân đôi Tài sản Kỹ thuật số của bạn một cách thông minh",
+      "subtitle": "Nền tảng an toàn và sinh lời nhất để tự động hóa thu nhập tiền điện tử của bạn. Bắt đầu ngay hôm nay và xem danh mục đầu tư của bạn phát triển.",
+      "cta": "Bắt đầu ngay",
+      "login": "Đăng nhập",
+      "badge": "Nền tảng tự động 100%",
+      "watchVideo": "Xem video"
+    },
+    "stats": {
+      "users": "Người dùng hoạt động",
+      "paid": "Tổng đã thanh toán",
+      "invested": "Tổng đã đầu tư"
+    },
+    "features": {
+      "title": "Tại sao chọn Multi Crypto?",
+      "subtitle": "Công nghệ tiên tiến cho khoản đầu tư của bạn",
+      "daily": {
+        "title": "Lợi nhuận hàng ngày",
+        "desc": "Thu nhập ổn định được cộng tự động vào tài khoản của bạn mỗi ngày."
+      },
+      "secure": {
+        "title": "Bảo mật tối đa",
+        "desc": "Dữ liệu và tài sản của bạn được bảo vệ bằng mã hóa tiên tiến nhất."
+      },
+      "support": {
+        "title": "Hỗ trợ 24/7",
+        "desc": "Đội ngũ chuyên dụng sẵn sàng giúp bạn bất cứ lúc nào."
+      },
+      "withdraw": {
+        "title": "Rút tiền nhanh chóng",
+        "desc": "Nhận lợi nhuận của bạn qua PIX hoặc Crypto nhanh chóng và không cần thủ tục giấy tờ."
+      }
+    },
+    "video": {
+      "title": "Xem cách hoạt động"
+    },
+    "testimonials": {
+      "title": "Nhà đầu tư của chúng tôi nói gì",
+      "subtitle": "Những câu chuyện thực tế từ những người đang kiếm lợi nhuận"
+    },
+    "faq": {
+      "title": "Câu hỏi thường gặp"
+    },
+    "cta_footer": {
+      "title": "Sẵn sàng thay đổi cuộc sống tài chính của bạn?",
+      "subtitle": "Tham gia cùng hàng ngàn nhà đầu tư hài lòng.",
+      "button": "Tạo tài khoản miễn phí"
+    }
+  },
   "admin": {
     "title": "Bảng quản trị",
     "dashboard": "Bảng điều khiển",

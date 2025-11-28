@@ -25,7 +25,10 @@ const MobileNavbar: React.FC = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-surface-light">
       <div className="flex items-center justify-between px-4 py-3">
         {/* Logo */}
-        <div className="flex items-center space-x-2">
+        <div 
+          className="flex items-center space-x-2 cursor-pointer"
+          onClick={() => navigate('/dashboard')}
+        >
           <div className="w-8 h-8 rounded-full overflow-hidden">
             <img src="/images/logo.png" alt="Multi Crypto" className="w-full h-full object-cover" />
           </div>
@@ -49,7 +52,7 @@ const MobileNavbar: React.FC = () => {
           {/* Botão Admin */}
           {isAdmin && (
             <button
-              onClick={() => navigate('/admin')}
+              onClick={() => navigate('/admin/6785/admin')}
               className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center space-x-1"
               title="Painel Admin"
             >

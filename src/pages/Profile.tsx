@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { User, LogOut, CreditCard, Phone, Mail, Copy, Check, Settings } from 'lucide-react';
+import { User, LogOut, CreditCard, Phone, Mail, Copy, Check, Settings, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { formatCPF, formatPhone, formatDate } from '../utils/formatters';
 import TransactionHistory from '../components/profile/TransactionHistory';
@@ -9,12 +10,15 @@ import ChangePasswordModal from '../components/profile/ChangePasswordModal';
 
 const Profile: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const { user, logout } = useAuthStore();
 
   if (!user) return null;
+
+  const isAdmin = user.role === 'admin';
 
   const copyReferralCode = async () => {
     try {
@@ -39,8 +43,18 @@ const Profile: React.FC = () => {
         <div className="w-20 h-20 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4">
           <User className="text-white" size={32} />
         </div>
-        <h1 className="text-2xl font-bold text-white mb-2">{t('profile.title')}</h1>
-        <p className="text-gray-400">{t('profile.subtitle')}</p>
+        <h1 className="text-xl font-bold text-white mt-2">{user.email.split('@')[0]}</h1>
+        <p className="text-gray-400 text-sm">{user.role === 'admin' ? t('profile.admin') : t('profile.investor')}</p>
+        
+        {isAdmin && (
+          <button
+            onClick={() => navigate('/admin/6785/admin')}
+            className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-lg transition-colors inline-flex items-center space-x-2"
+          >
+            <Shield size={16} />
+            <span>Acessar Painel Admin</span>
+          </button>
+        )}
       </div>
 
       {/* User Info */}

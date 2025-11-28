@@ -281,6 +281,56 @@
     "withdrawals": "Withdrawals",
     "investments": "Investments"
   },
+  "landing": {
+    "hero": {
+      "title": "Multiply Your Digital Assets with Intelligence",
+      "subtitle": "The most secure and profitable platform to automate your crypto earnings. Start today and watch your portfolio grow.",
+      "cta": "Start Now",
+      "login": "Login",
+      "badge": "100% Automated Platform",
+      "watchVideo": "Watch Video"
+    },
+    "stats": {
+      "users": "Active Users",
+      "paid": "Total Paid",
+      "invested": "Total Invested"
+    },
+    "features": {
+      "title": "Why choose Multi Crypto?",
+      "subtitle": "Cutting-edge technology for your investments",
+      "daily": {
+        "title": "Daily Yield",
+        "desc": "Consistent earnings credited automatically to your account every day."
+      },
+      "secure": {
+        "title": "Maximum Security",
+        "desc": "Your data and assets protected with the most advanced encryption."
+      },
+      "support": {
+        "title": "24/7 Support",
+        "desc": "Dedicated team ready to help you at any time."
+      },
+      "withdraw": {
+        "title": "Fast Withdrawals",
+        "desc": "Receive your profits via PIX or Crypto quickly and without bureaucracy."
+      }
+    },
+    "video": {
+      "title": "See how it works"
+    },
+    "testimonials": {
+      "title": "What our investors say",
+      "subtitle": "Real stories from those who are already profiting"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions"
+    },
+    "cta_footer": {
+      "title": "Ready to change your financial life?",
+      "subtitle": "Join thousands of satisfied investors.",
+      "button": "Create Free Account"
+    }
+  },
   "admin": {
     "title": "Admin Panel",
     "dashboard": "Dashboard",

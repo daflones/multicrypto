@@ -281,6 +281,56 @@
     "withdrawals": "Saques",
     "investments": "Investimentos"
   },
+  "landing": {
+    "hero": {
+      "title": "Multiplique seus Ativos Digitais com Inteligência",
+      "subtitle": "A plataforma mais segura e rentável para automatizar seus ganhos em criptomoedas. Comece hoje e veja seu patrimônio crescer.",
+      "cta": "Começar Agora",
+      "login": "Entrar",
+      "badge": "Plataforma 100% Automatizada",
+      "watchVideo": "Ver Vídeo"
+    },
+    "stats": {
+      "users": "Usuários Ativos",
+      "paid": "Total Pago",
+      "invested": "Total Investido"
+    },
+    "features": {
+      "title": "Por que escolher a Multi Crypto?",
+      "subtitle": "Tecnologia de ponta para seus investimentos",
+      "daily": {
+        "title": "Rendimento Diário",
+        "desc": "Ganhos consistentes creditados automaticamente na sua conta todos os dias."
+      },
+      "secure": {
+        "title": "Segurança Máxima",
+        "desc": "Seus dados e ativos protegidos com a mais avançada criptografia."
+      },
+      "support": {
+        "title": "Suporte 24/7",
+        "desc": "Equipe dedicada pronta para ajudar você em qualquer momento."
+      },
+      "withdraw": {
+        "title": "Saques Rápidos",
+        "desc": "Receba seus lucros via PIX ou Cripto com agilidade e sem burocracia."
+      }
+    },
+    "video": {
+      "title": "Veja como funciona"
+    },
+    "testimonials": {
+      "title": "O que dizem nossos investidores",
+      "subtitle": "Histórias reais de quem já está lucrando"
+    },
+    "faq": {
+      "title": "Perguntas Frequentes"
+    },
+    "cta_footer": {
+      "title": "Pronto para mudar sua vida financeira?",
+      "subtitle": "Junte-se a milhares de investidores satisfeitos.",
+      "button": "Criar Conta Grátis"
+    }
+  },
   "admin": {
     "title": "Painel Administrativo",
     "dashboard": "Dashboard",

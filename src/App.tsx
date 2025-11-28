@@ -8,6 +8,7 @@ import { ToastProvider } from './contexts/ToastContext';
 import './i18n'; // Initialize i18n
 
 // Pages
+import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -47,6 +48,20 @@ function ProtectedRoutes() {
   );
 }
 
+function RootRoute() {
+  const { isAuthenticated, isLoading } = useAuthStore();
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-background">
+        <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <Landing />;
+}
+
 function App() {
   // Não faz verificação de autenticação global aqui
   // A verificação é feita apenas dentro do componente ProtectedRoutes
@@ -57,6 +72,7 @@ function App() {
         <div className="App">
           <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<RootRoute />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/about" element={<About />} />
@@ -74,15 +90,14 @@ function App() {
           />
           
           {/* Protected Routes */}
-          <Route path="/" element={<ProtectedRoutes />}>
-            <Route index element={<Home />} />
-            <Route path="invest" element={<Invest />} />
-            <Route path="my-investments" element={<MyInvestments />} />
-            <Route path="team" element={<Team />} />
-            <Route path="deposit" element={<Deposit />} />
-            <Route path="withdraw" element={<Withdraw />} />
-            <Route path="profile" element={<Profile />} />
-            {/* About moved to public route */}
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/dashboard" element={<Home />} />
+            <Route path="/invest" element={<Invest />} />
+            <Route path="/my-investments" element={<MyInvestments />} />
+            <Route path="/team" element={<Team />} />
+            <Route path="/deposit" element={<Deposit />} />
+            <Route path="/withdraw" element={<Withdraw />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
           
           {/* Redirect unknown routes */}

@@ -7,7 +7,7 @@ const BottomNavigation: React.FC = () => {
   const { t } = useTranslation();
   
   const navItems = [
-    { path: '/', icon: Home, label: t('navigation.home') },
+    { path: '/dashboard', icon: Home, label: t('navigation.home') },
     { path: '/invest', icon: TrendingUp, label: t('navigation.invest') },
     { path: '/team', icon: Users, label: t('navigation.team') },
     { path: '/withdraw', icon: Wallet, label: t('navigation.withdraw') },

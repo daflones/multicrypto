@@ -18,25 +18,61 @@ function verifyDbxSignature(rawBody, ts, sig, secret) {
   return expected === sig.replace(/^v1=/, "");
 }
 
-// Função para creditar saldo do usuário usando external_reference
-async function creditUserBalanceByReference(externalReference, amount, customerEmail, paymentId) {
+// Função para creditar saldo do usuário usando external_reference, email ou CPF
+async function creditUserBalanceByReference(externalReference, amount, customerEmail, customerDocument, paymentId) {
   try {
-    // Extrair user_id da external_reference (formato: user_{userId}_{timestamp})
-    const userIdMatch = externalReference.match(/^user_([^_]+)_/);
-    if (!userIdMatch) {
-      return false;
+    let user = null;
+    
+    // Estratégia 1: Tentar extrair ID da referência (formato: user_{userId}_{timestamp})
+    const userIdMatch = externalReference ? externalReference.match(/^user_([^_]+)_/) : null;
+    
+    if (userIdMatch) {
+      const userId = userIdMatch[1];
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, email, balance')
+        .eq('id', userId)
+        .single();
+        
+      if (data && !error) {
+        user = data;
+        console.log(`✅ Usuário encontrado via ID na referência: ${user.email}`);
+      }
     }
     
-    const userId = userIdMatch[1];
+    // Estratégia 2: Tentar pelo Email (se falhou a 1)
+    if (!user && customerEmail) {
+      console.log(`🔍 Referência não padrão. Tentando encontrar usuário pelo email: ${customerEmail}`);
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, email, balance')
+        .eq('email', customerEmail)
+        .single();
+        
+      if (data && !error) {
+        user = data;
+        console.log(`✅ Usuário encontrado via Email: ${user.email}`);
+      }
+    }
     
-    // Buscar usuário por ID
-    const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('id, email, balance')
-      .eq('id', userId)
-      .single();
+    // Estratégia 3: Tentar pelo CPF (se falhou a 1 e 2)
+    if (!user && customerDocument) {
+      // Remove pontuação do CPF recebido e do banco se necessário (ajuste conforme seu banco)
+      console.log(`🔍 Tentando encontrar usuário pelo CPF: ${customerDocument}`);
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, email, balance')
+        .eq('cpf', customerDocument)
+        .single();
+        
+      if (data && !error) {
+        user = data;
+        console.log(`✅ Usuário encontrado via CPF: ${user.email}`);
+      }
+    }
     
-    if (userError || !user) {
+    if (!user) {
+      console.error('❌ Usuário não encontrado para crédito (Ref, Email ou CPF falharam).');
       return false;
     }
     
@@ -50,11 +86,12 @@ async function creditUserBalanceByReference(externalReference, amount, customerE
       .limit(1);
     
     if (existingTransaction && existingTransaction.length > 0) {
+      console.log('⚠️ Transação já processada anteriormente.');
       return true;
     }
     
     // Calcular novo saldo
-    const newBalance = (user.balance || 0) + amount;
+    const newBalance = (Number(user.balance) || 0) + Number(amount);
     
     // Atualizar saldo do usuário
     const { error: updateError } = await supabase
@@ -63,6 +100,7 @@ async function creditUserBalanceByReference(externalReference, amount, customerE
       .eq('id', user.id);
     
     if (updateError) {
+      console.error('Erro ao atualizar saldo:', updateError);
       return false;
     }
     
@@ -79,18 +117,21 @@ async function creditUserBalanceByReference(externalReference, amount, customerE
           payment_id: paymentId,
           external_reference: externalReference,
           customer_email: customerEmail,
+          customer_document: customerDocument,
           gateway: 'dbxbankpay',
           processed_at: new Date().toISOString()
         }
       });
     
     if (transactionError) {
-      return false;
+      console.error('Erro ao registrar transação:', transactionError);
+      // Não retornamos false aqui pois o saldo JÁ foi atualizado
     }
     
     return true;
     
   } catch (error) {
+    console.error('Erro interno no processamento:', error);
     return false;
   }
 }
@@ -101,7 +142,7 @@ async function creditUserBalance(email, amount, reference, paymentId) {
     // Buscar usuário por email
     const { data: user, error: userError } = await supabase
       .from('users')
-      .select('id, balance')
+      .select('id, email, balance')
       .eq('email', email)
       .single();
     

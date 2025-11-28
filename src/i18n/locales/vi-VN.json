@@ -303,7 +303,29 @@
     },
     "testimonials": {
       "title": "Nhà đầu tư của chúng tôi nói gì",
-      "subtitle": "Những câu chuyện thực tế từ những người đang kiếm lợi nhuận"
+      "subtitle": "Những câu chuyện thực tế từ những người đang kiếm lợi nhuận",
+      "list": [
+        {
+          "name": "Nguyễn Văn A",
+          "role": "Nhà đầu tư từ 2023",
+          "text": "Thật tuyệt vời khi nền tảng này đơn giản đến vậy. Tôi bắt đầu với số vốn nhỏ và giờ đây tôi có thu nhập thụ động đủ chi trả các hóa đơn."
+        },
+        {
+          "name": "Trần Thị B",
+          "role": "Nhà giao dịch chuyên nghiệp",
+          "text": "Tôi đã thử nghiệm nhiều nền tảng, nhưng Multi Crypto là nền tảng duy nhất thực hiện đúng cam kết. Rút tiền ngay lập tức!"
+        },
+        {
+          "name": "Lê Văn C",
+          "role": "Doanh nhân",
+          "text": "Sự minh bạch là chìa khóa. Tôi có thể theo dõi từng xu lợi nhuận hàng ngày. Tôi khuyên mọi người nên dùng."
+        },
+        {
+          "name": "Phạm Thị D",
+          "role": "Sinh viên",
+          "text": "Tôi bắt đầu mà không biết gì về tiền điện tử và đội ngũ hỗ trợ đã giúp tôi mọi thứ. Cách tuyệt vời để bắt đầu đầu tư."
+        }
+      ]
     },
     "faq": {
       "title": "Câu hỏi thường gặp"

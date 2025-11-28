@@ -207,30 +207,15 @@ const Landing: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <TestimonialCard 
-              image="/images/feed/pessoa1.png"
-              name="Ricardo Silva"
-              role="Investidor desde 2023"
-              text="Incrível como a plataforma é simples. Comecei com pouco e hoje tenho uma renda passiva que cobre minhas contas."
-            />
-            <TestimonialCard 
-              image="/images/feed/pessoa2.png"
-              name="Ana Beatriz"
-              role="Trader Profissional"
-              text="Já testei várias plataformas, mas a Multi Crypto é a única que entrega o que promete. Saques caem na hora!"
-            />
-            <TestimonialCard 
-              image="/images/feed/pessoa3.png"
-              name="Carlos Eduardo"
-              role="Empresário"
-              text="A transparência é o diferencial. Consigo acompanhar cada centavo de rendimento diário. Recomendo a todos."
-            />
-            <TestimonialCard 
-              image="/images/feed/pessoa4.png"
-              name="Fernando Lima"
-              role="Estudante"
-              text="Comecei sem saber nada de cripto e o suporte me ajudou em tudo. Ótima forma de começar a investir."
-            />
+            {(t('landing.testimonials.list', { returnObjects: true }) as Array<{ name: string, role: string, text: string }>).map((testimonial, index) => (
+              <TestimonialCard 
+                key={index}
+                image={`/images/feed/pessoa${index + 1}.png`}
+                name={testimonial.name}
+                role={testimonial.role}
+                text={testimonial.text}
+              />
+            ))}
           </div>
         </div>
       </section>

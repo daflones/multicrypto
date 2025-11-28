@@ -320,7 +320,29 @@
     },
     "testimonials": {
       "title": "What our investors say",
-      "subtitle": "Real stories from those who are already profiting"
+      "subtitle": "Real stories from those who are already profiting",
+      "list": [
+        {
+          "name": "Richard Smith",
+          "role": "Investor since 2023",
+          "text": "It's amazing how simple the platform is. I started small and now I have a passive income that covers my bills."
+        },
+        {
+          "name": "Anna Beatrice",
+          "role": "Professional Trader",
+          "text": "I've tested several platforms, but Multi Crypto is the only one that delivers what it promises. Withdrawals are instant!"
+        },
+        {
+          "name": "Charles Edwards",
+          "role": "Entrepreneur",
+          "text": "Transparency is the key. I can track every cent of daily yield. I recommend it to everyone."
+        },
+        {
+          "name": "Fernanda Lee",
+          "role": "Student",
+          "text": "I started knowing nothing about crypto and support helped me through everything. Great way to start investing."
+        }
+      ]
     },
     "faq": {
       "title": "Frequently Asked Questions"

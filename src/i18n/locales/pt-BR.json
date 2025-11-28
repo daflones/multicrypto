@@ -320,7 +320,29 @@
     },
     "testimonials": {
       "title": "O que dizem nossos investidores",
-      "subtitle": "Histórias reais de quem já está lucrando"
+      "subtitle": "Histórias reais de quem já está lucrando",
+      "list": [
+        {
+          "name": "Ricardo Silva",
+          "role": "Investidor desde 2023",
+          "text": "Incrível como a plataforma é simples. Comecei com pouco e hoje tenho uma renda passiva que cobre minhas contas."
+        },
+        {
+          "name": "Ana Beatriz",
+          "role": "Trader Profissional",
+          "text": "Já testei várias plataformas, mas a Multi Crypto é a única que entrega o que promete. Saques caem na hora!"
+        },
+        {
+          "name": "Carlos Eduardo",
+          "role": "Empresário",
+          "text": "A transparência é o diferencial. Consigo acompanhar cada centavo de rendimento diário. Recomendo a todos."
+        },
+        {
+          "name": "Fernanda Lima",
+          "role": "Estudante",
+          "text": "Comecei sem saber nada de cripto e o suporte me ajudou em tudo. Ótima forma de começar a investir."
+        }
+      ]
     },
     "faq": {
       "title": "Perguntas Frequentes"

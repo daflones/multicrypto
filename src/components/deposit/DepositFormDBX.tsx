@@ -88,6 +88,11 @@ const DepositForm: React.FC<DepositFormProps> = () => {
       if (formData.paymentMethod === 'pix') {
         // Criar pagamento PIX via DBXBankPay
         const externalReference = dbxBankPayService.generateExternalReference(user?.id || 'anonymous');
+        const webhookUrl = import.meta.env.VITE_WEBHOOK_URL || 'https://multicrypto.com.br/api/webhooks/dbxbankpay';
+        
+        console.log('🔧 DEBUG - Criando pagamento:');
+        console.log('🔗 Webhook URL enviada:', webhookUrl);
+        console.log('🆔 Referência:', externalReference);
         
         const paymentData = {
           amount: dbxBankPayService.formatAmountToCents(amount),
@@ -97,7 +102,7 @@ const DepositForm: React.FC<DepositFormProps> = () => {
           customer_document: user?.cpf || '',
           customer_phone: user?.phone || '11999999999',
           external_reference: externalReference,
-          webhook_url: import.meta.env.VITE_WEBHOOK_URL || 'https://multicrypto.com.br/api/webhooks/dbxbankpay'
+          webhook_url: webhookUrl
         };
 
         const newPayment = await dbxBankPayService.createPayment(paymentData);

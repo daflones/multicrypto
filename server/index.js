@@ -9,6 +9,17 @@ const PORT = process.env.PORT || 3000; // Caddy espera porta 3000
 // Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Suporte para dados urlencoded
+
+// Middleware de Log Global - "O Espião"
+app.use((req, res, next) => {
+  console.log(`📨 [${new Date().toISOString()}] Recebido: ${req.method} ${req.originalUrl}`);
+  // Se for POST, tenta mostrar o body (se já tiver sido parseado) ou avisa
+  if (req.method === 'POST') {
+    console.log('📦 Body inicial:', JSON.stringify(req.body).substring(0, 200) + '...');
+  }
+  next();
+});
 
 // Servir arquivos estáticos do React com tipos MIME corretos
 app.use(express.static(path.join(__dirname, '../dist'), {

@@ -9,14 +9,20 @@ import {
   Play, 
   ChevronDown,
   ArrowRight,
-  Star
+  Star,
+  Coins,
+  Users,
+  Zap,
+  CheckCircle
 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { useCurrency } from '../hooks/useCurrency';
 import LanguageSelector from '../components/common/LanguageSelector';
 
 const Landing: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuthStore();
+  const { formatAmount } = useCurrency();
 
   return (
     <div className="min-h-screen bg-background text-white overflow-x-hidden">
@@ -120,11 +126,11 @@ const Landing: React.FC = () => {
               <p className="text-sm text-gray-500">{t('landing.stats.users')}</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-success mb-1">R$ 2.5M+</p>
+              <p className="text-3xl font-bold text-success mb-1">{formatAmount(2500000)}+</p>
               <p className="text-sm text-gray-500">{t('landing.stats.paid')}</p>
             </div>
             <div className="text-center">
-              <p className="text-3xl font-bold text-primary mb-1">R$ 5.8M+</p>
+              <p className="text-3xl font-bold text-primary mb-1">{formatAmount(5800000)}+</p>
               <p className="text-sm text-gray-500">{t('landing.stats.invested')}</p>
             </div>
             <div className="text-center">
@@ -174,7 +180,207 @@ const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* Video Section */}
+      {/* Multi Coin Section */}
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center space-x-2 bg-primary/20 px-4 py-2 rounded-full mb-6">
+                <Coins size={20} className="text-primary" />
+                <span className="text-primary font-semibold">Multi Coin 🪙</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('landing.multicoin.title')}</h2>
+              <p className="text-gray-400 text-lg mb-8">{t('landing.multicoin.desc')}</p>
+              
+              <div className="space-y-4">
+                <div className="flex items-start space-x-4">
+                  <div className="p-2 bg-success/20 rounded-lg">
+                    <Zap size={20} className="text-success" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white">{t('landing.multicoin.arbitrage.title')}</h4>
+                    <p className="text-gray-400 text-sm">{t('landing.multicoin.arbitrage.desc')}</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-4">
+                  <div className="p-2 bg-primary/20 rounded-lg">
+                    <TrendingUp size={20} className="text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white">{t('landing.multicoin.bot.title')}</h4>
+                    <p className="text-gray-400 text-sm">{t('landing.multicoin.bot.desc')}</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-4">
+                  <div className="p-2 bg-secondary/20 rounded-lg">
+                    <Shield size={20} className="text-secondary" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-white">{t('landing.multicoin.sustainability.title')}</h4>
+                    <p className="text-gray-400 text-sm">{t('landing.multicoin.sustainability.desc')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative">
+              <div className="bg-gradient-to-br from-surface to-surface-light rounded-3xl p-8 border border-white/10 shadow-2xl">
+                <div className="text-center mb-8">
+                  <div className="w-28 h-28 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/30 overflow-hidden p-1">
+                    <img src="/images/investimentos/bitcoin-gold.jpg" alt="Multi Coin" className="w-full h-full object-cover rounded-full" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white">Multi Coin</h3>
+                  <p className="text-gray-400">{t('landing.multicoin.token')}</p>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-4 bg-gradient-to-r from-success/20 to-success/5 rounded-xl border border-success/20">
+                    <span className="text-gray-300 font-medium">{t('landing.multicoin.return')}</span>
+                    <span className="text-success font-bold text-2xl">300%</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+                    <span className="text-gray-400">{t('landing.multicoin.minInvest')}</span>
+                    <span className="text-white font-semibold">{formatAmount(50)}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+                    <span className="text-gray-400">{t('landing.multicoin.maxInvest')}</span>
+                    <span className="text-white font-semibold">{formatAmount(10000)}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+                    <span className="text-gray-400">{t('landing.multicoin.yields')}</span>
+                    <span className="text-primary font-semibold">{t('landing.multicoin.weekdays')}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+                    <span className="text-gray-400">{t('landing.multicoin.withdrawYields')}</span>
+                    <span className="text-white font-semibold">{t('landing.multicoin.mondays')}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+                    <span className="text-gray-400">{t('landing.multicoin.withdrawNetwork')}</span>
+                    <span className="text-white font-semibold">{t('landing.multicoin.everyday')}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+                    <span className="text-gray-400">{t('landing.multicoin.fee')}</span>
+                    <span className="text-white font-semibold">5%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="py-20 bg-surface/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('landing.howItWorks.title')}</h2>
+            <p className="text-gray-400 text-lg">{t('landing.howItWorks.subtitle')}</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 relative">
+                <span className="absolute -top-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm">1</span>
+                <Wallet size={32} className="text-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">{t('landing.howItWorks.step1.title')}</h3>
+              <p className="text-gray-400">{t('landing.howItWorks.step1.desc')}</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-success/20 rounded-2xl flex items-center justify-center mx-auto mb-6 relative">
+                <span className="absolute -top-2 -right-2 w-8 h-8 bg-success rounded-full flex items-center justify-center text-white font-bold text-sm">2</span>
+                <TrendingUp size={32} className="text-success" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">{t('landing.howItWorks.step2.title')}</h3>
+              <p className="text-gray-400">{t('landing.howItWorks.step2.desc')}</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 relative">
+                <span className="absolute -top-2 -right-2 w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-white font-bold text-sm">3</span>
+                <Coins size={32} className="text-secondary" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">{t('landing.howItWorks.step3.title')}</h3>
+              <p className="text-gray-400">{t('landing.howItWorks.step3.desc')}</p>
+            </div>
+          </div>
+
+          {/* Benefits Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-background p-6 rounded-2xl border border-white/5 text-center">
+              <CheckCircle size={24} className="text-success mx-auto mb-3" />
+              <p className="text-sm text-gray-400">{t('landing.benefits.dailyYields')}</p>
+            </div>
+            <div className="bg-background p-6 rounded-2xl border border-white/5 text-center">
+              <CheckCircle size={24} className="text-success mx-auto mb-3" />
+              <p className="text-sm text-gray-400">{t('landing.benefits.weeklyWithdraw')}</p>
+            </div>
+            <div className="bg-background p-6 rounded-2xl border border-white/5 text-center">
+              <CheckCircle size={24} className="text-success mx-auto mb-3" />
+              <p className="text-sm text-gray-400">{t('landing.benefits.referralBonus')}</p>
+            </div>
+            <div className="bg-background p-6 rounded-2xl border border-white/5 text-center">
+              <CheckCircle size={24} className="text-success mx-auto mb-3" />
+              <p className="text-sm text-gray-400">{t('landing.benefits.lowFees')}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Referral Program Section */}
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-success/5 to-background pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center space-x-2 bg-success/20 px-4 py-2 rounded-full mb-6">
+              <Users size={20} className="text-success" />
+              <span className="text-success font-semibold">{t('landing.referral.badge')}</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('landing.referral.title')}</h2>
+            <p className="text-gray-400 text-lg">{t('landing.referral.subtitle')}</p>
+          </div>
+
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-gradient-to-br from-surface to-surface-light rounded-3xl p-8 border border-white/10">
+              <div className="grid grid-cols-4 md:grid-cols-7 gap-3">
+                <div className="text-center p-4 bg-white/5 rounded-xl">
+                  <p className="text-xs text-gray-500 mb-1">{t('landing.referral.level')} 1</p>
+                  <p className="text-2xl font-bold text-success">10%</p>
+                  <p className="text-xs text-gray-600">{t('landing.referral.direct')}</p>
+                </div>
+                <div className="text-center p-4 bg-white/5 rounded-xl">
+                  <p className="text-xs text-gray-500 mb-1">{t('landing.referral.level')} 2</p>
+                  <p className="text-2xl font-bold text-primary">4%</p>
+                </div>
+                <div className="text-center p-4 bg-white/5 rounded-xl">
+                  <p className="text-xs text-gray-500 mb-1">{t('landing.referral.level')} 3</p>
+                  <p className="text-2xl font-bold text-secondary">2%</p>
+                </div>
+                <div className="text-center p-4 bg-white/5 rounded-xl">
+                  <p className="text-xs text-gray-500 mb-1">{t('landing.referral.level')} 4</p>
+                  <p className="text-2xl font-bold text-warning">1%</p>
+                </div>
+                <div className="text-center p-4 bg-white/5 rounded-xl">
+                  <p className="text-xs text-gray-500 mb-1">{t('landing.referral.level')} 5</p>
+                  <p className="text-2xl font-bold text-info">1%</p>
+                </div>
+                <div className="text-center p-4 bg-white/5 rounded-xl">
+                  <p className="text-xs text-gray-500 mb-1">{t('landing.referral.level')} 6</p>
+                  <p className="text-2xl font-bold text-purple-400">1%</p>
+                </div>
+                <div className="text-center p-4 bg-white/5 rounded-xl">
+                  <p className="text-xs text-gray-500 mb-1">{t('landing.referral.level')} 7</p>
+                  <p className="text-2xl font-bold text-gray-400">1%</p>
+                </div>
+              </div>
+              <div className="mt-6 p-4 bg-success/10 rounded-xl border border-success/20">
+                <p className="text-center text-success font-semibold">{t('landing.referral.total')}: 20%</p>
+              </div>
+              <p className="text-center text-gray-400 text-sm mt-4">{t('landing.referral.note')}</p>
+            </div>
+          </div>
+        </div>
+      </section>
       <section id="video" className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
@@ -269,7 +475,8 @@ const Landing: React.FC = () => {
       {/* Simple Footer */}
       <footer className="bg-background border-t border-white/10 py-10">
         <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
-          <p>&copy; 2024 Multi Crypto. Todos os direitos reservados.</p>
+          <p>&copy; 2025 Multi Crypto. {t('landing.footer.rights')}</p>
+          <p className="mt-2 text-xs text-gray-600">{t('landing.footer.tagline')}</p>
         </div>
       </footer>
     </div>

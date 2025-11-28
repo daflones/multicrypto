@@ -266,11 +266,11 @@
   },
   "landing": {
     "hero": {
-      "title": "Nhân đôi Tài sản Kỹ thuật số của bạn một cách thông minh",
-      "subtitle": "Nền tảng an toàn và sinh lời nhất để tự động hóa thu nhập tiền điện tử của bạn. Bắt đầu ngay hôm nay và xem danh mục đầu tư của bạn phát triển.",
+      "title": "Đầu tư thông minh với Crypto và AI",
+      "subtitle": "Nền tảng hàng đầu năm 2025 để nhân đôi tài sản kỹ thuật số của bạn với công nghệ Trí tuệ nhân tạo. Lợi nhuận tự động và an toàn.",
       "cta": "Bắt đầu ngay",
       "login": "Đăng nhập",
-      "badge": "Nền tảng tự động 100%",
+      "badge": "Công nghệ AI + Crypto 2025",
       "watchVideo": "Xem video"
     },
     "stats": {
@@ -280,23 +280,81 @@
     },
     "features": {
       "title": "Tại sao chọn Multi Crypto?",
-      "subtitle": "Công nghệ tiên tiến cho khoản đầu tư của bạn",
+      "subtitle": "Trí tuệ nhân tạo và Blockchain làm việc cho bạn",
       "daily": {
-        "title": "Lợi nhuận hàng ngày",
-        "desc": "Thu nhập ổn định được cộng tự động vào tài khoản của bạn mỗi ngày."
+        "title": "Lợi nhuận với AI",
+        "desc": "AI của chúng tôi phân tích thị trường 24/7 và tự động tối ưu hóa thu nhập của bạn mỗi ngày."
       },
       "secure": {
-        "title": "Bảo mật tối đa",
-        "desc": "Dữ liệu và tài sản của bạn được bảo vệ bằng mã hóa tiên tiến nhất."
+        "title": "Bảo mật Blockchain",
+        "desc": "Tài sản của bạn được bảo vệ bằng công nghệ mã hóa phi tập trung tiên tiến nhất."
       },
       "support": {
-        "title": "Hỗ trợ 24/7",
-        "desc": "Đội ngũ chuyên dụng sẵn sàng giúp bạn bất cứ lúc nào."
+        "title": "Hỗ trợ Premium 24/7",
+        "desc": "Đội ngũ chuyên gia crypto sẵn sàng giúp bạn bất cứ lúc nào."
       },
       "withdraw": {
-        "title": "Rút tiền nhanh chóng",
-        "desc": "Nhận lợi nhuận của bạn qua PIX hoặc Crypto nhanh chóng và không cần thủ tục giấy tờ."
+        "title": "Rút tiền tức thì",
+        "desc": "Nhận lợi nhuận qua PIX hoặc Crypto trong vài phút, không cần thủ tục."
       }
+    },
+    "multicoin": {
+      "title": "Khám phá Multi Coin 🪙",
+      "desc": "Token độc quyền của chúng tôi tối đa hóa thu nhập của bạn thông qua các hoạt động chênh lệch giá tiền điện tử với công nghệ tiên tiến và bot giao dịch tự động.",
+      "token": "Token chính thức của nền tảng",
+      "return": "Tổng lợi nhuận mỗi khoản đầu tư",
+      "minInvest": "Đầu tư tối thiểu",
+      "maxInvest": "Tối đa mỗi gói",
+      "yields": "Lợi nhuận",
+      "weekdays": "Thứ Hai - Thứ Sáu",
+      "withdrawYields": "Rút lợi nhuận",
+      "mondays": "Mỗi thứ Hai",
+      "withdrawNetwork": "Rút mạng lưới",
+      "everyday": "Mỗi ngày (tối thiểu $50)",
+      "fee": "Phí rút tiền",
+      "arbitrage": {
+        "title": "Chênh lệch giá tiền điện tử",
+        "desc": "Các hoạt động tự động hàng ngày trên nhiều sàn giao dịch, tận dụng chênh lệch giá để tạo lợi nhuận ổn định từ thứ Hai đến thứ Sáu."
+      },
+      "bot": {
+        "title": "Bot giao dịch 24h",
+        "desc": "AI của chúng tôi hoạt động từ thứ Hai đến thứ Sáu tạo lợi nhuận hàng ngày cho bạn. Thứ Bảy và Chủ Nhật bot làm việc cho công ty, đảm bảo tính bền vững."
+      },
+      "sustainability": {
+        "title": "Mô hình bền vững 100%",
+        "desc": "Lợi nhuận cuối tuần đảm bảo sức khỏe tài chính của nền tảng. Kinh doanh được cấu trúc cho sự lâu dài và an toàn của nhà đầu tư."
+      }
+    },
+    "howItWorks": {
+      "title": "Cách hoạt động",
+      "subtitle": "Bắt đầu kiếm tiền trong 3 bước đơn giản",
+      "step1": {
+        "title": "Tạo tài khoản",
+        "desc": "Đăng ký nhanh chóng và miễn phí. Trong vòng 2 phút bạn đã sẵn sàng đầu tư."
+      },
+      "step2": {
+        "title": "Thực hiện đầu tư",
+        "desc": "Chọn gói từ $50 và bắt đầu nhận lợi nhuận hàng ngày."
+      },
+      "step3": {
+        "title": "Nhận lợi nhuận",
+        "desc": "Theo dõi thu nhập hàng ngày và rút lợi nhuận mỗi thứ Hai."
+      }
+    },
+    "benefits": {
+      "dailyYields": "Lợi nhuận từ thứ Hai đến thứ Sáu",
+      "weeklyWithdraw": "Rút lợi nhuận vào thứ Hai",
+      "referralBonus": "Thưởng giới thiệu lên đến 10%",
+      "lowFees": "Chỉ 5% phí rút tiền"
+    },
+    "referral": {
+      "badge": "Chương trình giới thiệu",
+      "title": "Kiếm tiền bằng cách giới thiệu bạn bè",
+      "subtitle": "Xây dựng mạng lưới và nhận hoa hồng đến 7 cấp độ. Tổng cộng 20% hoa hồng!",
+      "level": "Cấp",
+      "direct": "Trực tiếp",
+      "total": "Tổng hoa hồng",
+      "note": "Thu nhập hoa hồng và lợi nhuận được tính để đạt lợi nhuận 300%"
     },
     "video": {
       "title": "Xem cách hoạt động"
@@ -334,6 +392,10 @@
       "title": "Sẵn sàng thay đổi cuộc sống tài chính của bạn?",
       "subtitle": "Tham gia cùng hàng ngàn nhà đầu tư hài lòng.",
       "button": "Tạo tài khoản miễn phí"
+    },
+    "footer": {
+      "rights": "Tất cả các quyền được bảo lưu.",
+      "tagline": "Đầu tư thông minh với Trí tuệ nhân tạo và Blockchain"
     }
   },
   "admin": {

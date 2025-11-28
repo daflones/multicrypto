@@ -283,11 +283,11 @@
   },
   "landing": {
     "hero": {
-      "title": "Multiply Your Digital Assets with Intelligence",
-      "subtitle": "The most secure and profitable platform to automate your crypto earnings. Start today and watch your portfolio grow.",
+      "title": "Smart Investments with Crypto and AI",
+      "subtitle": "Leading 2025 platform to multiply your digital assets with Artificial Intelligence technology. Automated and secure returns.",
       "cta": "Start Now",
       "login": "Login",
-      "badge": "100% Automated Platform",
+      "badge": "AI + Crypto Technology 2025",
       "watchVideo": "Watch Video"
     },
     "stats": {
@@ -297,23 +297,81 @@
     },
     "features": {
       "title": "Why choose Multi Crypto?",
-      "subtitle": "Cutting-edge technology for your investments",
+      "subtitle": "Artificial Intelligence and Blockchain working for you",
       "daily": {
-        "title": "Daily Yield",
-        "desc": "Consistent earnings credited automatically to your account every day."
+        "title": "AI-Powered Yield",
+        "desc": "Our AI analyzes the market 24/7 and optimizes your earnings automatically every day."
       },
       "secure": {
-        "title": "Maximum Security",
-        "desc": "Your data and assets protected with the most advanced encryption."
+        "title": "Blockchain Security",
+        "desc": "Your assets protected with the most advanced decentralized cryptography technology."
       },
       "support": {
-        "title": "24/7 Support",
-        "desc": "Dedicated team ready to help you at any time."
+        "title": "Premium 24/7 Support",
+        "desc": "Crypto-specialized team ready to help you at any time."
       },
       "withdraw": {
-        "title": "Fast Withdrawals",
-        "desc": "Receive your profits via PIX or Crypto quickly and without bureaucracy."
+        "title": "Instant Withdrawals",
+        "desc": "Receive your profits via PIX or Crypto in minutes, no bureaucracy."
       }
+    },
+    "multicoin": {
+      "title": "Meet Multi Coin 🪙",
+      "desc": "Our exclusive token that maximizes your earnings through cryptocurrency arbitrage operations with cutting-edge technology and automated trading bot.",
+      "token": "Official Platform Token",
+      "return": "Total Return per Investment",
+      "minInvest": "Minimum Investment",
+      "maxInvest": "Maximum per Package",
+      "yields": "Yields",
+      "weekdays": "Monday to Friday",
+      "withdrawYields": "Yield Withdrawals",
+      "mondays": "Every Monday",
+      "withdrawNetwork": "Network Withdrawals",
+      "everyday": "Every day (min. $50)",
+      "fee": "Withdrawal Fee",
+      "arbitrage": {
+        "title": "Cryptocurrency Arbitrage",
+        "desc": "Daily automated operations across multiple exchanges, leveraging price differences to generate consistent profits Monday through Friday."
+      },
+      "bot": {
+        "title": "24h Trading Bot",
+        "desc": "Our AI operates Monday to Friday generating daily yields for you. Saturday and Sunday the bot works for the company, ensuring sustainability."
+      },
+      "sustainability": {
+        "title": "100% Sustainable Model",
+        "desc": "Weekend profits ensure the platform's financial health. Business structured for longevity and investor security."
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Start earning in 3 simple steps",
+      "step1": {
+        "title": "Create Your Account",
+        "desc": "Quick and free registration. In less than 2 minutes you're ready to invest."
+      },
+      "step2": {
+        "title": "Make Your Investment",
+        "desc": "Choose a package starting from $50 and start receiving daily yields."
+      },
+      "step3": {
+        "title": "Receive Your Profits",
+        "desc": "Track your daily earnings and withdraw your yields every Monday."
+      }
+    },
+    "benefits": {
+      "dailyYields": "Yields Monday to Friday",
+      "weeklyWithdraw": "Yield Withdrawals on Mondays",
+      "referralBonus": "Referral Bonus up to 10%",
+      "lowFees": "Only 5% Withdrawal Fee"
+    },
+    "referral": {
+      "badge": "Referral Program",
+      "title": "Earn by Referring Friends",
+      "subtitle": "Build your network and receive commissions up to 7 levels deep. Total of 20% in commissions!",
+      "level": "Level",
+      "direct": "Direct",
+      "total": "Total Commissions",
+      "note": "Commission and yield earnings count towards achieving the 300% return"
     },
     "video": {
       "title": "See how it works"
@@ -351,6 +409,10 @@
       "title": "Ready to change your financial life?",
       "subtitle": "Join thousands of satisfied investors.",
       "button": "Create Free Account"
+    },
+    "footer": {
+      "rights": "All rights reserved.",
+      "tagline": "Smart investments with Artificial Intelligence and Blockchain"
     }
   },
   "admin": {

@@ -283,11 +283,11 @@
   },
   "landing": {
     "hero": {
-      "title": "Multiplique seus Ativos Digitais com Inteligência",
-      "subtitle": "A plataforma mais segura e rentável para automatizar seus ganhos em criptomoedas. Comece hoje e veja seu patrimônio crescer.",
+      "title": "Investimentos Inteligentes com Crypto e IA",
+      "subtitle": "Plataforma líder em 2025 para multiplicar seus ativos digitais com tecnologia de Inteligência Artificial. Rendimentos automatizados e seguros.",
       "cta": "Começar Agora",
       "login": "Entrar",
-      "badge": "Plataforma 100% Automatizada",
+      "badge": "Tecnologia IA + Crypto 2025",
       "watchVideo": "Ver Vídeo"
     },
     "stats": {
@@ -297,23 +297,81 @@
     },
     "features": {
       "title": "Por que escolher a Multi Crypto?",
-      "subtitle": "Tecnologia de ponta para seus investimentos",
+      "subtitle": "Inteligência Artificial e Blockchain trabalhando para você",
       "daily": {
-        "title": "Rendimento Diário",
-        "desc": "Ganhos consistentes creditados automaticamente na sua conta todos os dias."
+        "title": "Rendimento com IA",
+        "desc": "Nossa IA analisa o mercado 24h e otimiza seus ganhos automaticamente todos os dias."
       },
       "secure": {
-        "title": "Segurança Máxima",
-        "desc": "Seus dados e ativos protegidos com a mais avançada criptografia."
+        "title": "Segurança Blockchain",
+        "desc": "Seus ativos protegidos com a mais avançada tecnologia de criptografia descentralizada."
       },
       "support": {
-        "title": "Suporte 24/7",
-        "desc": "Equipe dedicada pronta para ajudar você em qualquer momento."
+        "title": "Suporte Premium 24/7",
+        "desc": "Equipe especializada em crypto pronta para ajudar você em qualquer momento."
       },
       "withdraw": {
-        "title": "Saques Rápidos",
-        "desc": "Receba seus lucros via PIX ou Cripto com agilidade e sem burocracia."
+        "title": "Saques Instantâneos",
+        "desc": "Receba seus lucros via PIX ou Cripto em minutos, sem burocracia."
       }
+    },
+    "multicoin": {
+      "title": "Conheça a Multi Coin 🪙",
+      "desc": "Nossa moeda exclusiva que potencializa seus ganhos através de operações de arbitragem de criptomoedas com tecnologia de ponta e bot de operações automatizado.",
+      "token": "Token Oficial da Plataforma",
+      "return": "Retorno Total por Investimento",
+      "minInvest": "Investimento Mínimo",
+      "maxInvest": "Máximo por Pacote",
+      "yields": "Rendimentos",
+      "weekdays": "Segunda a Sexta",
+      "withdrawYields": "Saque de Rendimentos",
+      "mondays": "Toda Segunda-feira",
+      "withdrawNetwork": "Saque de Rede",
+      "everyday": "Todos os dias (mín. R$ 50)",
+      "fee": "Taxa de Saque",
+      "arbitrage": {
+        "title": "Arbitragem de Criptomoedas",
+        "desc": "Operações diárias automatizadas em múltiplas exchanges, aproveitando diferenças de preço para gerar lucros consistentes de segunda a sexta."
+      },
+      "bot": {
+        "title": "Bot de Operações 24h",
+        "desc": "Nossa IA opera de segunda a sexta gerando rendimentos diários para você. Sábado e domingo o bot trabalha para a empresa, garantindo sustentabilidade."
+      },
+      "sustainability": {
+        "title": "Modelo 100% Sustentável",
+        "desc": "Lucros dos fins de semana garantem a saúde financeira da plataforma. Negócio estruturado para longevidade e segurança dos investidores."
+      }
+    },
+    "howItWorks": {
+      "title": "Como Funciona",
+      "subtitle": "Em 3 passos simples você começa a lucrar",
+      "step1": {
+        "title": "Crie sua Conta",
+        "desc": "Cadastro rápido e gratuito. Em menos de 2 minutos você está pronto para investir."
+      },
+      "step2": {
+        "title": "Faça seu Investimento",
+        "desc": "Escolha um pacote a partir de R$ 50 e comece a receber rendimentos diários."
+      },
+      "step3": {
+        "title": "Receba seus Lucros",
+        "desc": "Acompanhe seus ganhos diários e saque seus rendimentos toda segunda-feira."
+      }
+    },
+    "benefits": {
+      "dailyYields": "Rendimentos de Segunda a Sexta",
+      "weeklyWithdraw": "Saques de Rendimento às Segundas",
+      "referralBonus": "Bônus de Indicação até 10%",
+      "lowFees": "Taxa de Saque de apenas 5%"
+    },
+    "referral": {
+      "badge": "Programa de Indicação",
+      "title": "Ganhe Indicando Amigos",
+      "subtitle": "Monte sua rede e receba comissões em até 7 níveis de profundidade. Total de 20% em comissões!",
+      "level": "Nível",
+      "direct": "Direto",
+      "total": "Total em Comissões",
+      "note": "Ganhos de comissão e rendimento contabilizam para atingir o retorno de 300%"
     },
     "video": {
       "title": "Veja como funciona"
@@ -351,6 +409,10 @@
       "title": "Pronto para mudar sua vida financeira?",
       "subtitle": "Junte-se a milhares de investidores satisfeitos.",
       "button": "Criar Conta Grátis"
+    },
+    "footer": {
+      "rights": "Todos os direitos reservados.",
+      "tagline": "Investimentos inteligentes com Inteligência Artificial e Blockchain"
     }
   },
   "admin": {

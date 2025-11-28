@@ -1,9 +1,11 @@
 import React from 'react';
 import { TrendingUp, Calendar, DollarSign, Target, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { UserInvestment } from '../../services/supabase';
-import { formatCurrency, formatDateTimeSP } from '../../utils/formatters';
+import { formatDateTimeSP } from '../../utils/formatters';
 import { DAILY_YIELD_PERCENTAGE } from '../../constants/investment';
 import { getProductImage } from '../../utils/imageUtils';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface InvestmentListProps {
   investments: UserInvestment[];
@@ -11,6 +13,9 @@ interface InvestmentListProps {
 }
 
 const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading }) => {
+  const { t } = useTranslation();
+  const { formatAmount } = useCurrency();
+  
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -35,10 +40,10 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
         <div className="w-16 h-16 bg-surface rounded-full flex items-center justify-center mx-auto mb-4">
           <TrendingUp className="text-gray-400" size={24} />
         </div>
-        <h3 className="text-lg font-semibold text-white mb-2">Nenhum investimento ainda</h3>
-        <p className="text-gray-400 mb-6">Comece a investir para ver seus rendimentos aqui</p>
+        <h3 className="text-lg font-semibold text-white mb-2">{t('investment.noInvestments')}</h3>
+        <p className="text-gray-400 mb-6">{t('investment.makeFirstInvestment')}</p>
         <button className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
-          Ver Produtos
+          {t('investment.seeProducts')}
         </button>
       </div>
     );
@@ -70,7 +75,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
                     ? 'bg-success/20 text-success' 
                     : 'bg-gray-600 text-gray-300'
                 }`}>
-                  {investment.status === 'active' ? 'Ativo' : 'Inativo'}
+                  {investment.status === 'active' ? t('investment.active') : t('investment.completed')}
                 </span>
               </div>
 
@@ -79,9 +84,9 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
                 <div className="flex items-center space-x-2">
                   <DollarSign className="text-gray-400" size={16} />
                   <div>
-                    <p className="text-xs text-gray-400">Investido</p>
+                    <p className="text-xs text-gray-400">{t('dashboard.invested')}</p>
                     <p className="text-sm font-semibold text-white">
-                      {formatCurrency(investment.amount)}
+                      {formatAmount(investment.amount)}
                     </p>
                   </div>
                 </div>
@@ -89,9 +94,9 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="text-success" size={16} />
                   <div>
-                    <p className="text-xs text-gray-400">Rendimento</p>
+                    <p className="text-xs text-gray-400">{t('dashboard.earnings')}</p>
                     <p className="text-sm font-semibold text-success">
-                      {formatCurrency(investment.amount * DAILY_YIELD_PERCENTAGE)}/dia
+                      {formatAmount(investment.amount * DAILY_YIELD_PERCENTAGE)}/dia
                     </p>
                   </div>
                 </div>
@@ -99,9 +104,9 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
                 <div className="flex items-center space-x-2">
                   <Target className="text-primary" size={16} />
                   <div>
-                    <p className="text-xs text-gray-400">Total Retorno</p>
+                    <p className="text-xs text-gray-400">{t('investment.totalReturn')}</p>
                     <p className="text-sm font-semibold text-primary">
-                      {formatCurrency(investment.amount + (investment.amount * DAILY_YIELD_PERCENTAGE) * (investment.product?.duration_days || 60))}
+                      {formatAmount(investment.amount + (investment.amount * DAILY_YIELD_PERCENTAGE) * (investment.product?.duration_days || 60))}
                     </p>
                   </div>
                 </div>

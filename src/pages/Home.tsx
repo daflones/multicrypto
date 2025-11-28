@@ -4,11 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { TrendingUp, Users, Wallet, DollarSign, Plus, Eye } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useUserStore } from '../store/userStore';
-import { formatCurrency } from '../utils/formatters';
+import { useCurrency } from '../hooks/useCurrency';
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuthStore();
+  const { formatAmount } = useCurrency();
   const { 
     investmentStats, 
     commissionStats, 
@@ -47,7 +48,7 @@ const Home: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-white/80 text-sm">{t('dashboard.availableBalance')}</p>
-              <p className="text-2xl font-bold">{formatCurrency(user.balance || 0)}</p>
+              <p className="text-2xl font-bold">{formatAmount(user.balance || 0)}</p>
               <p className="text-white/60 text-xs mt-1">{t('deposit.title')} + {t('investment.totalEarned')}</p>
             </div>
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -61,7 +62,7 @@ const Home: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-white/80 text-sm">{t('dashboard.profitBalance')}</p>
-              <p className="text-2xl font-bold">{formatCurrency(user.commission_balance || 0)}</p>
+              <p className="text-2xl font-bold">{formatAmount(user.commission_balance || 0)}</p>
               <p className="text-white/60 text-xs mt-1">{t('team.referralEarnings')}</p>
             </div>
             <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
@@ -77,7 +78,7 @@ const Home: React.FC = () => {
           <div>
             <p className="text-gray-400 text-sm">{t('dashboard.totalBalance')}</p>
             <p className="text-xl font-bold text-white">
-              {formatCurrency((user.balance || 0) + (user.commission_balance || 0))}
+              {formatAmount((user.balance || 0) + (user.commission_balance || 0))}
             </p>
           </div>
           <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
@@ -122,13 +123,13 @@ const Home: React.FC = () => {
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">{t('investment.totalInvested')}:</span>
               <span className="text-white">
-                {formatCurrency(investmentStats?.totalInvested || 0)}
+                {formatAmount(investmentStats?.totalInvested || 0)}
               </span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">{t('investment.totalEarned')}:</span>
               <span className="text-success">
-                {formatCurrency(investmentStats?.totalEarned || 0)}
+                {formatAmount(investmentStats?.totalEarned || 0)}
               </span>
             </div>
           </div>
@@ -141,23 +142,23 @@ const Home: React.FC = () => {
               <Users className="text-primary" size={20} />
             </div>
             <div>
-              <p className="text-white font-semibold">Equipe</p>
+              <p className="text-white font-semibold">{t('team.title')}</p>
               <p className="text-gray-400 text-sm">
-                {teamStats?.totalTeamSize || 0} membros
+                {teamStats?.totalTeamSize || 0} {t('team.members')}
               </p>
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Comissões:</span>
+              <span className="text-gray-400">{t('team.totalCommissions')}:</span>
               <span className="text-success">
-                {formatCurrency(commissionStats?.totalCommissions || 0)}
+                {formatAmount(commissionStats?.totalCommissions || 0)}
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-400">Este mês:</span>
+              <span className="text-gray-400">{t('team.thisMonth')}:</span>
               <span className="text-success">
-                {formatCurrency(commissionStats?.thisMonthTotal || 0)}
+                {formatAmount(commissionStats?.thisMonthTotal || 0)}
               </span>
             </div>
           </div>
@@ -169,14 +170,14 @@ const Home: React.FC = () => {
         <div className="bg-success/10 border border-success/20 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-success font-semibold">Rendimento Diário</p>
-              <p className="text-gray-400 text-sm">Próximo pagamento em breve</p>
+              <p className="text-success font-semibold">{t('investment.dailyReturn')}</p>
+              <p className="text-gray-400 text-sm">{t('investment.dailyYield')}</p>
             </div>
             <div className="text-right">
               <p className="text-2xl font-bold text-success">
-                {formatCurrency(investmentStats.dailyYield)}
+                {formatAmount(investmentStats.dailyYield)}
               </p>
-              <p className="text-success/80 text-sm">por dia</p>
+              <p className="text-success/80 text-sm">{t('investment.days')}</p>
             </div>
           </div>
         </div>
@@ -184,7 +185,7 @@ const Home: React.FC = () => {
 
       {/* Quick Actions */}
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-white">Ações Rápidas</h2>
+        <h2 className="text-lg font-semibold text-white">{t('dashboard.quickActions')}</h2>
         
         <div className="grid grid-cols-2 gap-4">
           <Link
@@ -196,8 +197,8 @@ const Home: React.FC = () => {
                 <TrendingUp className="text-primary" size={20} />
               </div>
               <div>
-                <p className="text-white font-medium">Investir</p>
-                <p className="text-gray-400 text-sm">Ver produtos</p>
+                <p className="text-white font-medium">{t('dashboard.invest')}</p>
+                <p className="text-gray-400 text-sm">{t('investment.seeProducts')}</p>
               </div>
             </div>
           </Link>
@@ -211,8 +212,8 @@ const Home: React.FC = () => {
                 <Eye className="text-secondary" size={20} />
               </div>
               <div>
-                <p className="text-white font-medium">Meus Investimentos</p>
-                <p className="text-gray-400 text-sm">Acompanhar</p>
+                <p className="text-white font-medium">{t('investment.myInvestments')}</p>
+                <p className="text-gray-400 text-sm">{t('dashboard.viewAll')}</p>
               </div>
             </div>
           </Link>
@@ -226,8 +227,8 @@ const Home: React.FC = () => {
                 <Users className="text-warning" size={20} />
               </div>
               <div>
-                <p className="text-white font-medium">Minha Equipe</p>
-                <p className="text-gray-400 text-sm">Convidar amigos</p>
+                <p className="text-white font-medium">{t('team.title')}</p>
+                <p className="text-gray-400 text-sm">{t('team.inviteFriends')}</p>
               </div>
             </div>
           </Link>
@@ -241,8 +242,8 @@ const Home: React.FC = () => {
                 <DollarSign className="text-gray-300" size={20} />
               </div>
               <div>
-                <p className="text-white font-medium">Perfil</p>
-                <p className="text-gray-400 text-sm">Configurações</p>
+                <p className="text-white font-medium">{t('profile.title')}</p>
+                <p className="text-gray-400 text-sm">{t('team.configurations')}</p>
               </div>
             </div>
           </Link>
@@ -252,15 +253,15 @@ const Home: React.FC = () => {
       {/* Getting Started */}
       {(!investmentStats || investmentStats.activeInvestments === 0) && (
         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
-          <h3 className="text-primary font-semibold mb-2">Comece a Investir!</h3>
+          <h3 className="text-primary font-semibold mb-2">{t('dashboard.startInvesting')}</h3>
           <p className="text-gray-300 text-sm mb-4">
-            Faça seu primeiro investimento e comece a ganhar rendimentos diários.
+            {t('dashboard.makeFirstInvestment')}
           </p>
           <Link
             to="/invest"
             className="inline-block bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
-            Ver Produtos de Investimento
+            {t('dashboard.seeProducts')}
           </Link>
         </div>
       )}

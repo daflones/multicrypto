@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Copy, Check, Share2, Users, Gift } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
 
 const ReferralLink: React.FC = () => {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const { user } = useAuthStore();
 
@@ -43,16 +45,16 @@ const ReferralLink: React.FC = () => {
         <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-4">
           <Users className="text-white" size={24} />
         </div>
-        <h2 className="text-xl font-bold text-white mb-2">Convide Amigos</h2>
+        <h2 className="text-xl font-bold text-white mb-2">{t('team.inviteFriends')}</h2>
         <p className="text-gray-400">
-          Ganhe comissões de até 20% dos investimentos da sua equipe
+          {t('team.subtitle')}
         </p>
       </div>
 
       {/* Referral Code */}
       <div className="bg-surface rounded-lg p-4">
         <label className="block text-sm font-medium text-gray-300 mb-2">
-          Seu Código de Convite:
+          {t('team.referralCode')}:
         </label>
         <div className="flex items-center space-x-2">
           <input
@@ -77,7 +79,7 @@ const ReferralLink: React.FC = () => {
       {/* Referral Link */}
       <div className="bg-surface rounded-lg p-4">
         <label className="block text-sm font-medium text-gray-300 mb-2">
-          Link de Convite:
+          {t('profile.referralCode')}:
         </label>
         <div className="flex items-center space-x-2">
           <input
@@ -105,14 +107,14 @@ const ReferralLink: React.FC = () => {
         className="w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center justify-center space-x-2"
       >
         <Share2 size={20} />
-        <span>Compartilhar Link</span>
+        <span>{t('team.shareLink')}</span>
       </button>
 
       {/* Commission Structure */}
       <div className="bg-surface rounded-lg p-4">
         <h3 className="text-lg font-semibold text-white mb-4 flex items-center space-x-2">
           <Gift className="text-primary" size={20} />
-          <span>Estrutura de Comissões</span>
+          <span>{t('team.commissionSummary')}</span>
         </h3>
         
         <div className="space-y-2">
@@ -121,7 +123,7 @@ const ReferralLink: React.FC = () => {
               <div className="w-7 h-7 bg-primary/20 rounded-full flex items-center justify-center">
                 <span className="text-primary font-bold text-xs">1</span>
               </div>
-              <p className="text-white font-medium text-sm">Nível 1</p>
+              <p className="text-white font-medium text-sm">{t('team.level')} 1</p>
             </div>
             <span className="text-success font-bold">10%</span>
           </div>
@@ -131,7 +133,7 @@ const ReferralLink: React.FC = () => {
               <div className="w-7 h-7 bg-secondary/20 rounded-full flex items-center justify-center">
                 <span className="text-secondary font-bold text-xs">2</span>
               </div>
-              <p className="text-white font-medium text-sm">Nível 2</p>
+              <p className="text-white font-medium text-sm">{t('team.level')} 2</p>
             </div>
             <span className="text-success font-bold">4%</span>
           </div>
@@ -141,7 +143,7 @@ const ReferralLink: React.FC = () => {
               <div className="w-7 h-7 bg-warning/20 rounded-full flex items-center justify-center">
                 <span className="text-warning font-bold text-xs">3</span>
               </div>
-              <p className="text-white font-medium text-sm">Nível 3</p>
+              <p className="text-white font-medium text-sm">{t('team.level')} 3</p>
             </div>
             <span className="text-success font-bold">2%</span>
           </div>
@@ -176,19 +178,19 @@ const ReferralLink: React.FC = () => {
 
         <div className="mt-4 p-3 bg-success/10 border border-success/20 rounded-lg">
           <p className="text-success text-sm text-center">
-            <strong>Total: 20%</strong> de comissão sobre todos os investimentos da sua equipe!
+            <strong>Total: 20%</strong> {t('team.referralEarnings')}
           </p>
         </div>
       </div>
 
       {/* Instructions */}
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
-        <h4 className="text-primary font-semibold mb-2">Como funciona:</h4>
+        <h4 className="text-primary font-semibold mb-2">{t('about.howItWorks')}:</h4>
         <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
-          <li>Compartilhe seu código ou link de convite</li>
-          <li>Seus amigos se cadastram usando seu código</li>
-          <li>Quando eles investem, você ganha comissão automaticamente</li>
-          <li>As comissões são creditadas no seu saldo instantaneamente</li>
+          <li>{t('profile.shareReferralCode')}</li>
+          <li>{t('auth.register.createAccount')}</li>
+          <li>{t('team.referralEarnings')}</li>
+          <li>{t('withdraw.success')}</li>
         </ol>
       </div>
     </div>

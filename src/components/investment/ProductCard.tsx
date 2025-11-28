@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp, Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Product } from '../../services/supabase';
 import { getProductImage } from '../../utils/imageUtils';
 
@@ -13,6 +14,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   product, 
   onInvest 
 }) => {
+  const { t } = useTranslation();
   const isPremium = product.product_type === 'premium';
 
   return (
@@ -50,12 +52,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Investment Details */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-400">Investimento mínimo:</span>
+            <span className="text-sm text-gray-400">{t('investment.minimumInvestment')}:</span>
             <span className="text-white font-semibold">R$ 50,00</span>
           </div>
           
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-400">Rendimento/dia:</span>
+            <span className="text-sm text-gray-400">{t('investment.dailyReturn')}:</span>
             <span className="text-success font-semibold flex items-center space-x-1">
               <TrendingUp size={14} />
               <span>5%</span>
@@ -63,8 +65,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
           
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-400">Duração:</span>
-            <span className="text-white font-semibold">{product.duration_days || 60} dias</span>
+            <span className="text-sm text-gray-400">{t('investment.duration')}:</span>
+            <span className="text-white font-semibold">{product.duration_days || 60} {t('investment.days')}</span>
           </div>
         </div>
 
@@ -72,15 +74,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20 rounded-lg p-3">
           <div className="space-y-1">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-300">ROI total:</span>
+              <span className="text-gray-300">{t('investment.totalROI')}:</span>
               <span className="text-success font-semibold text-lg">
                 300%
               </span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-300 text-xs">Rendimento diário:</span>
+              <span className="text-gray-300 text-xs">{t('investment.dailyReturn')}:</span>
               <span className="text-success text-xs">
-                5% ao dia
+                5%
               </span>
             </div>
           </div>
@@ -89,7 +91,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Investment Range */}
         <div className="bg-background/50 rounded-lg p-3">
           <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-400">Valor de investimento:</span>
+            <span className="text-gray-400">{t('investment.investmentValue')}:</span>
             <span className="text-white font-semibold">
               R$ 50 - R$ 50.000
             </span>
@@ -101,7 +103,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           onClick={() => onInvest(product)}
           className="w-full py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center space-x-2 bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white"
         >
-          <span>Investir Agora</span>
+          <span>{t('investment.investNow')}</span>
         </button>
       </div>
     </div>

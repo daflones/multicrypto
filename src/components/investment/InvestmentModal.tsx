@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { X, TrendingUp, AlertCircle, DollarSign } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Product } from '../../services/supabase';
 import { useAuthStore } from '../../store/authStore';
 import { useUserStore } from '../../store/userStore';
-import { formatCurrency } from '../../utils/formatters';
 import { NotificationService } from '../../services/notification.service';
 import { useNavigate } from 'react-router-dom';
 import { INVESTMENT_LIMITS, calculateDailyYield, calculateTotalYield, calculateTotalROI, calculateDaysToMaxReturn } from '../../constants/investment';
 import { useToastContext } from '../../contexts/ToastContext';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface InvestmentModalProps {
   product: Product | null;
@@ -26,6 +27,8 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
   isOpen, 
   onClose 
 }) => {
+  const { t } = useTranslation();
+  const { formatAmount } = useCurrency();
   const [isInvesting, setIsInvesting] = useState(false);
   const [investAmount, setInvestAmount] = useState(0);
   const { user } = useAuthStore();
@@ -52,7 +55,7 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
       if (investAmount < sliderMin || investAmount === 0) {
         showError(
           'Valor Inválido',
-          `O valor mínimo para este produto é ${formatCurrency(sliderMin)}`
+          `O valor mínimo para este produto é ${formatAmount(sliderMin)}`
         );
         return;
       }
@@ -73,7 +76,7 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
         
         showError(
           'Saldo Insuficiente',
-          `Disponível: ${formatCurrency(totalBalance)}, Necessário: ${formatCurrency(investAmount)}`
+          `Disponível: ${formatAmount(totalBalance)}, Necessário: ${formatAmount(investAmount)}`
         );
         return;
       }
@@ -100,7 +103,7 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
 
       showSuccess(
         'Investimento Realizado!',
-        `Investimento de ${formatCurrency(investAmount)} em ${product.name} realizado com sucesso!`
+        `Investimento de ${formatAmount(investAmount)} em ${product.name} realizado com sucesso!`
       );
       
       onClose();
@@ -182,7 +185,7 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
       <div className="bg-surface rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-surface-light">
-          <h2 className="text-xl font-bold text-white">Confirmar Investimento</h2>
+          <h2 className="text-xl font-bold text-white">{t('investment.confirmInvestment')}</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
@@ -213,9 +216,9 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
           <div className="bg-background/50 rounded-lg p-4 space-y-4">
             <div>
               <div className="flex justify-between items-center mb-4">
-                <span className="text-gray-400">Valor do investimento:</span>
+                <span className="text-gray-400">{t('investment.investmentValue')}:</span>
                 <span className="text-white font-semibold text-2xl">
-                  {formatCurrency(investAmount)}
+                  {formatAmount(investAmount)}
                 </span>
               </div>
               
@@ -251,7 +254,7 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
                     }
                   }}
                   className="w-full bg-surface border border-surface-light rounded-lg px-4 py-3 text-white text-center text-xl font-semibold focus:outline-none focus:border-primary"
-                  placeholder={`Mín: ${formatCurrency(sliderMin)}`}
+                  placeholder={`${t('investment.minimumAmount')}: ${formatAmount(sliderMin)}`}
                 />
               </div>
 
@@ -266,37 +269,37 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
                   className="w-full accent-primary"
                 />
                 <div className="flex justify-between text-xs text-gray-500">
-                  <span>Mín: {formatCurrency(sliderMin)}</span>
-                  <span>Máx: {formatCurrency(sliderMax)}</span>
+                  <span>{t('investment.minimumAmount')}: {formatAmount(sliderMin)}</span>
+                  <span>{t('investment.maxAmount')}: {formatAmount(sliderMax)}</span>
                 </div>
               </div>
             </div>
 
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Rendimento diário (5%):</span>
+                <span className="text-gray-400">{t('investment.dailyYield')}:</span>
                 <span className="text-success font-semibold flex items-center space-x-1">
                   <TrendingUp size={16} />
-                  <span>{formatCurrency(dailyReturn)}</span>
+                  <span>{formatAmount(dailyReturn)}</span>
                 </span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Retorno total (300%):</span>
+                <span className="text-gray-400">{t('investment.totalReturn')}:</span>
                 <span className="text-success font-semibold">
-                  {formatCurrency(totalReturn)}
+                  {formatAmount(totalReturn)}
                 </span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">Dias para completar:</span>
+                <span className="text-gray-400">{t('investment.daysToComplete')}:</span>
                 <span className="text-amber-400 font-semibold">
-                  {daysToComplete} dias
+                  {daysToComplete} {t('investment.days')}
                 </span>
               </div>
               
               <div className="flex justify-between items-center">
-                <span className="text-gray-400">ROI total:</span>
+                <span className="text-gray-400">{t('investment.totalROI')}:</span>
                 <span className="text-success font-semibold">
                   {totalROI.toFixed(0)}%
                 </span>
@@ -307,43 +310,43 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
           {/* Balance Check */}
           <div className="bg-background/50 rounded-lg p-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-gray-400">Saldo total disponível:</span>
+              <span className="text-gray-400">{t('dashboard.totalBalance')}:</span>
               <span className="text-white font-semibold">
-                {formatCurrency(totalBalance)}
+                {formatAmount(totalBalance)}
               </span>
             </div>
             <div className="text-xs text-gray-500 mb-3 space-y-1">
               <div className="flex justify-between">
-                <span>• Saldo principal:</span>
-                <span>{formatCurrency(user.balance || 0)}</span>
+                <span>• {t('withdraw.mainBalance')}:</span>
+                <span>{formatAmount(user.balance || 0)}</span>
               </div>
               <div className="flex justify-between">
-                <span>• Saldo de comissão:</span>
-                <span>{formatCurrency(user.commission_balance || 0)}</span>
+                <span>• {t('withdraw.commissionBalance')}:</span>
+                <span>{formatAmount(user.commission_balance || 0)}</span>
               </div>
             </div>
             <div className="border-t border-gray-600 pt-3 mt-3">
               <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-400">Saldo após investimento:</span>
+                <span className="text-gray-400">{t('dashboard.availableBalance')}:</span>
                 <span className={`font-semibold ${
                   hasInsufficientBalance ? 'text-error' : 'text-success'
                 }`}>
-                  {formatCurrency(balanceAfterInvestment)}
+                  {formatAmount(balanceAfterInvestment)}
                 </span>
               </div>
               
               {/* Saldos restantes simples */}
               <div className="text-xs text-gray-500 space-y-1">
                 <div className="flex justify-between">
-                  <span>Saldo principal:</span>
+                  <span>{t('withdraw.mainBalance')}:</span>
                   <span className="text-gray-300">
-                    {formatCurrency(Math.max(0, balanceBreakdown.newMainBalance))}
+                    {formatAmount(Math.max(0, balanceBreakdown.newMainBalance))}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Saldo de comissão:</span>
+                  <span>{t('withdraw.commissionBalance')}:</span>
                   <span className="text-gray-300">
-                    {formatCurrency(Math.max(0, balanceBreakdown.newCommissionBalance))}
+                    {formatAmount(Math.max(0, balanceBreakdown.newCommissionBalance))}
                   </span>
                 </div>
               </div>
@@ -355,9 +358,9 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
             <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 flex items-start space-x-3">
               <AlertCircle className="text-yellow-500 flex-shrink-0 mt-0.5" size={20} />
               <div>
-                <p className="text-yellow-500 font-medium text-sm">Valor Abaixo do Mínimo</p>
+                <p className="text-yellow-500 font-medium text-sm">{t('investment.minimumAmount')}</p>
                 <p className="text-yellow-500/80 text-sm mt-1">
-                  O valor mínimo para investimento é {formatCurrency(sliderMin)}.
+                  {t('investment.minimumInvestment')}: {formatAmount(sliderMin)}
                 </p>
               </div>
             </div>
@@ -367,9 +370,9 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
             <div className="bg-error/10 border border-error/20 rounded-lg p-4 flex items-start space-x-3">
               <AlertCircle className="text-error flex-shrink-0 mt-0.5" size={20} />
               <div>
-                <p className="text-error font-medium text-sm">Saldo Insuficiente</p>
+                <p className="text-error font-medium text-sm">{t('investment.insufficientBalance')}</p>
                 <p className="text-error/80 text-sm mt-1">
-                  Você precisa de {formatCurrency(investAmount - totalBalance)} a mais para realizar este investimento.
+                  {t('investment.needMore', { amount: formatAmount(investAmount - totalBalance) })}
                 </p>
               </div>
             </div>
@@ -381,7 +384,7 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
               onClick={onClose}
               className="flex-1 py-3 px-4 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
             >
-              Cancelar
+              {t('common.cancel')}
             </button>
             <button
               onClick={handleInvest}
@@ -393,7 +396,7 @@ const InvestmentModal: React.FC<InvestmentModalProps> = ({
               ) : (
                 <>
                   <DollarSign size={20} />
-                  <span>Confirmar Investimento</span>
+                  <span>{t('investment.confirmInvestment')}</span>
                 </>
               )}
             </button>

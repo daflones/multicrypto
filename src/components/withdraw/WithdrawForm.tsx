@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Wallet, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
-import { formatCurrency } from '../../utils/formatters';
 import { APP_CONFIG } from '../../utils/constants';
 import { withdrawSchema, WithdrawFormData, validateWalletAddress } from '../../utils/validators';
 import { TransactionService } from '../../services/transaction.service';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface WithdrawFormProps {
   onSuccess?: () => void;
@@ -13,9 +13,11 @@ interface WithdrawFormProps {
 
 const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
   const { t } = useTranslation();
+  const { formatAmount, isBrazilian: isBrazilianUser } = useCurrency();
+  
   const [formData, setFormData] = useState<WithdrawFormData>({
     amount: 0,
-    paymentMethod: 'pix',
+    paymentMethod: isBrazilianUser ? 'pix' : 'crypto', // Força crypto para não-brasileiros
     balanceType: 'main',
     pixKey: '',
     pixKeyType: 'cpf',
@@ -27,6 +29,13 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
   const [checkingProducts, setCheckingProducts] = useState(true);
 
   const { user, refreshBalance } = useAuthStore();
+  
+  // Atualizar método de pagamento quando idioma mudar
+  useEffect(() => {
+    if (!isBrazilianUser && formData.paymentMethod === 'pix') {
+      setFormData(prev => ({ ...prev, paymentMethod: 'crypto' }));
+    }
+  }, [isBrazilianUser]);
 
   // Verificar se usuário tem produtos ativos
   useEffect(() => {
@@ -91,7 +100,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
       const netToReceive = typeof (result as any).netAmount === 'number'
         ? (result as any).netAmount
         : (validatedData.amount - result.fee);
-      alert(`Solicitação de saque enviada!\n\nValor: ${formatCurrency(validatedData.amount)}\nTaxa (5%): ${formatCurrency(result.fee)}\nTotal a receber: ${formatCurrency(netToReceive)}`);
+      alert(`Solicitação de saque enviada!\n\nValor: ${formatAmount(validatedData.amount)}\nTaxa (5%): ${formatAmount(result.fee)}\nTotal a receber: ${formatAmount(netToReceive)}`);
       
       await refreshBalance();
       onSuccess?.();
@@ -182,7 +191,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
         <div className="flex items-center justify-between">
           <span className="text-gray-400">{t('withdraw.availableBalance')}:</span>
           <span className="text-xl font-bold text-primary">
-            {formatCurrency(availableBalance)}
+            {formatAmount(availableBalance)}
           </span>
         </div>
       </div>
@@ -206,9 +215,9 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
           <div className="flex items-center space-x-2">
             <AlertCircle className="text-red-400" size={20} />
             <div>
-              <p className="text-red-400 font-medium">Saldo insuficiente</p>
+              <p className="text-red-400 font-medium">{t('investment.insufficientBalance')}</p>
               <p className="text-red-300 text-sm">
-                Mínimo: {formatCurrency(APP_CONFIG.MIN_WITHDRAWAL)}
+                {t('withdraw.minAmount')}
               </p>
             </div>
           </div>
@@ -220,9 +229,9 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
           <div className="flex items-center space-x-2">
             <AlertCircle className="text-yellow-400" size={20} />
             <div>
-              <p className="text-yellow-400 font-medium">Saques disponíveis apenas às segundas-feiras</p>
+              <p className="text-yellow-400 font-medium">{t('withdraw.mondayOnly')}</p>
               <p className="text-yellow-300 text-sm">
-                Você poderá solicitar seu saque na próxima segunda-feira.
+                {t('withdraw.mondayOnly')}
               </p>
             </div>
           </div>
@@ -233,7 +242,7 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
         {/* Seleção do tipo de saldo */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
-            Tipo de saldo para saque
+            {t('withdraw.balanceType')}
           </label>
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -247,9 +256,9 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
               disabled={isSubmitting}
             >
               <div className="text-center">
-                <p className="font-medium">Saldo Principal</p>
-                <p className="text-sm opacity-80">{formatCurrency(mainBalance)}</p>
-                <p className="text-xs opacity-60 mt-1">Depósitos + Rendimentos</p>
+                <p className="font-medium">{t('withdraw.mainBalance')}</p>
+                <p className="text-sm opacity-80">{formatAmount(mainBalance)}</p>
+                <p className="text-xs opacity-60 mt-1">{t('dashboard.depositPlusTotalEarned')}</p>
               </div>
             </button>
             
@@ -264,9 +273,9 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
               disabled={isSubmitting}
             >
               <div className="text-center">
-                <p className="font-medium">Saldo de Comissão</p>
-                <p className="text-sm opacity-80">{formatCurrency(commissionBalance)}</p>
-                <p className="text-xs opacity-60 mt-1">Comissões de Indicação</p>
+                <p className="font-medium">{t('withdraw.commissionBalance')}</p>
+                <p className="text-sm opacity-80">{formatAmount(commissionBalance)}</p>
+                <p className="text-xs opacity-60 mt-1">{t('dashboard.referralCommissions')}</p>
               </div>
             </button>
           </div>
@@ -274,11 +283,11 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
-            Valor do saque
+            {t('withdraw.withdrawAmount')}
             <span className="text-sm text-gray-400 ml-2">
               {user?.withdrawal_limit && user.withdrawal_limit > 0 ? 
-                `(Limite: ${formatCurrency(user.withdrawal_limit)})` : 
-                `(Disponível: ${formatCurrency(availableBalance)})`
+                `(Limite: ${formatAmount(user.withdrawal_limit)})` : 
+                `(Disponível: ${formatAmount(availableBalance)})`
               }
             </span>
           </label>
@@ -307,29 +316,29 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
 
         {formData.amount > 0 && (
           <div className="bg-surface rounded-lg p-4">
-            <h4 className="text-white font-medium mb-3">Resumo do Saque</h4>
+            <h4 className="text-white font-medium mb-3">{t('withdraw.title')}</h4>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-400">Valor solicitado:</span>
-                <span className="text-white">{formatCurrency(formData.amount)}</span>
+                <span className="text-gray-400">{t('withdraw.withdrawAmount')}:</span>
+                <span className="text-white">{formatAmount(formData.amount)}</span>
               </div>
               {isCrypto && (
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Equivalente em USD:</span>
+                  <span className="text-gray-400">{t('withdraw.equivalentUSD')}:</span>
                   <span className="text-amber-400">${amountInUSD.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-gray-400">Taxa (5%):</span>
-                <span className="text-yellow-400">{formatCurrency(fee)}</span>
+                <span className="text-gray-400">{t('withdraw.withdrawFee').split(':')[0]}:</span>
+                <span className="text-yellow-400">{formatAmount(fee)}</span>
               </div>
               <div className="flex justify-between border-t border-gray-600 pt-2">
-                <span className="text-gray-300 font-medium">Total a Receber:</span>
-                <span className="text-success font-bold">{formatCurrency(totalDeducted)}</span>
+                <span className="text-gray-300 font-medium">{t('withdraw.totalToReceive')}:</span>
+                <span className="text-success font-bold">{formatAmount(totalDeducted)}</span>
               </div>
               {isCrypto && (
                 <div className="flex justify-between">
-                  <span className="text-gray-300 font-medium">Você receberá (USD):</span>
+                  <span className="text-gray-300 font-medium">{t('withdraw.youWillReceive')} (USD):</span>
                   <span className="text-success font-bold">${netAmountInUSD.toFixed(2)}</span>
                 </div>
               )}
@@ -339,25 +348,31 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
-            Método de recebimento
+            {t('withdraw.paymentMethod')}
           </label>
-          <select
-            name="paymentMethod"
-            value={formData.paymentMethod}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white focus:outline-none focus:border-primary"
-            disabled={isSubmitting || !canWithdraw}
-          >
-            <option value="pix">PIX</option>
-            <option value="crypto">Criptomoeda</option>
-          </select>
+          {isBrazilianUser ? (
+            <select
+              name="paymentMethod"
+              value={formData.paymentMethod}
+              onChange={handleChange}
+              className="w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white focus:outline-none focus:border-primary"
+              disabled={isSubmitting || !canWithdraw}
+            >
+              <option value="pix">{t('withdraw.pix')}</option>
+              <option value="crypto">{t('withdraw.crypto')}</option>
+            </select>
+          ) : (
+            <div className="w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white">
+              {t('withdraw.crypto')} (TRC20 / BEP20)
+            </div>
+          )}
         </div>
 
-        {formData.paymentMethod === 'pix' && (
+        {formData.paymentMethod === 'pix' && isBrazilianUser && (
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Tipo da Chave PIX
+                {t('withdraw.pixKeyType')}
               </label>
               <select
                 name="pixKeyType"
@@ -366,30 +381,24 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
                 className="w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white focus:outline-none focus:border-primary"
                 disabled={isSubmitting || !canWithdraw}
               >
-                <option value="cpf">CPF</option>
+                <option value="cpf">{t('withdraw.cpf')}</option>
                 <option value="cnpj">CNPJ</option>
-                <option value="email">E-mail</option>
-                <option value="phone">Telefone</option>
-                <option value="random">Chave Aleatória</option>
+                <option value="email">{t('withdraw.email')}</option>
+                <option value="phone">{t('withdraw.phone')}</option>
+                <option value="random">{t('withdraw.random')}</option>
               </select>
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Chave PIX
+                {t('withdraw.pixKey')}
               </label>
               <input
                 type="text"
                 name="pixKey"
                 value={formData.pixKey}
                 onChange={handleChange}
-                placeholder={
-                  formData.pixKeyType === 'cpf' ? 'Digite seu CPF' :
-                  formData.pixKeyType === 'cnpj' ? 'Digite seu CNPJ' :
-                  formData.pixKeyType === 'email' ? 'Digite seu e-mail' :
-                  formData.pixKeyType === 'phone' ? 'Digite seu telefone' :
-                  'Digite sua chave aleatória'
-                }
+                placeholder={t('withdraw.enterPixKey')}
                 className="w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
                 disabled={isSubmitting || !canWithdraw}
               />
@@ -403,14 +412,14 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
         {formData.paymentMethod === 'crypto' && (
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Endereço da Carteira
+              {t('withdraw.walletAddress')}
             </label>
             <input
               type="text"
               name="walletAddress"
               value={formData.walletAddress}
               onChange={handleChange}
-              placeholder="Digite o endereço da carteira"
+              placeholder={t('withdraw.walletPlaceholder')}
               className="w-full px-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
               disabled={isSubmitting || !canWithdraw}
             />
@@ -421,20 +430,20 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
         )}
 
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
-          <h4 className="text-amber-400 font-medium mb-2">Informações importantes:</h4>
+          <h4 className="text-amber-400 font-medium mb-2">{t('withdraw.importantInfo')}:</h4>
           <ul className="text-sm text-gray-300 space-y-1">
             {user?.withdrawal_limit && user.withdrawal_limit > 0 ? (
-              <li>• <strong>Seu limite de saque: {formatCurrency(user.withdrawal_limit)}</strong></li>
+              <li>• <strong>{t('withdraw.yourLimit')}: {formatAmount(user.withdrawal_limit)}</strong></li>
             ) : (
-              <li>• Taxa de saque: 5% sobre o valor solicitado</li>
+              <li>• {t('withdraw.withdrawFee')}</li>
             )}
-            <li>• Mínimo: {formatCurrency(APP_CONFIG.MIN_WITHDRAWAL)}</li>
+            <li>• {t('withdraw.minAmount')}</li>
             {!user?.withdrawal_limit || user.withdrawal_limit === 0 ? (
-              <li>• Máximo: {formatCurrency(APP_CONFIG.MAX_WITHDRAWAL)}</li>
+              <li>• {t('withdraw.maxAmount')}</li>
             ) : null}
-            <li>• Saques permitidos apenas às segundas-feiras</li>
-            <li>• Processamento: 1-3 dias úteis</li>
-            <li>• Necessário ter investimento ativo</li>
+            <li>• {t('withdraw.mondayOnly')}</li>
+            <li>• {t('withdraw.processingTime')}</li>
+            <li>• {t('withdraw.activeInvestmentRequired')}</li>
           </ul>
         </div>
 
@@ -446,12 +455,12 @@ const WithdrawForm: React.FC<WithdrawFormProps> = ({ onSuccess }) => {
           {isSubmitting ? (
             <>
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              <span>Processando...</span>
+              <span>{t('withdraw.processing')}</span>
             </>
           ) : (
             <>
               <Wallet size={20} />
-              <span>Solicitar Saque</span>
+              <span>{t('withdraw.submit')}</span>
             </>
           )}
         </button>

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, ArrowDownLeft, ShoppingCart, Users, Calendar, Filter, TrendingUp, DollarSign } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../../services/supabase';
 import { useAuthStore } from '../../store/authStore';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import { formatDate } from '../../utils/formatters';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface Transaction {
   id: string;
@@ -21,6 +23,8 @@ interface Transaction {
 }
 
 const TransactionHistory: React.FC = () => {
+  const { t } = useTranslation();
+  const { formatAmount } = useCurrency();
   const { user } = useAuthStore();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,7 +179,7 @@ const TransactionHistory: React.FC = () => {
         return `Saque via ${paymentMethod?.toUpperCase() || 'PIX'}${balanceText}`;
       case 'investment':
         if (data?.commission_used && data?.main_balance_used) {
-          return `Investimento (Comissão: ${formatCurrency(data.commission_used)} + Principal: ${formatCurrency(data.main_balance_used)})`;
+          return `Investimento (Comissão: ${formatAmount(data.commission_used)} + Principal: ${formatAmount(data.main_balance_used)})`;
         }
         return 'Investimento';
       case 'yield':
@@ -221,13 +225,13 @@ const TransactionHistory: React.FC = () => {
   const getStatusText = (status: Transaction['status']) => {
     switch (status) {
       case 'approved':
-        return 'Aprovado';
+        return t('transactions.approved');
       case 'completed':
-        return 'Concluído';
+        return t('transactions.completed');
       case 'pending':
-        return 'Pendente';
+        return t('transactions.pending');
       case 'rejected':
-        return 'Rejeitado';
+        return t('transactions.rejected');
       default:
         return status;
     }
@@ -265,7 +269,7 @@ const TransactionHistory: React.FC = () => {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">Histórico de Transações</h3>
+        <h3 className="text-lg font-semibold text-white">{t('profile.transactionHistory')}</h3>
         
         {/* Filter */}
         <div className="flex items-center space-x-2">
@@ -275,12 +279,12 @@ const TransactionHistory: React.FC = () => {
             onChange={(e) => setFilter(e.target.value as typeof filter)}
             className="bg-surface border border-surface-light rounded px-3 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary"
           >
-            <option value="all">Todas</option>
-            <option value="deposit">Recargas</option>
-            <option value="withdraw">Saques</option>
-            <option value="investment">Investimentos</option>
-            <option value="commission">Comissões</option>
-            <option value="yield">Rendimentos</option>
+            <option value="all">{t('transactions.all')}</option>
+            <option value="deposit">{t('transactions.deposit')}</option>
+            <option value="withdraw">{t('transactions.withdrawal')}</option>
+            <option value="investment">{t('transactions.investment')}</option>
+            <option value="commission">{t('transactions.referralBonus')}</option>
+            <option value="yield">{t('transactions.profit')}</option>
           </select>
         </div>
       </div>
@@ -290,12 +294,12 @@ const TransactionHistory: React.FC = () => {
         {loading ? (
           <div className="text-center py-8">
             <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            <p className="text-gray-400">Carregando transações...</p>
+            <p className="text-gray-400">{t('common.loading')}</p>
           </div>
         ) : transactions.length === 0 ? (
           <div className="text-center py-8">
             <Calendar size={48} className="text-gray-600 mx-auto mb-2" />
-            <p className="text-gray-400">Nenhuma transação encontrada</p>
+            <p className="text-gray-400">{t('transactions.noTransactions')}</p>
           </div>
         ) : (
           transactions.map((transaction) => (
@@ -323,15 +327,15 @@ const TransactionHistory: React.FC = () => {
                       <div className="mt-1 text-xs text-gray-500">
                         <span>Produto: {transaction.product.name}</span>
                         {transaction.product.price && (
-                          <span> • Preço: {formatCurrency(transaction.product.price)}</span>
+                          <span> • Preço: {formatAmount(transaction.product.price)}</span>
                         )}
                       </div>
                     )}
                     
                     {transaction.data?.breakdown && (
                       <div className="mt-1 text-xs text-gray-500">
-                        Usado: Comissão {formatCurrency(transaction.data.breakdown.commission_balance)} + 
-                        Principal {formatCurrency(transaction.data.breakdown.main_balance)}
+                        Usado: Comissão {formatAmount(transaction.data.breakdown.commission_balance)} + 
+                        Principal {formatAmount(transaction.data.breakdown.main_balance)}
                       </div>
                     )}
                   </div>
@@ -339,7 +343,7 @@ const TransactionHistory: React.FC = () => {
                 
                 <div className="text-right">
                   <p className={`font-semibold text-lg ${getAmountColor(transaction.type)}`}>
-                    {getAmountPrefix(transaction.type)}{formatCurrency(transaction.amount)}
+                    {getAmountPrefix(transaction.type)}{formatAmount(transaction.amount)}
                   </p>
                   {transaction.payment_method && (
                     <p className="text-xs text-gray-400 uppercase">
@@ -365,7 +369,7 @@ const TransactionHistory: React.FC = () => {
             onClick={fetchTransactions}
             className="text-primary hover:text-primary/80 text-sm"
           >
-            Carregar mais transações
+            {t('dashboard.viewAll')}
           </button>
         </div>
       )}

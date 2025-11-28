@@ -3,14 +3,12 @@ import { User, LogOut, CreditCard, Phone, Mail, Copy, Check, Settings } from 'lu
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
 import { formatCPF, formatPhone, formatDate } from '../utils/formatters';
-import { useCountry } from '../hooks/useCountry';
 import TransactionHistory from '../components/profile/TransactionHistory';
 import ChangePhoneModal from '../components/profile/ChangePhoneModal';
 import ChangePasswordModal from '../components/profile/ChangePasswordModal';
 
 const Profile: React.FC = () => {
   const { t } = useTranslation();
-  const { countryInfo } = useCountry();
   const [copied, setCopied] = useState(false);
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -66,7 +64,7 @@ const Profile: React.FC = () => {
             <CreditCard className="text-secondary" size={20} />
           </div>
           <div className="flex-1">
-            <p className="text-gray-400 text-sm">CPF</p>
+            <p className="text-gray-400 text-sm">{t('profile.document')}</p>
             <p className="text-white font-medium">{formatCPF(user.cpf)}</p>
           </div>
         </div>
@@ -77,7 +75,7 @@ const Profile: React.FC = () => {
             <Phone className="text-warning" size={20} />
           </div>
           <div className="flex-1">
-            <p className="text-gray-400 text-sm">Telefone</p>
+            <p className="text-gray-400 text-sm">{t('profile.phone')}</p>
             <p className="text-white font-medium">{formatPhone(user.phone)}</p>
           </div>
         </div>
@@ -88,7 +86,7 @@ const Profile: React.FC = () => {
             <Settings className="text-gray-300" size={20} />
           </div>
           <div className="flex-1">
-            <p className="text-gray-400 text-sm">Membro desde</p>
+            <p className="text-gray-400 text-sm">{t('profile.memberSince')}</p>
             <p className="text-white font-medium">{formatDate(user.created_at)}</p>
           </div>
         </div>
@@ -96,7 +94,7 @@ const Profile: React.FC = () => {
 
       {/* Referral Code */}
       <div className="bg-surface rounded-lg p-4">
-        <h2 className="text-lg font-semibold text-white mb-4">Código de Convite</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">{t('profile.referralCode')}</h2>
         <div className="flex items-center space-x-3">
           <div className="flex-1 bg-background border border-surface-light rounded-lg px-4 py-3">
             <p className="text-center text-white font-mono text-lg">{user.referral_code}</p>
@@ -113,13 +111,13 @@ const Profile: React.FC = () => {
           </button>
         </div>
         <p className="text-gray-400 text-sm mt-2 text-center">
-          Compartilhe este código para convidar amigos
+          {t('profile.shareReferralCode')}
         </p>
       </div>
 
       {/* Account Actions */}
       <div className="space-y-3">
-        <h2 className="text-lg font-semibold text-white">Configurações da Conta</h2>
+        <h2 className="text-lg font-semibold text-white">{t('profile.accountSettings')}</h2>
         
         <div className="bg-surface rounded-lg overflow-hidden">
           <button
@@ -128,9 +126,9 @@ const Profile: React.FC = () => {
           >
             <div className="flex items-center space-x-3">
               <Settings className="text-gray-400" size={20} />
-              <span className="text-white">Alterar Senha</span>
+              <span className="text-white">{t('profile.changePassword')}</span>
             </div>
-            <span className="text-gray-400">Abrir</span>
+            <span className="text-gray-400">{t('common.open')}</span>
           </button>
           
           <div className="border-t border-surface-light">
@@ -140,9 +138,9 @@ const Profile: React.FC = () => {
             >
               <div className="flex items-center space-x-3">
                 <Phone className="text-gray-400" size={20} />
-                <span className="text-white">Alterar Telefone</span>
+                <span className="text-white">{t('profile.changePhone')}</span>
               </div>
-              <span className="text-gray-400">Abrir</span>
+              <span className="text-gray-400">{t('common.open')}</span>
             </button>
           </div>
         </div>
@@ -155,9 +153,9 @@ const Profile: React.FC = () => {
 
       {/* Support */}
       <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
-        <h3 className="text-primary font-semibold mb-2">💬 Precisa de Ajuda?</h3>
+        <h3 className="text-primary font-semibold mb-2">💬 {t('profile.needHelp')}</h3>
         <p className="text-gray-300 text-sm mb-3">
-          Nossa equipe de suporte está sempre disponível para ajudar você.
+          {t('about.specializedSupportText')}
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <a
@@ -166,7 +164,7 @@ const Profile: React.FC = () => {
             rel="noopener noreferrer"
             className="flex-1 text-center bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
-            Falar com Suporte (WhatsApp)
+            {t('profile.contactSupport')}
           </a>
           <a
             href="https://chat.whatsapp.com/IEqTSpXZSC1FqqMRXJhHeg?mode=ac_t"
@@ -174,7 +172,7 @@ const Profile: React.FC = () => {
             rel="noopener noreferrer"
             className="flex-1 text-center bg-secondary hover:bg-secondary/80 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
-            Entrar no Grupo do WhatsApp
+            {t('profile.joinWhatsAppGroup')}
           </a>
         </div>
       </div>
@@ -185,7 +183,7 @@ const Profile: React.FC = () => {
         className="w-full bg-error hover:bg-error/80 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
       >
         <LogOut size={20} />
-        <span>Sair da Conta</span>
+        <span>{t('profile.logoutAccount')}</span>
       </button>
 
       {/* Modals */}

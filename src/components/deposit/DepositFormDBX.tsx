@@ -3,8 +3,8 @@ import { AlertCircle, DollarSign, Copy, CheckCircle, Clock, X } from 'lucide-rea
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
 import { PAYMENT_METHODS } from '../../utils/constants';
-import { formatCurrency } from '../../utils/formatters';
 import { dbxBankPayService, DBXPaymentResponse } from '../../services/dbxbankpay.service';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface DepositFormProps {
   onSuccess?: () => void;
@@ -12,10 +12,12 @@ interface DepositFormProps {
 
 const DepositForm: React.FC<DepositFormProps> = () => {
   const { t } = useTranslation();
+  const { formatAmount, isBrazilian: isBrazilianUser } = useCurrency();
+  
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     amount: '',
-    paymentMethod: 'pix' as 'pix' | 'trc20' | 'bep20'
+    paymentMethod: isBrazilianUser ? 'pix' : 'trc20' as 'pix' | 'trc20' | 'bep20'
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +27,13 @@ const DepositForm: React.FC<DepositFormProps> = () => {
   const [usdRate, setUsdRate] = useState<number | null>(null);
 
   const { user } = useAuthStore();
+  
+  // Atualizar método de pagamento quando idioma mudar
+  useEffect(() => {
+    if (!isBrazilianUser && formData.paymentMethod === 'pix') {
+      setFormData(prev => ({ ...prev, paymentMethod: 'trc20' }));
+    }
+  }, [isBrazilianUser]);
 
   const walletAddresses = {
     PIX: import.meta.env.VITE_PIX_KEY || '',
@@ -68,7 +77,7 @@ const DepositForm: React.FC<DepositFormProps> = () => {
     
     // Validação de valor mínimo
     if (amount < 10) {
-      setError('Valor mínimo de R$ 10,00');
+      setError(t('deposit.minimumAmount'));
       return;
     }
     
@@ -82,7 +91,7 @@ const DepositForm: React.FC<DepositFormProps> = () => {
         
         const paymentData = {
           amount: dbxBankPayService.formatAmountToCents(amount),
-          description: `Recarga Multi Crypto - ${formatCurrency(amount)}`,
+          description: `Recarga Multi Crypto - ${formatAmount(amount)}`,
           customer_email: user?.email || '',
           customer_name: user?.email || 'Usuário',
           customer_document: user?.cpf || '',
@@ -137,13 +146,13 @@ const DepositForm: React.FC<DepositFormProps> = () => {
   const getStatusMessage = () => {
     switch (paymentStatus) {
       case 'aguardando':
-        return 'Aguardando pagamento...';
+        return t('deposit.awaitingPayment');
       case 'aprovado':
-        return 'Pagamento aprovado! Saldo creditado.';
+        return t('deposit.paymentApproved');
       case 'expirado':
-        return 'Pagamento expirado. Tente novamente.';
+        return t('deposit.paymentExpired');
       case 'cancelado':
-        return 'Pagamento cancelado.';
+        return t('deposit.paymentCancelled');
       default:
         return '';
     }
@@ -163,7 +172,9 @@ const DepositForm: React.FC<DepositFormProps> = () => {
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-300">{t('deposit.selectMethod')}</label>
             <div className="grid grid-cols-1 gap-3">
-              {PAYMENT_METHODS.map((method) => (
+              {PAYMENT_METHODS
+                .filter(method => isBrazilianUser || method.id !== 'pix') // Filtrar PIX para não-brasileiros
+                .map((method) => (
                 <button
                   key={method.id}
                   onClick={() => handlePaymentMethodChange(method.id as 'pix' | 'trc20' | 'bep20')}
@@ -264,7 +275,7 @@ const DepositForm: React.FC<DepositFormProps> = () => {
             <div className="bg-surface rounded-lg p-6 space-y-4">
               <div className="text-center">
                 <p className="text-gray-400 text-sm">Valor a pagar:</p>
-                <p className="text-2xl font-bold text-white">{formatCurrency(amount)}</p>
+                <p className="text-2xl font-bold text-white">{formatAmount(amount)}</p>
               </div>
 
               {/* QR Code */}
@@ -321,7 +332,7 @@ const DepositForm: React.FC<DepositFormProps> = () => {
             <div className="bg-surface rounded-lg p-6 space-y-4">
               <div className="text-center">
                 <p className="text-gray-400 text-sm">Valor a pagar:</p>
-                <p className="text-2xl font-bold text-white">{formatCurrency(amount)}</p>
+                <p className="text-2xl font-bold text-white">{formatAmount(amount)}</p>
                 {amountInUsd && <p className="text-gray-400 text-sm">≈ ${amountInUsd.toFixed(2)} USD</p>}
               </div>
               

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { sanitizeInput, validatePhone } from '../../utils/validators';
 import { AuthService } from '../../services/auth.service';
 import { useAuthStore } from '../../store/authStore';
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const ChangePhoneModal: React.FC<Props> = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const { user } = useAuthStore();
   const [phone, setPhone] = useState(user?.phone || '');
   const [loading, setLoading] = useState(false);
@@ -50,7 +52,7 @@ const ChangePhoneModal: React.FC<Props> = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="w-full max-w-md bg-surface rounded-lg shadow-lg">
         <div className="flex items-center justify-between p-4 border-b border-surface-light">
-          <h3 className="text-white font-semibold">Alterar Telefone</h3>
+          <h3 className="text-white font-semibold">{t('profile.changePhone')}</h3>
           <button onClick={onClose} className="p-2 hover:bg-surface-light rounded-md">
             <X className="text-gray-300" size={18} />
           </button>
@@ -58,7 +60,7 @@ const ChangePhoneModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Novo Telefone</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('profile.phone')}</label>
             <input
               type="tel"
               value={phone}
@@ -78,14 +80,14 @@ const ChangePhoneModal: React.FC<Props> = ({ isOpen, onClose }) => {
               onClick={onClose}
               className="flex-1 bg-surface-light hover:bg-surface text-white py-2 rounded-md"
             >
-              Cancelar
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="flex-1 bg-primary hover:bg-primary/80 disabled:opacity-60 text-white py-2 rounded-md"
             >
-              {loading ? 'Salvando...' : 'Salvar'}
+              {loading ? t('common.loading') : t('common.save')}
             </button>
           </div>
         </form>

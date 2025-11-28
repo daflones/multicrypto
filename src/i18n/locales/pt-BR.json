@@ -16,7 +16,9 @@
     "select": "Selecionar",
     "currency": "R$",
     "yes": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "open": "Abrir",
+    "about": "Sobre"
   },
   "auth": {
     "login": {
@@ -91,7 +93,9 @@
     "noInvestments": "Nenhum investimento encontrado",
     "makeFirstInvestment": "Faça seu primeiro investimento",
     "confirmInvestment": "Confirmar Investimento",
-    "seeProducts": "Ver produtos"
+    "seeProducts": "Ver produtos",
+    "needMore": "Você precisa de {{amount}} a mais para realizar este investimento",
+    "maxAmount": "Máximo"
   },
   "deposit": {
     "title": "Depositar",
@@ -112,7 +116,12 @@
     "submit": "Enviar Solicitação",
     "instructions": "Instruções",
     "pixInstructions": "1. Copie a chave PIX\n2. Faça o pagamento no seu banco\n3. Envie o comprovante\n4. Aguarde a confirmação",
-    "cryptoInstructions": "1. Selecione a criptomoeda\n2. Copie o endereço da carteira\n3. Envie os fundos\n4. Aguarde a confirmação na blockchain"
+    "cryptoInstructions": "1. Selecione a criptomoeda\n2. Copie o endereço da carteira\n3. Envie os fundos\n4. Aguarde a confirmação na blockchain",
+    "minimumAmount": "Valor mínimo de R$ 10,00",
+    "awaitingPayment": "Aguardando pagamento...",
+    "paymentApproved": "Pagamento aprovado! Saldo creditado.",
+    "paymentExpired": "Pagamento expirado. Tente novamente.",
+    "paymentCancelled": "Pagamento cancelado."
   },
   "withdraw": {
     "title": "Sacar",
@@ -150,7 +159,12 @@
     "minAmount": "Mínimo: R$ 50,00",
     "maxAmount": "Máximo: R$ 10.000,00",
     "mondayOnly": "Saques permitidos apenas às segundas-feiras",
-    "activeInvestmentRequired": "Necessário ter investimento ativo"
+    "activeInvestmentRequired": "Necessário ter investimento ativo",
+    "equivalentUSD": "Equivalente em USD",
+    "totalToReceive": "Total a Receber",
+    "youWillReceive": "Você receberá",
+    "yourLimit": "Seu limite de saque",
+    "processingTime": "Processamento: 1-3 dias úteis"
   },
   "team": {
     "title": "Minha Rede",

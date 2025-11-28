@@ -218,7 +218,10 @@
     "needHelp": "Нужна помощь?",
     "contactSupport": "Связаться с поддержкой (WhatsApp)",
     "joinWhatsAppGroup": "Присоединиться к группе WhatsApp",
-    "memberSince": "Участник с"
+    "memberSince": "Участник с",
+    "investor": "Инвестор",
+    "admin": "Администратор",
+    "adminPanel": "Панель администратора"
   },
   "dashboard": {
     "welcome": "Добро пожаловать",

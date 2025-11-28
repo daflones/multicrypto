@@ -229,7 +229,10 @@
     "needHelp": "¿Necesitas Ayuda?",
     "contactSupport": "Hablar con Soporte (WhatsApp)",
     "joinWhatsAppGroup": "Unirse al Grupo de WhatsApp",
-    "memberSince": "Miembro desde"
+    "memberSince": "Miembro desde",
+    "investor": "Inversor",
+    "admin": "Administrador",
+    "adminPanel": "Acceder al Panel Admin"
   },
   "dashboard": {
     "welcome": "Bienvenido",

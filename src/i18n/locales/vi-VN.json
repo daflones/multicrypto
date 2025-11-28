@@ -212,7 +212,10 @@
     "needHelp": "Cần trợ giúp?",
     "contactSupport": "Liên hệ hỗ trợ (WhatsApp)",
     "joinWhatsAppGroup": "Tham gia nhóm WhatsApp",
-    "memberSince": "Thành viên từ"
+    "memberSince": "Thành viên từ",
+    "investor": "Nhà đầu tư",
+    "admin": "Quản trị viên",
+    "adminPanel": "Truy cập bảng quản trị"
   },
   "dashboard": {
     "welcome": "Chào mừng",

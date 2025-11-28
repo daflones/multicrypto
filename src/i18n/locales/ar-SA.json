@@ -206,7 +206,10 @@
     "needHelp": "تحتاج مساعدة؟",
     "contactSupport": "تواصل مع الدعم (واتساب)",
     "joinWhatsAppGroup": "انضم لمجموعة واتساب",
-    "memberSince": "عضو منذ"
+    "memberSince": "عضو منذ",
+    "investor": "مستثمر",
+    "admin": "مدير",
+    "adminPanel": "الوصول إلى لوحة الإدارة"
   },
   "dashboard": {
     "welcome": "مرحباً",

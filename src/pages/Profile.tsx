@@ -52,7 +52,7 @@ const Profile: React.FC = () => {
             className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-lg transition-colors inline-flex items-center space-x-2"
           >
             <Shield size={16} />
-            <span>Acessar Painel Admin</span>
+            <span>{t('profile.adminPanel')}</span>
           </button>
         )}
       </div>

@@ -5,12 +5,7 @@ import {
   ArrowDownLeft, 
   TrendingUp, 
   Users, 
-  Filter, 
-  Search, 
-  Eye,
-  CheckCircle,
-  XCircle,
-  Clock
+  Search
 } from 'lucide-react';
 import { supabase } from '../../../services/supabase';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
@@ -159,20 +154,6 @@ const TransactionsSection: React.FC = () => {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'approved':
-      case 'completed':
-        return <CheckCircle className="text-green-400" size={16} />;
-      case 'rejected':
-        return <XCircle className="text-red-400" size={16} />;
-      case 'pending':
-        return <Clock className="text-yellow-400" size={16} />;
-      default:
-        return <Clock className="text-gray-400" size={16} />;
-    }
-  };
-
   const getStatusText = (status: string) => {
     switch (status) {
       case 'approved':
@@ -231,88 +212,65 @@ const TransactionsSection: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 lg:p-6 space-y-4 lg:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Transações</h1>
-          <p className="text-gray-400">Monitore todas as transações do sistema</p>
+      <div>
+        <h1 className="text-xl lg:text-2xl font-bold text-white">Transações</h1>
+        <p className="text-gray-400 text-sm">Monitore todas as transações</p>
+      </div>
+
+      {/* Stats Cards - Grid responsivo */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Volume Total</p>
+          <p className="text-lg lg:text-2xl font-bold text-primary truncate">{formatCurrency(totalVolume)}</p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Pendentes</p>
+          <p className="text-xl lg:text-2xl font-bold text-yellow-400">{pendingTransactions.length}</p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Aprovadas</p>
+          <p className="text-xl lg:text-2xl font-bold text-green-400">{approvedTransactions.length}</p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Total</p>
+          <p className="text-xl lg:text-2xl font-bold text-white">{transactions.length}</p>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Volume Total</p>
-              <p className="text-2xl font-bold text-primary">{formatCurrency(totalVolume)}</p>
-            </div>
-            <CreditCard className="text-primary" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Pendentes</p>
-              <p className="text-2xl font-bold text-yellow-400">{pendingTransactions.length}</p>
-            </div>
-            <Clock className="text-yellow-400" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Aprovadas</p>
-              <p className="text-2xl font-bold text-green-400">{approvedTransactions.length}</p>
-            </div>
-            <CheckCircle className="text-green-400" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Total</p>
-              <p className="text-2xl font-bold text-white">{transactions.length}</p>
-            </div>
-            <CreditCard className="text-white" size={24} />
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex items-center space-x-4">
+      {/* Filters - Responsivo */}
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           <input
             type="text"
-            placeholder="Buscar por usuário ou ID da transação..."
+            placeholder="Buscar..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface border border-surface-light rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary text-sm"
           />
         </div>
         
-        <div className="flex items-center space-x-2">
-          <Filter size={16} className="text-gray-400" />
+        <div className="flex gap-2">
           <select
             value={typeFilter}
             onChange={(e) => {
               setTypeFilter(e.target.value as typeof typeFilter);
               setCurrentPage(1);
             }}
-            className="bg-surface border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
+            className="bg-surface border border-surface-light rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-primary text-sm flex-1 sm:flex-none"
           >
-            <option value="all">Todos os Tipos</option>
+            <option value="all">Tipo</option>
             <option value="deposit">Depósitos</option>
             <option value="withdraw">Saques</option>
-            <option value="investment">Investimentos</option>
+            <option value="investment">Invest.</option>
             <option value="commission">Comissões</option>
             <option value="yield">Rendimentos</option>
           </select>
@@ -323,9 +281,9 @@ const TransactionsSection: React.FC = () => {
               setStatusFilter(e.target.value as typeof statusFilter);
               setCurrentPage(1);
             }}
-            className="bg-surface border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
+            className="bg-surface border border-surface-light rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-primary text-sm flex-1 sm:flex-none"
           >
-            <option value="all">Todos os Status</option>
+            <option value="all">Status</option>
             <option value="pending">Pendentes</option>
             <option value="approved">Aprovados</option>
             <option value="completed">Concluídos</option>
@@ -334,101 +292,70 @@ const TransactionsSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Transactions Table */}
+      {/* Transactions Cards */}
       {loading ? (
         <div className="text-center py-12">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Carregando transações...</p>
+          <p className="text-gray-400">Carregando...</p>
+        </div>
+      ) : paginatedTransactions.length === 0 ? (
+        <div className="text-center py-12 text-gray-400">
+          Nenhuma transação encontrada
         </div>
       ) : (
-        <div className="bg-surface border border-surface-light rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-background/50 border-b border-surface-light">
-                <tr>
-                  <th className="text-left p-4 text-gray-400 font-medium">ID</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Usuário</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Tipo</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Valor</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Status</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Método</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Data</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedTransactions.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="text-center py-8 text-gray-400">
-                      {filteredTransactions.length === 0 ? 'Nenhuma transação encontrada' : 'Nenhum resultado na página atual'}
-                    </td>
-                  </tr>
-                ) : (
-                  paginatedTransactions.map((transaction) => (
-                    <tr key={transaction.id} className="border-b border-surface-light hover:bg-background/30">
-                      <td className="p-4">
-                        <p className="text-white font-mono text-sm">{transaction.id.slice(0, 8)}...</p>
-                      </td>
-                      <td className="p-4">
-                        <div>
-                          <p className="text-white font-medium">{transaction.user.name}</p>
-                          <p className="text-gray-400 text-sm">{transaction.user.email}</p>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center space-x-2">
-                          {getTypeIcon(transaction.type)}
-                          <span className="text-white">{getTypeText(transaction.type)}</span>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <p className={`font-bold text-lg ${getAmountColor(transaction.type)}`}>
-                          {getAmountPrefix(transaction.type)}{formatCurrency(transaction.amount)}
-                        </p>
-                        {transaction.balance_type && (
-                          <p className="text-xs text-gray-500">
-                            {transaction.balance_type === 'commission' ? 'Comissão' : 'Principal'}
-                          </p>
-                        )}
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center space-x-2">
-                          {getStatusIcon(transaction.status)}
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(transaction.status)}`}>
-                            {getStatusText(transaction.status)}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <p className="text-white uppercase text-sm">
-                          {transaction.payment_method || '-'}
-                        </p>
-                      </td>
-                      <td className="p-4">
-                        <p className="text-white">{formatDate(transaction.created_at)}</p>
-                      </td>
-                      <td className="p-4">
-                        <button className="p-2 text-gray-400 hover:text-primary transition-colors">
-                          <Eye size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-          
+        <div className="space-y-3">
+          {paginatedTransactions.map((transaction) => (
+            <div 
+              key={transaction.id} 
+              className="bg-surface border border-surface-light rounded-xl p-4"
+            >
+              {/* Header do Card */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    transaction.type === 'deposit' ? 'bg-green-500/20' :
+                    transaction.type === 'withdraw' ? 'bg-red-500/20' :
+                    transaction.type === 'commission' ? 'bg-yellow-500/20' :
+                    'bg-blue-500/20'
+                  }`}>
+                    {getTypeIcon(transaction.type)}
+                  </div>
+                  <div>
+                    <p className="text-white font-medium text-sm">{transaction.user.name || transaction.user.email.split('@')[0]}</p>
+                    <p className="text-gray-500 text-xs">{getTypeText(transaction.type)}</p>
+                  </div>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(transaction.status)}`}>
+                  {getStatusText(transaction.status)}
+                </span>
+              </div>
+
+              {/* Valor */}
+              <div className="flex items-center justify-between py-2 border-t border-surface-light">
+                <span className="text-gray-400 text-sm">Valor</span>
+                <span className={`font-bold text-lg ${getAmountColor(transaction.type)}`}>
+                  {getAmountPrefix(transaction.type)}{formatCurrency(transaction.amount)}
+                </span>
+              </div>
+
+              {/* Info adicional */}
+              <div className="flex items-center justify-between text-xs text-gray-500 pt-2">
+                <span>{formatDate(transaction.created_at)}</span>
+                <span className="uppercase">{transaction.payment_method || '-'}</span>
+              </div>
+            </div>
+          ))}
+
           {/* Paginação */}
           {totalPages > 1 && (
-            <div className="p-4 border-t border-surface-light">
+            <div className="pt-4">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 totalItems={totalItems}
                 itemsPerPage={itemsPerPage}
                 onPageChange={handlePageChange}
-                maxVisiblePages={10}
+                maxVisiblePages={5}
               />
             </div>
           )}

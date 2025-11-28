@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Users, 
-  TrendingUp, 
-  DollarSign, 
   UserPlus,
   Search,
-  Filter,
   Eye,
   Settings
 } from 'lucide-react';
@@ -207,129 +204,94 @@ const UsersSection: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 lg:p-6 space-y-4 lg:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Gerenciamento de Usuários</h1>
-          <p className="text-gray-400">Gerencie usuários, redes e limites de saque</p>
+          <h1 className="text-xl lg:text-2xl font-bold text-white">Usuários</h1>
+          <p className="text-gray-400 text-sm">Gerencie usuários e redes</p>
         </div>
         
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center space-x-2 bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg transition-colors"
-          >
-            <UserPlus size={20} />
-            <span>Novo Usuário</span>
-          </button>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="flex items-center justify-center space-x-2 bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto"
+        >
+          <UserPlus size={20} />
+          <span>Novo Usuário</span>
+        </button>
+      </div>
+
+      {/* Stats Cards - Grid responsivo */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Total</p>
+          <p className="text-xl lg:text-2xl font-bold text-white">{users.length}</p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Investidores</p>
+          <p className="text-xl lg:text-2xl font-bold text-green-400">
+            {users.filter(u => u.active_investments_count && u.active_investments_count > 0).length}
+          </p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Investido</p>
+          <p className="text-lg lg:text-2xl font-bold text-primary truncate">
+            {formatCurrency(users.reduce((sum, u) => sum + (u.total_invested || 0), 0))}
+          </p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Líderes</p>
+          <p className="text-xl lg:text-2xl font-bold text-purple-400">
+            {users.filter(u => u.commission_balance > 0).length}
+          </p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Depositantes</p>
+          <p className="text-xl lg:text-2xl font-bold text-yellow-400">
+            {users.filter(u => u.has_deposits).length}
+          </p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Saldo Total</p>
+          <p className="text-lg lg:text-2xl font-bold text-white truncate">
+            {formatCurrency(users.reduce((sum, u) => sum + u.balance + u.commission_balance, 0))}
+          </p>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Total de Usuários</p>
-              <p className="text-2xl font-bold text-white">{users.length}</p>
-            </div>
-            <Users className="text-primary" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Investidores Ativos</p>
-              <p className="text-2xl font-bold text-green-400">
-                {users.filter(u => u.active_investments_count && u.active_investments_count > 0).length}
-              </p>
-            </div>
-            <TrendingUp className="text-green-400" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Total Investido</p>
-              <p className="text-2xl font-bold text-primary">
-                {formatCurrency(users.reduce((sum, u) => sum + (u.total_invested || 0), 0))}
-              </p>
-            </div>
-            <TrendingUp className="text-primary" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Líderes</p>
-              <p className="text-2xl font-bold text-purple-400">
-                {users.filter(u => u.commission_balance > 0).length}
-              </p>
-            </div>
-            <Users className="text-purple-400" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Depositantes</p>
-              <p className="text-2xl font-bold text-yellow-400">
-                {users.filter(u => u.has_deposits).length}
-              </p>
-            </div>
-            <DollarSign className="text-yellow-400" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Saldo Total</p>
-              <p className="text-2xl font-bold text-white">
-                {formatCurrency(users.reduce((sum, u) => sum + u.balance + u.commission_balance, 0))}
-              </p>
-            </div>
-            <DollarSign className="text-white" size={24} />
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex items-center space-x-4">
+      {/* Filters - Responsivo */}
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           <input
             type="text"
-            placeholder="Buscar por nome, email ou CPF..."
+            placeholder="Buscar..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
-              setCurrentPage(1); // Reset para primeira página ao buscar
+              setCurrentPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface border border-surface-light rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary text-sm"
           />
         </div>
         
-        <div className="flex items-center space-x-2">
-          <Filter size={16} className="text-gray-400" />
-          <select
-            value={filterActive}
-            onChange={(e) => {
-              setFilterActive(e.target.value as typeof filterActive);
-              setCurrentPage(1); // Reset para primeira página ao filtrar
-            }}
-            className="bg-surface border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
-          >
-            <option value="all">Todos</option>
-            <option value="active">Ativos</option>
-            <option value="inactive">Inativos</option>
-          </select>
-        </div>
+        <select
+          value={filterActive}
+          onChange={(e) => {
+            setFilterActive(e.target.value as typeof filterActive);
+            setCurrentPage(1);
+          }}
+          className="bg-surface border border-surface-light rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary text-sm"
+        >
+          <option value="all">Todos</option>
+          <option value="active">Ativos</option>
+          <option value="inactive">Inativos</option>
+        </select>
       </div>
 
       {/* Users Grid */}
@@ -340,129 +302,96 @@ const UsersSection: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="space-y-3">
             {paginatedUsers.map((user) => (
             <div
               key={user.id}
-              className="bg-surface border border-surface-light rounded-lg p-4 hover:border-primary/30 transition-colors"
+              className="bg-surface border border-surface-light rounded-xl p-4"
             >
-              {/* User Header */}
-              <div className="flex items-center justify-between mb-4">
+              {/* Header - Nome, Email e Status */}
+              <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                     user.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                   }`}>
                     <Users size={20} />
                   </div>
-                  <div>
-                    <div className="flex items-center space-x-2 flex-wrap">
-                      <h3 className="font-semibold text-white">{user.name}</h3>
-                      
-                      {/* Tags de tipo de usuário - mostrar todas que se aplicam */}
-                      <div className="flex items-center space-x-1 flex-wrap">
-                        {user.active_investments_count && user.active_investments_count > 0 && (
-                          <span className="px-2 py-0.5 bg-green-500/20 text-green-400 text-xs font-medium rounded-full">
-                            Investidor
-                          </span>
-                        )}
-                        
-                        {user.commission_balance > 0 && (
-                          <span className="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs font-medium rounded-full">
-                            Líder
-                          </span>
-                        )}
-                        
-                        {user.has_deposits && (
-                          <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs font-medium rounded-full">
-                            Depositante
-                          </span>
-                        )}
-                        
-                        {/* Se não tem nenhuma das tags acima, mostrar "Novo" */}
-                        {(!user.active_investments_count || user.active_investments_count === 0) && 
-                         user.commission_balance === 0 && 
-                         !user.has_deposits && (
-                          <span className="px-2 py-0.5 bg-gray-500/20 text-gray-400 text-xs font-medium rounded-full">
-                            Novo
-                          </span>
-                        )}
-                      </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-white truncate text-sm">{user.name}</h3>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold flex-shrink-0 ${
+                        user.is_active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                      }`}>
+                        {user.is_active ? 'Ativo' : 'Inativo'}
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-400">{user.email}</p>
+                    <p className="text-xs text-gray-400 truncate">{user.email}</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-2">
+                {/* Tags de status compactas */}
+                <div className="flex flex-col gap-1 items-end">
+                  {user.active_investments_count && user.active_investments_count > 0 && (
+                    <span className="px-1.5 py-0.5 bg-green-500/10 text-green-400 text-[10px] font-medium rounded border border-green-500/20">
+                      Investidor
+                    </span>
+                  )}
+                  {user.commission_balance > 0 && (
+                    <span className="px-1.5 py-0.5 bg-purple-500/10 text-purple-400 text-[10px] font-medium rounded border border-purple-500/20">
+                      Líder
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Stats Grid - 2 colunas */}
+              <div className="grid grid-cols-2 gap-3 py-3 border-t border-surface-light">
+                <div>
+                  <p className="text-gray-500 text-[10px] uppercase tracking-wider">Saldo Principal</p>
+                  <p className="text-white font-bold text-sm">{formatCurrency(user.balance)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-[10px] uppercase tracking-wider">Comissões</p>
+                  <p className="text-yellow-400 font-bold text-sm">{formatCurrency(user.commission_balance)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-[10px] uppercase tracking-wider">Total Investido</p>
+                  <p className="text-primary font-bold text-sm">{formatCurrency(user.total_invested || 0)}</p>
+                </div>
+                <div>
+                  <p className="text-gray-500 text-[10px] uppercase tracking-wider">Indicados</p>
+                  <p className="text-white font-bold text-sm">{user.referrals_count}</p>
+                </div>
+              </div>
+
+              {/* Ações e Data */}
+              <div className="flex items-center justify-between pt-3 border-t border-surface-light">
+                <div className="flex space-x-1">
                   <button
                     onClick={() => handleViewDetails(user)}
-                    className="p-2 text-gray-400 hover:text-primary transition-colors"
+                    className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                    title="Ver Detalhes"
                   >
                     <Eye size={16} />
                   </button>
                   <button
                     onClick={() => handleEditUser(user)}
-                    className="p-2 text-gray-400 hover:text-primary transition-colors"
+                    className="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                    title="Editar"
                   >
                     <Settings size={16} />
                   </button>
                   <button
                     onClick={() => handleAddProducts(user)}
-                    className="p-2 text-primary hover:text-primary/80 transition-colors"
-                    title="Adicionar produtos ao usuário"
+                    className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                    title="Adicionar Produto"
                   >
                     <UserPlus size={16} />
                   </button>
                 </div>
-              </div>
-
-              {/* User Stats */}
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Saldo Principal:</span>
-                  <span className="text-white font-medium">{formatCurrency(user.balance)}</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Saldo Comissão:</span>
-                  <span className="text-yellow-400 font-medium">{formatCurrency(user.commission_balance)}</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Total Investido:</span>
-                  <span className="text-primary font-medium">{formatCurrency(user.total_invested || 0)}</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Indicados:</span>
-                  <span className="text-white font-medium">{user.referrals_count}</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Rede Investiu:</span>
-                  <span className="text-green-400 font-medium">{formatCurrency(user.network_invested || 0)}</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Ganhos da Rede:</span>
-                  <span className="text-green-400 font-medium">{formatCurrency(user.network_earnings || 0)}</span>
-                </div>
-              </div>
-
-              {/* Status Badge */}
-              <div className="mt-4 pt-3 border-t border-surface-light">
-                <div className="flex items-center justify-between">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    user.is_active 
-                      ? 'bg-green-500/20 text-green-400' 
-                      : 'bg-red-500/20 text-red-400'
-                  }`}>
-                    {user.is_active ? 'Ativo' : 'Inativo'}
-                  </span>
-                  
-                  <span className="text-xs text-gray-500">
-                    {formatDate(user.created_at)}
-                  </span>
-                </div>
+                <span className="text-[10px] text-gray-500">
+                  Desde {formatDate(user.created_at)}
+                </span>
               </div>
             </div>
             ))}
@@ -470,14 +399,14 @@ const UsersSection: React.FC = () => {
 
           {/* Paginação */}
           {totalPages > 1 && (
-            <div className="mt-6">
+            <div className="pt-4">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 totalItems={totalItems}
                 itemsPerPage={itemsPerPage}
                 onPageChange={handlePageChange}
-                maxVisiblePages={10}
+                maxVisiblePages={5}
               />
             </div>
           )}

@@ -206,7 +206,10 @@
     "needHelp": "Potrzebujesz pomocy?",
     "contactSupport": "Skontaktuj się z pomocą (WhatsApp)",
     "joinWhatsAppGroup": "Dołącz do grupy WhatsApp",
-    "memberSince": "Członek od"
+    "memberSince": "Członek od",
+    "investor": "Inwestor",
+    "admin": "Administrator",
+    "adminPanel": "Panel administracyjny"
   },
   "dashboard": {
     "welcome": "Witaj",

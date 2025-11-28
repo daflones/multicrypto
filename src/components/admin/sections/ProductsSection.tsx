@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Package, 
   Plus, 
   Edit, 
   Trash2, 
   Eye, 
   EyeOff, 
   Search,
-  Image as ImageIcon,
-  DollarSign,
-  Calendar
+  Image as ImageIcon
 } from 'lucide-react';
 import { supabase } from '../../../services/supabase';
-import { formatCurrency, formatDate } from '../../../utils/formatters';
+import { formatCurrency } from '../../../utils/formatters';
 import ProductModal from '../modals/ProductModal';
 import Pagination from '../../ui/Pagination';
 
@@ -151,228 +148,176 @@ const ProductsSection: React.FC = () => {
   };
 
   const activeProducts = products.filter(p => p.is_active);
-  const totalInvestments = products.length; // Aqui você pode buscar o número real de investimentos
+  const totalInvestments = products.length;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 lg:p-6 space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Produtos</h1>
-          <p className="text-gray-400">Gerencie produtos de investimento</p>
+          <h1 className="text-xl lg:text-2xl font-bold text-white">Produtos</h1>
+          <p className="text-gray-400 text-sm">Gerencie produtos de investimento</p>
         </div>
         
         <button
           onClick={handleCreateProduct}
-          className="flex items-center space-x-2 bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center justify-center space-x-2 bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto"
         >
           <Plus size={20} />
           <span>Novo Produto</span>
         </button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Total de Produtos</p>
-              <p className="text-2xl font-bold text-white">{products.length}</p>
-            </div>
-            <Package className="text-primary" size={24} />
-          </div>
+      {/* Stats Cards - Grid 2x2 */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-surface border border-surface-light rounded-xl p-3">
+          <p className="text-gray-400 text-xs">Total</p>
+          <p className="text-xl font-bold text-white">{products.length}</p>
         </div>
         
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Produtos Ativos</p>
-              <p className="text-2xl font-bold text-green-400">{activeProducts.length}</p>
-            </div>
-            <Eye className="text-green-400" size={24} />
-          </div>
+        <div className="bg-surface border border-surface-light rounded-xl p-3">
+          <p className="text-gray-400 text-xs">Ativos</p>
+          <p className="text-xl font-bold text-green-400">{activeProducts.length}</p>
         </div>
         
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Preço Médio</p>
-              <p className="text-2xl font-bold text-primary">
-                {products.length > 0 
-                  ? formatCurrency(products.reduce((sum, p) => sum + p.price, 0) / products.length)
-                  : formatCurrency(0)
-                }
-              </p>
-            </div>
-            <DollarSign className="text-primary" size={24} />
-          </div>
+        <div className="bg-surface border border-surface-light rounded-xl p-3">
+          <p className="text-gray-400 text-xs">Preço Médio</p>
+          <p className="text-lg font-bold text-primary truncate">
+            {products.length > 0 
+              ? formatCurrency(products.reduce((sum, p) => sum + p.price, 0) / products.length)
+              : formatCurrency(0)
+            }
+          </p>
         </div>
         
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Investimentos</p>
-              <p className="text-2xl font-bold text-yellow-400">{totalInvestments}</p>
-            </div>
-            <Calendar className="text-yellow-400" size={24} />
-          </div>
+        <div className="bg-surface border border-surface-light rounded-xl p-3">
+          <p className="text-gray-400 text-xs">Investimentos</p>
+          <p className="text-xl font-bold text-yellow-400">{totalInvestments}</p>
         </div>
       </div>
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
         <input
           type="text"
-          placeholder="Buscar produtos..."
+          placeholder="Buscar..."
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-10 pr-4 py-2 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
+          className="w-full pl-10 pr-4 py-2.5 bg-surface border border-surface-light rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary text-sm"
         />
       </div>
 
-      {/* Products Grid */}
+      {/* Products Cards */}
       {loading ? (
         <div className="text-center py-12">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Carregando produtos...</p>
+          <p className="text-gray-400">Carregando...</p>
+        </div>
+      ) : paginatedProducts.length === 0 ? (
+        <div className="text-center py-12 text-gray-400">
+          Nenhum produto encontrado
         </div>
       ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {paginatedProducts.map((product) => (
+        <div className="space-y-3">
+          {paginatedProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-surface border border-surface-light rounded-lg overflow-hidden hover:border-primary/30 transition-colors"
+              className="bg-surface border border-surface-light rounded-xl overflow-hidden"
             >
-              {/* Product Image */}
-              <div className="relative h-48 bg-background/50">
-                {product.image_path ? (
-                  <img
-                    src={product.image_path}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = '/images/crypto-placeholder.jpg';
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <ImageIcon className="text-gray-500" size={48} />
-                  </div>
-                )}
-                
-                {/* Status Badge */}
-                <div className="absolute top-3 right-3">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    product.is_active 
-                      ? 'bg-green-500/20 text-green-400' 
-                      : 'bg-red-500/20 text-red-400'
-                  }`}>
-                    {product.is_active ? 'Ativo' : 'Inativo'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Product Info */}
-              <div className="p-4 space-y-3">
-                <div>
-                  <h3 className="text-lg font-bold text-white mb-1">{product.name}</h3>
-                  <p className="text-gray-400 text-sm line-clamp-2">{product.description}</p>
-                </div>
-
-                {/* Price and Details */}
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400 text-sm">Preço:</span>
-                    <span className="text-primary font-bold text-lg">{formatCurrency(product.price)}</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400 text-sm">Rendimento:</span>
-                    <span className="text-green-400 font-medium">{product.daily_yield_percentage}% ao dia</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-400 text-sm">Duração:</span>
-                    <span className="text-white">{product.duration_days} dias</span>
-                  </div>
-
-                  {product.min_investment && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-400 text-sm">Mín/Máx:</span>
-                      <span className="text-white text-sm">
-                        {formatCurrency(product.min_investment)} - {formatCurrency(product.max_investment || product.price)}
-                      </span>
+              {/* Product Header com imagem */}
+              <div className="flex items-start p-4">
+                {/* Imagem */}
+                <div className="w-16 h-16 rounded-lg overflow-hidden bg-background/50 flex-shrink-0 mr-4">
+                  {product.image_path ? (
+                    <img
+                      src={product.image_path}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = '/images/crypto-placeholder.jpg';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ImageIcon className="text-gray-500" size={24} />
                     </div>
                   )}
                 </div>
-
-                {/* Actions */}
-                <div className="flex items-center justify-between pt-3 border-t border-surface-light">
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => handleEditProduct(product)}
-                      className="p-2 text-gray-400 hover:text-primary transition-colors"
-                      title="Editar"
-                    >
-                      <Edit size={16} />
-                    </button>
-                    
-                    <button
-                      onClick={() => toggleProductStatus(product.id, product.is_active)}
-                      className={`p-2 transition-colors ${
-                        product.is_active 
-                          ? 'text-green-400 hover:text-green-300' 
-                          : 'text-red-400 hover:text-red-300'
-                      }`}
-                      title={product.is_active ? 'Desativar' : 'Ativar'}
-                    >
-                      {product.is_active ? <Eye size={16} /> : <EyeOff size={16} />}
-                    </button>
-                    
-                    <button
-                      onClick={() => deleteProduct(product.id)}
-                      className="p-2 text-gray-400 hover:text-red-400 transition-colors"
-                      title="Excluir"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <h3 className="font-bold text-white truncate">{product.name}</h3>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ml-2 ${
+                      product.is_active 
+                        ? 'bg-green-500/20 text-green-400' 
+                        : 'bg-red-500/20 text-red-400'
+                    }`}>
+                      {product.is_active ? 'Ativo' : 'Inativo'}
+                    </span>
                   </div>
-                  
-                  <span className="text-xs text-gray-500">
-                    {formatDate(product.created_at)}
-                  </span>
+                  <p className="text-primary font-bold text-lg">{formatCurrency(product.price)}</p>
+                  <p className="text-gray-500 text-xs mt-1">
+                    {product.daily_yield_percentage}% ao dia • {product.duration_days} dias
+                  </p>
                 </div>
               </div>
-            </div>
-            ))}
-            
-            {paginatedProducts.length === 0 && !loading && (
-              <div className="col-span-full text-center py-12">
-                <Package size={48} className="text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400">{filteredProducts.length === 0 ? 'Nenhum produto encontrado' : 'Nenhum resultado na página atual'}</p>
+
+              {/* Ações */}
+              <div className="flex border-t border-surface-light">
+                <button
+                  onClick={() => toggleProductStatus(product.id, product.is_active)}
+                  className={`flex-1 py-3 text-sm font-medium flex items-center justify-center space-x-2 ${
+                    product.is_active 
+                      ? 'text-red-400 hover:bg-red-500/10' 
+                      : 'text-green-400 hover:bg-green-500/10'
+                  }`}
+                >
+                  {product.is_active ? <EyeOff size={16} /> : <Eye size={16} />}
+                  <span>{product.is_active ? 'Desativar' : 'Ativar'}</span>
+                </button>
+                
+                <div className="w-px bg-surface-light" />
+                
+                <button
+                  onClick={() => handleEditProduct(product)}
+                  className="flex-1 py-3 text-sm font-medium text-primary flex items-center justify-center space-x-2 hover:bg-primary/10"
+                >
+                  <Edit size={16} />
+                  <span>Editar</span>
+                </button>
+                
+                <div className="w-px bg-surface-light" />
+                
+                <button
+                  onClick={() => deleteProduct(product.id)}
+                  className="flex-1 py-3 text-sm font-medium text-red-400 flex items-center justify-center space-x-2 hover:bg-red-500/10"
+                >
+                  <Trash2 size={16} />
+                  <span>Excluir</span>
+                </button>
               </div>
-            )}
-          </div>
+            </div>
+          ))}
 
           {/* Paginação */}
           {totalPages > 1 && (
-            <div className="mt-6">
+            <div className="pt-4">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 totalItems={totalItems}
                 itemsPerPage={itemsPerPage}
                 onPageChange={handlePageChange}
-                maxVisiblePages={10}
+                maxVisiblePages={5}
               />
             </div>
           )}
-        </>
+        </div>
       )}
 
       {/* Product Modal */}

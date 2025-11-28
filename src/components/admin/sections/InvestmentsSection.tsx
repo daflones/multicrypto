@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Calendar, User, Package, Filter, Search, Eye } from 'lucide-react';
+import { User, Search } from 'lucide-react';
 import { supabase } from '../../../services/supabase';
 import { formatCurrency, formatDate } from '../../../utils/formatters';
 import Pagination from '../../ui/Pagination';
@@ -145,181 +145,136 @@ const InvestmentsSection: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 lg:p-6 space-y-4 lg:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Investimentos</h1>
-          <p className="text-gray-400">Visualize e gerencie todos os investimentos</p>
+      <div>
+        <h1 className="text-xl lg:text-2xl font-bold text-white">Investimentos</h1>
+        <p className="text-gray-400 text-sm">Visualize todos os investimentos</p>
+      </div>
+
+      {/* Stats Cards - Grid responsivo */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Total Investido</p>
+          <p className="text-lg lg:text-2xl font-bold text-primary truncate">{formatCurrency(totalInvested)}</p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Ativos</p>
+          <p className="text-xl lg:text-2xl font-bold text-green-400">{activeInvestments.length}</p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Finalizados</p>
+          <p className="text-xl lg:text-2xl font-bold text-blue-400">{completedInvestments.length}</p>
+        </div>
+        
+        <div className="bg-surface border border-surface-light rounded-xl p-3 lg:p-4">
+          <p className="text-gray-400 text-xs lg:text-sm">Valor Médio</p>
+          <p className="text-lg lg:text-2xl font-bold text-yellow-400 truncate">
+            {investments.length > 0 ? formatCurrency(totalInvested / investments.length) : formatCurrency(0)}
+          </p>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Total Investido</p>
-              <p className="text-2xl font-bold text-primary">{formatCurrency(totalInvested)}</p>
-            </div>
-            <TrendingUp className="text-primary" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Investimentos Ativos</p>
-              <p className="text-2xl font-bold text-green-400">{activeInvestments.length}</p>
-            </div>
-            <Calendar className="text-green-400" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Finalizados</p>
-              <p className="text-2xl font-bold text-blue-400">{completedInvestments.length}</p>
-            </div>
-            <Package className="text-blue-400" size={24} />
-          </div>
-        </div>
-        
-        <div className="bg-surface border border-surface-light rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm">Valor Médio</p>
-              <p className="text-2xl font-bold text-yellow-400">
-                {investments.length > 0 ? formatCurrency(totalInvested / investments.length) : formatCurrency(0)}
-              </p>
-            </div>
-            <TrendingUp className="text-yellow-400" size={24} />
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex items-center space-x-4">
+      {/* Filters - Responsivo */}
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           <input
             type="text"
-            placeholder="Buscar por usuário ou produto..."
+            placeholder="Buscar..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-primary"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface border border-surface-light rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-primary text-sm"
           />
         </div>
         
-        <div className="flex items-center space-x-2">
-          <Filter size={16} className="text-gray-400" />
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value as typeof statusFilter);
-              setCurrentPage(1);
-            }}
-            className="bg-surface border border-surface-light rounded-lg px-3 py-2 text-white focus:outline-none focus:border-primary"
-          >
-            <option value="all">Todos</option>
-            <option value="active">Ativos</option>
-            <option value="completed">Finalizados</option>
-            <option value="cancelled">Cancelados</option>
-          </select>
-        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value as typeof statusFilter);
+            setCurrentPage(1);
+          }}
+          className="bg-surface border border-surface-light rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-primary text-sm"
+        >
+          <option value="all">Todos</option>
+          <option value="active">Ativos</option>
+          <option value="completed">Finalizados</option>
+          <option value="cancelled">Cancelados</option>
+        </select>
       </div>
 
-      {/* Investments Table */}
+      {/* Investments Cards */}
       {loading ? (
         <div className="text-center py-12">
           <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Carregando investimentos...</p>
+          <p className="text-gray-400">Carregando...</p>
+        </div>
+      ) : paginatedInvestments.length === 0 ? (
+        <div className="text-center py-12 text-gray-400">
+          Nenhum investimento encontrado
         </div>
       ) : (
-        <div className="bg-surface border border-surface-light rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-background/50 border-b border-surface-light">
-                <tr>
-                  <th className="text-left p-4 text-gray-400 font-medium">Usuário</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Produto</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Valor</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Status</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Data</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Período</th>
-                  <th className="text-left p-4 text-gray-400 font-medium">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedInvestments.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="text-center py-8 text-gray-400">
-                      {filteredInvestments.length === 0 ? 'Nenhum investimento encontrado' : 'Nenhum resultado na página atual'}
-                    </td>
-                  </tr>
-                ) : (
-                  paginatedInvestments.map((investment) => (
-                    <tr key={investment.id} className="border-b border-surface-light hover:bg-background/30">
-                      <td className="p-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
-                            <User size={16} className="text-primary" />
-                          </div>
-                          <div>
-                            <p className="text-white font-medium">{investment.user.name}</p>
-                            <p className="text-gray-400 text-sm">{investment.user.email}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div>
-                          <p className="text-white font-medium">{investment.product.name}</p>
-                          <p className="text-gray-400 text-sm">Preço: {formatCurrency(investment.product.price)}</p>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <p className="text-primary font-bold text-lg">{formatCurrency(investment.amount)}</p>
-                      </td>
-                      <td className="p-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(investment.status)}`}>
-                          {getStatusText(investment.status)}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <p className="text-white">{formatDate(investment.purchase_date)}</p>
-                        <p className="text-gray-400 text-sm">{formatDate(investment.created_at)}</p>
-                      </td>
-                      <td className="p-4">
-                        <div className="text-sm">
-                          <p className="text-white">Início: {formatDate(investment.start_date)}</p>
-                          <p className="text-gray-400">Fim: {formatDate(investment.end_date)}</p>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <button className="p-2 text-gray-400 hover:text-primary transition-colors">
-                          <Eye size={16} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-          
+        <div className="space-y-3">
+          {paginatedInvestments.map((investment) => (
+            <div 
+              key={investment.id} 
+              className="bg-surface border border-surface-light rounded-xl p-4"
+            >
+              {/* Header do Card */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    investment.status === 'active' ? 'bg-green-500/20' :
+                    investment.status === 'completed' ? 'bg-blue-500/20' :
+                    'bg-red-500/20'
+                  }`}>
+                    <User size={18} className={
+                      investment.status === 'active' ? 'text-green-400' :
+                      investment.status === 'completed' ? 'text-blue-400' :
+                      'text-red-400'
+                    } />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium text-sm">{investment.user.name || investment.user.email.split('@')[0]}</p>
+                    <p className="text-gray-500 text-xs">{investment.product.name}</p>
+                  </div>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(investment.status)}`}>
+                  {getStatusText(investment.status)}
+                </span>
+              </div>
+
+              {/* Valor */}
+              <div className="flex items-center justify-between py-2 border-t border-surface-light">
+                <span className="text-gray-400 text-sm">Valor Investido</span>
+                <span className="font-bold text-xl text-primary">
+                  {formatCurrency(investment.amount)}
+                </span>
+              </div>
+
+              {/* Info adicional */}
+              <div className="flex items-center justify-between text-xs text-gray-500 pt-2">
+                <span>Início: {formatDate(investment.start_date)}</span>
+                <span>Fim: {formatDate(investment.end_date)}</span>
+              </div>
+            </div>
+          ))}
+
           {/* Paginação */}
           {totalPages > 1 && (
-            <div className="p-4 border-t border-surface-light">
+            <div className="pt-4">
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 totalItems={totalItems}
                 itemsPerPage={itemsPerPage}
                 onPageChange={handlePageChange}
+                maxVisiblePages={5}
               />
             </div>
           )}

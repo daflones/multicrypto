@@ -28,14 +28,11 @@ const Landing: React.FC = () => {
     <div className="min-h-screen bg-background text-white overflow-x-hidden">
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-white/10">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-full overflow-hidden">
-              <img src="/images/logo.png" alt="Multi Crypto" className="w-full h-full object-cover" />
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center">
+            <div className="h-12 overflow-hidden">
+              <img src="/images/logo.png" alt="Multi Crypto" className="h-full w-auto object-contain" />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Multi Crypto
-            </span>
           </div>
           
           <div className="flex items-center space-x-4">

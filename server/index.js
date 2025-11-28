@@ -51,4 +51,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  console.log(`💳 Rota de Webhook ativa em: /api/webhooks/dbx-payment`);
+  console.log(`✅ Health check disponível em: /api/health`);
+});

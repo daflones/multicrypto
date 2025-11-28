@@ -95,7 +95,17 @@
     "confirmInvestment": "Confirm Investment",
     "seeProducts": "See products",
     "needMore": "You need {{amount}} more to make this investment",
-    "maxAmount": "Maximum"
+    "maxAmount": "Maximum",
+    "investmentHistory": "Investment History",
+    "performance": "Performance",
+    "performanceInfo1": "Earnings are credited automatically every day",
+    "performanceInfo2": "You can reinvest your earnings at any time",
+    "performanceInfo3": "Track your portfolio growth in real time",
+    "invested": "Invested",
+    "dailyEarnings": "Daily earnings",
+    "totalReturnValue": "Total return",
+    "startedAt": "Started",
+    "endsAt": "Ends"
   },
   "deposit": {
     "title": "Deposit",
@@ -121,7 +131,8 @@
     "awaitingPayment": "Awaiting payment...",
     "paymentApproved": "Payment approved! Balance credited.",
     "paymentExpired": "Payment expired. Try again.",
-    "paymentCancelled": "Payment cancelled."
+    "paymentCancelled": "Payment cancelled.",
+    "youWillSend": "You will send"
   },
   "withdraw": {
     "title": "Withdraw",

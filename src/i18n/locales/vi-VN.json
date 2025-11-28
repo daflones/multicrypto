@@ -114,7 +114,13 @@
     "submit": "Gửi yêu cầu",
     "instructions": "Hướng dẫn",
     "pixInstructions": "1. Sao chép khóa PIX\n2. Thanh toán tại ngân hàng\n3. Tải lên bằng chứng\n4. Chờ xác nhận",
-    "cryptoInstructions": "1. Chọn tiền điện tử\n2. Sao chép địa chỉ ví\n3. Gửi tiền\n4. Chờ xác nhận blockchain"
+    "cryptoInstructions": "1. Chọn tiền điện tử\n2. Sao chép địa chỉ ví\n3. Gửi tiền\n4. Chờ xác nhận blockchain",
+    "minimumAmount": "Số tiền tối thiểu: ₫ 10.000",
+    "awaitingPayment": "Đang chờ thanh toán...",
+    "paymentApproved": "Thanh toán được chấp nhận! Số dư đã được ghi có.",
+    "paymentExpired": "Thanh toán đã hết hạn. Thử lại.",
+    "paymentCancelled": "Thanh toán đã bị hủy.",
+    "youWillSend": "Bạn sẽ gửi"
   },
   "withdraw": {
     "title": "Rút tiền",

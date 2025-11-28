@@ -37,22 +37,25 @@ export const supportedLanguages = [
   { code: 'fa-IR', name: 'فارسی (ایران)', flag: '🇮🇷', country: 'IR' },
 ] as const;
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources,
-    fallbackLng: 'en-US',
-    debug: process.env.NODE_ENV === 'development',
-    
-    interpolation: {
-      escapeValue: false,
-    },
-    
-    detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
-      caches: ['localStorage'],
-    },
-  });
+// Só inicializa se ainda não foi inicializado
+if (!i18n.isInitialized) {
+  i18n
+    .use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+      resources,
+      fallbackLng: 'en-US',
+      debug: false, // Desabilitar debug para evitar logs excessivos
+      
+      interpolation: {
+        escapeValue: false,
+      },
+      
+      detection: {
+        order: ['localStorage', 'navigator', 'htmlTag'],
+        caches: ['localStorage'],
+      },
+    });
+}
 
 export default i18n;

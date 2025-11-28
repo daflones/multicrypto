@@ -1,20 +1,25 @@
 import React from 'react';
-import { LogOut } from 'lucide-react';
+import { LogOut, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { formatCurrency } from '../../utils/formatters';
+import { useCurrency } from '../../hooks/useCurrency';
 import NotificationBell from '../notifications/NotificationBell';
 import LanguageSelector from '../common/LanguageSelector';
 
 const MobileNavbar: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+  const { formatAmount } = useCurrency();
 
   const handleLogout = () => {
     if (confirm(t('profile.logout') + '?')) {
       logout();
     }
   };
+
+  const isAdmin = user?.role === 'admin';
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-surface-light">
@@ -33,13 +38,25 @@ const MobileNavbar: React.FC = () => {
             <div className="text-right">
               <p className="text-xs text-gray-400">{t('dashboard.totalBalance')}</p>
               <p className="text-sm font-semibold text-success">
-                {formatCurrency((user.balance || 0) + (user.commission_balance || 0))}
+                {formatAmount((user.balance || 0) + (user.commission_balance || 0))}
               </p>
             </div>
           )}
           
           <LanguageSelector showLabel={false} />
           <NotificationBell />
+          
+          {/* Botão Admin */}
+          {isAdmin && (
+            <button
+              onClick={() => navigate('/admin')}
+              className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center space-x-1"
+              title="Painel Admin"
+            >
+              <Shield size={14} />
+              <span>Admin</span>
+            </button>
+          )}
           
           <button
             onClick={handleLogout}

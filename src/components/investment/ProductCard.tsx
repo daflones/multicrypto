@@ -3,6 +3,7 @@ import { TrendingUp, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Product } from '../../services/supabase';
 import { getProductImage } from '../../utils/imageUtils';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface ProductCardProps {
   product: Product;
@@ -15,6 +16,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onInvest 
 }) => {
   const { t } = useTranslation();
+  const { formatAmount } = useCurrency();
   const isPremium = product.product_type === 'premium';
 
   return (
@@ -53,7 +55,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-400">{t('investment.minimumInvestment')}:</span>
-            <span className="text-white font-semibold">R$ 50,00</span>
+            <span className="text-white font-semibold">{formatAmount(50)}</span>
           </div>
           
           <div className="flex justify-between items-center">
@@ -93,7 +95,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="flex justify-between items-center text-sm">
             <span className="text-gray-400">{t('investment.investmentValue')}:</span>
             <span className="text-white font-semibold">
-              R$ 50 - R$ 50.000
+              {formatAmount(50)} - {formatAmount(50000)}
             </span>
           </div>
         </div>

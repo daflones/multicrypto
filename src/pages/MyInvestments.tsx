@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { useUserStore } from '../store/userStore';
 import { useAuthStore } from '../store/authStore';
 import InvestmentList from '../components/investment/InvestmentList';
-import { formatCurrency } from '../utils/formatters';
+import { useCurrency } from '../hooks/useCurrency';
 
 const MyInvestments: React.FC = () => {
   const { t } = useTranslation();
+  const { formatAmount } = useCurrency();
   const { user } = useAuthStore();
   const { 
     investments, 
@@ -43,7 +44,7 @@ const MyInvestments: React.FC = () => {
               <span className="text-gray-400 text-sm">{t('investment.totalInvested')}</span>
             </div>
             <p className="text-xl font-bold text-white">
-              {formatCurrency(investmentStats.totalInvested)}
+              {formatAmount(investmentStats.totalInvested)}
             </p>
           </div>
 
@@ -55,7 +56,7 @@ const MyInvestments: React.FC = () => {
               <span className="text-gray-400 text-sm">{t('investment.totalEarned')}</span>
             </div>
             <p className="text-xl font-bold text-success">
-              {formatCurrency(investmentStats.totalEarned)}
+              {formatAmount(investmentStats.totalEarned)}
             </p>
           </div>
 
@@ -67,7 +68,7 @@ const MyInvestments: React.FC = () => {
               <span className="text-gray-400 text-sm">{t('investment.dailyYield')}</span>
             </div>
             <p className="text-xl font-bold text-secondary">
-              {formatCurrency(investmentStats.dailyYield)}
+              {formatAmount(investmentStats.dailyYield)}
             </p>
           </div>
 
@@ -89,7 +90,7 @@ const MyInvestments: React.FC = () => {
 
       {/* Investments List */}
       <div>
-        <h2 className="text-lg font-semibold text-white mb-4">Histórico de Investimentos</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">{t('investment.investmentHistory')}</h2>
         <InvestmentList 
           investments={investments} 
           isLoading={isLoadingInvestments} 
@@ -99,11 +100,11 @@ const MyInvestments: React.FC = () => {
       {/* Performance Info */}
       {investments.length > 0 && (
         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
-          <h3 className="text-primary font-semibold mb-2">📈 Performance</h3>
+          <h3 className="text-primary font-semibold mb-2">📈 {t('investment.performance')}</h3>
           <div className="space-y-2 text-sm text-gray-300">
-            <p>• Rendimentos são creditados automaticamente todos os dias</p>
-            <p>• Você pode reinvestir seus rendimentos a qualquer momento</p>
-            <p>• Acompanhe o crescimento do seu patrimônio em tempo real</p>
+            <p>• {t('investment.performanceInfo1')}</p>
+            <p>• {t('investment.performanceInfo2')}</p>
+            <p>• {t('investment.performanceInfo3')}</p>
           </div>
         </div>
       )}

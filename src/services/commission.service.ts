@@ -192,49 +192,17 @@ export class CommissionService {
   }
 
   static async getTeamStats(userId: string) {
-    try {
-      // ✅ OTIMIZAÇÃO: Usar função RPC otimizada
-      const { data: statsData, error } = await supabase.rpc('get_team_stats_optimized', {
-        root_user_id: userId
-      });
-
-      if (error) {
-        console.error('Error calling get_team_stats_optimized:', error);
-        // Fallback para método antigo se RPC falhar
-        return this.getTeamStatsFallback(userId);
-      }
-
-      if (!statsData || statsData.length === 0) {
-        return {
-          level1Count: 0,
-          level2Count: 0,
-          level3Count: 0,
-          level4Count: 0,
-          level5Count: 0,
-          level6Count: 0,
-          level7Count: 0,
-          totalTeamSize: 0,
-          totalTeamInvested: 0
-        };
-      }
-
-      const stats = statsData[0];
+    // Validar userId antes de chamar
+    if (!userId || typeof userId !== 'string' || userId.length < 10) {
       return {
-        level1Count: stats.level1_count || 0,
-        level2Count: stats.level2_count || 0,
-        level3Count: stats.level3_count || 0,
-        level4Count: stats.level4_count || 0,
-        level5Count: stats.level5_count || 0,
-        level6Count: stats.level6_count || 0,
-        level7Count: stats.level7_count || 0,
-        totalTeamSize: stats.total_team_size || 0,
-        totalTeamInvested: stats.total_team_invested || 0
+        level1Count: 0, level2Count: 0, level3Count: 0, level4Count: 0,
+        level5Count: 0, level6Count: 0, level7Count: 0,
+        totalTeamSize: 0, totalTeamInvested: 0
       };
-    } catch (error) {
-      console.error('Get team stats error:', error);
-      // Fallback para método antigo
-      return this.getTeamStatsFallback(userId);
     }
+
+    // Usar diretamente o fallback que funciona corretamente
+    return this.getTeamStatsFallback(userId);
   }
 
   // Método fallback caso a RPC falhe

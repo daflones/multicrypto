@@ -347,53 +347,16 @@ export class AuthService {
   }
 
   static async getReferralTree(userId: string) {
-    try {
-      // ✅ OTIMIZAÇÃO: Uma única query recursiva com CTE
-      const { data: allReferrals, error } = await supabase.rpc('get_referral_tree_optimized', {
-        root_user_id: userId
-      });
-
-      if (error) {
-        console.error('Error calling get_referral_tree_optimized:', error);
-        // Fallback para método antigo se RPC falhar
-        return this.getReferralTreeFallback(userId);
-      }
-
-      // Organizar por níveis
-      const referralTree = {
-        level1: [] as any[],
-        level2: [] as any[],
-        level3: [] as any[],
-        level4: [] as any[],
-        level5: [] as any[],
-        level6: [] as any[],
-        level7: [] as any[]
+    // Validar userId antes de chamar
+    if (!userId || typeof userId !== 'string' || userId.length < 10) {
+      return {
+        level1: [], level2: [], level3: [], level4: [],
+        level5: [], level6: [], level7: []
       };
-
-      if (allReferrals) {
-        allReferrals.forEach((user: any) => {
-          const level = user.level;
-          if (level >= 1 && level <= 7) {
-            referralTree[`level${level}` as keyof typeof referralTree].push({
-              id: user.id,
-              email: user.email,
-              phone: user.phone,
-              referral_code: user.referral_code,
-              created_at: user.created_at,
-              balance: user.balance,
-              total_invested: user.total_invested || 0,
-              referred_by: user.referred_by
-            });
-          }
-        });
-      }
-
-      return referralTree;
-    } catch (error) {
-      console.error('Get referral tree error:', error);
-      // Fallback para método antigo
-      return this.getReferralTreeFallback(userId);
     }
+
+    // Usar diretamente o fallback que funciona corretamente
+    return this.getReferralTreeFallback(userId);
   }
 
   // Método fallback (antigo) caso a RPC falhe

@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { AuthService } from '../../services/auth.service';
 import { CommissionService } from '../../services/commission.service';
 import { useAuthStore } from '../../store/authStore';
-import { formatCurrency, formatDate } from '../../utils/formatters';
+import { formatDate } from '../../utils/formatters';
+import { useCurrency } from '../../hooks/useCurrency';
 
 interface TeamMember {
   id: string;
@@ -23,6 +24,7 @@ interface TeamTreeProps {
 
 const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
   const { t } = useTranslation();
+  const { formatAmount } = useCurrency();
   const [teamData, setTeamData] = useState<{
     level1: TeamMember[];
     level2: TeamMember[];
@@ -177,7 +179,7 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
                       </div>
                       <div className="flex items-center space-x-1">
                         <TrendingUp size={14} />
-                        <span>{formatCurrency(member.total_invested || 0)}</span>
+                        <span>{formatAmount(member.total_invested || 0)}</span>
                       </div>
                     </div>
                   </div>
@@ -240,7 +242,7 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
           
           <div className="bg-surface rounded-lg p-4 text-center">
             <div className="text-2xl font-bold text-success mb-1">
-              {commissionStats ? formatCurrency(commissionStats.totalCommissions) : 'R$ 0,00'}
+              {formatAmount(commissionStats?.totalCommissions || 0)}
             </div>
             <div className="text-sm text-gray-400">{t('team.totalCommissions')}</div>
           </div>
@@ -254,19 +256,19 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
           <div className="grid grid-cols-3 gap-3 text-center mb-3">
             <div>
               <div className="text-base font-bold text-primary mb-1">
-                {formatCurrency(commissionStats.level1Total)}
+                {formatAmount(commissionStats.level1Total)}
               </div>
               <div className="text-xs text-gray-400">Nível 1 (10%)</div>
             </div>
             <div>
               <div className="text-base font-bold text-secondary mb-1">
-                {formatCurrency(commissionStats.level2Total)}
+                {formatAmount(commissionStats.level2Total)}
               </div>
               <div className="text-xs text-gray-400">Nível 2 (4%)</div>
             </div>
             <div>
               <div className="text-base font-bold text-warning mb-1">
-                {formatCurrency(commissionStats.level3Total)}
+                {formatAmount(commissionStats.level3Total)}
               </div>
               <div className="text-xs text-gray-400">Nível 3 (2%)</div>
             </div>
@@ -275,25 +277,25 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
           <div className="grid grid-cols-4 gap-2 text-center">
             <div>
               <div className="text-sm font-bold text-success mb-1">
-                {formatCurrency(commissionStats.level4Total || 0)}
+                {formatAmount(commissionStats.level4Total || 0)}
               </div>
               <div className="text-xs text-gray-400">N4 (1%)</div>
             </div>
             <div>
               <div className="text-sm font-bold text-success mb-1">
-                {formatCurrency(commissionStats.level5Total || 0)}
+                {formatAmount(commissionStats.level5Total || 0)}
               </div>
               <div className="text-xs text-gray-400">N5 (1%)</div>
             </div>
             <div>
               <div className="text-sm font-bold text-success mb-1">
-                {formatCurrency(commissionStats.level6Total || 0)}
+                {formatAmount(commissionStats.level6Total || 0)}
               </div>
               <div className="text-xs text-gray-400">N6 (1%)</div>
             </div>
             <div>
               <div className="text-sm font-bold text-success mb-1">
-                {formatCurrency(commissionStats.level7Total || 0)}
+                {formatAmount(commissionStats.level7Total || 0)}
               </div>
               <div className="text-xs text-gray-400">N7 (1%)</div>
             </div>
@@ -303,7 +305,7 @@ const TeamTree: React.FC<TeamTreeProps> = ({ userId }) => {
             <div className="flex justify-between items-center text-sm">
               <span className="text-gray-400">Este mês:</span>
               <span className="text-success font-semibold">
-                {formatCurrency(commissionStats.thisMonthTotal)}
+                {formatAmount(commissionStats.thisMonthTotal)}
               </span>
             </div>
           </div>

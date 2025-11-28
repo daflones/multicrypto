@@ -93,7 +93,19 @@
     "noInvestments": "Инвестиций не найдено",
     "makeFirstInvestment": "Сделайте первую инвестицию",
     "confirmInvestment": "Подтвердить инвестицию",
-    "seeProducts": "Смотреть продукты"
+    "seeProducts": "Смотреть продукты",
+    "needMore": "Вам нужно ещё {{amount}} для этой инвестиции",
+    "maxAmount": "Максимум",
+    "investmentHistory": "История инвестиций",
+    "performance": "Производительность",
+    "performanceInfo1": "Доходы начисляются автоматически каждый день",
+    "performanceInfo2": "Вы можете реинвестировать свои доходы в любое время",
+    "performanceInfo3": "Отслеживайте рост вашего портфеля в реальном времени",
+    "invested": "Инвестировано",
+    "dailyEarnings": "Дневной доход",
+    "totalReturnValue": "Общий доход",
+    "startedAt": "Начало",
+    "endsAt": "Окончание"
   },
   "deposit": {
     "title": "Пополнить",

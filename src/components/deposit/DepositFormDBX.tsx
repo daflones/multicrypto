@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, DollarSign, Copy, CheckCircle, Clock, X } from 'lucide-react';
+import { AlertCircle, Copy, CheckCircle, Clock, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
 import { PAYMENT_METHODS } from '../../utils/constants';
@@ -12,7 +12,7 @@ interface DepositFormProps {
 
 const DepositForm: React.FC<DepositFormProps> = () => {
   const { t } = useTranslation();
-  const { formatAmount, isBrazilian: isBrazilianUser } = useCurrency();
+  const { formatAmount, isBrazilian: isBrazilianUser, currency, convertToBRL } = useCurrency();
   
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -127,7 +127,11 @@ const DepositForm: React.FC<DepositFormProps> = () => {
   const amount = parseFloat(formData.amount.replace(',', '.')) || 0;
   const isPix = formData.paymentMethod === 'pix';
   const isCrypto = !isPix;
-  const amountInUsd = isCrypto && usdRate ? amount * usdRate : undefined;
+  
+  // Para usuários não-brasileiros: converter valor digitado na moeda local para BRL, depois para USD
+  // Para brasileiros: converter direto de BRL para USD
+  const amountInBRL = isBrazilianUser ? amount : convertToBRL(amount);
+  const amountInUsd = isCrypto && usdRate ? amountInBRL * usdRate : undefined;
 
   const getStatusIcon = () => {
     switch (paymentStatus) {
@@ -199,20 +203,31 @@ const DepositForm: React.FC<DepositFormProps> = () => {
           {/* Amount Input */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-300">
-              {t('deposit.amount')}
+              {t('deposit.amount')} ({currency.code})
             </label>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm font-medium">
+                {currency.symbol}
+              </span>
               <input
                 type="text"
                 value={formData.amount}
                 onChange={(e) => handleAmountChange(e.target.value)}
                 placeholder={t('deposit.amountPlaceholder')}
-                className="w-full pl-10 pr-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:border-primary focus:outline-none"
+                className="w-full pl-12 pr-4 py-3 bg-surface border border-surface-light rounded-lg text-white placeholder-gray-400 focus:border-primary focus:outline-none"
               />
             </div>
-            {amountInUsd && (
-              <p className="text-xs text-gray-400">≈ ${amountInUsd.toFixed(2)} USD</p>
+            {isCrypto && amountInUsd && amountInUsd > 0 && (
+              <div className="bg-surface-light rounded-lg p-3 mt-2">
+                <p className="text-sm text-gray-300">
+                  {t('deposit.youWillSend')}: <span className="text-primary font-bold">${amountInUsd.toFixed(2)} USDT</span>
+                </p>
+                {!isBrazilianUser && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    {currency.symbol} {amount.toFixed(2)} → R$ {amountInBRL.toFixed(2)} → ${amountInUsd.toFixed(2)} USDT
+                  </p>
+                )}
+              </div>
             )}
           </div>
 

@@ -96,7 +96,7 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
                   <div>
                     <p className="text-xs text-gray-400">{t('dashboard.earnings')}</p>
                     <p className="text-sm font-semibold text-success">
-                      {formatAmount(investment.amount * DAILY_YIELD_PERCENTAGE)}/dia
+                      {formatAmount(investment.amount * DAILY_YIELD_PERCENTAGE)}/{t('investment.days').slice(0, 3)}
                     </p>
                   </div>
                 </div>
@@ -117,19 +117,19 @@ const InvestmentList: React.FC<InvestmentListProps> = ({ investments, isLoading 
                 <div className="flex justify-between text-sm">
                   <div className="flex items-center space-x-2 text-gray-400">
                     <Calendar size={14} />
-                    <span>Início: {formatDateTimeSP(investment.start_date || investment.purchase_date)}</span>
+                    <span>{t('investment.startedAt')}: {formatDateTimeSP(investment.start_date || investment.purchase_date)}</span>
                   </div>
                 </div>
                 
                 <div className="flex justify-between text-sm">
                   <div className="flex items-center space-x-2 text-gray-400">
                     <Clock size={14} />
-                    <span>{investment.product?.duration_days || 0} dias</span>
+                    <span>{investment.product?.duration_days || 0} {t('investment.days')}</span>
                   </div>
                   
                   <div className="flex items-center space-x-2 text-gray-400">
                     <Calendar size={14} />
-                    <span>Término: {investment.end_date ? formatDateTimeSP(investment.end_date) : formatDateTimeSP(new Date().toISOString())}</span>
+                    <span>{t('investment.endsAt')}: {investment.end_date ? formatDateTimeSP(investment.end_date) : formatDateTimeSP(new Date().toISOString())}</span>
                   </div>
                 </div>
               </div>

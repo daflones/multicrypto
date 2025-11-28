@@ -95,7 +95,17 @@
     "confirmInvestment": "Confirmar Investimento",
     "seeProducts": "Ver produtos",
     "needMore": "Você precisa de {{amount}} a mais para realizar este investimento",
-    "maxAmount": "Máximo"
+    "maxAmount": "Máximo",
+    "investmentHistory": "Histórico de Investimentos",
+    "performance": "Performance",
+    "performanceInfo1": "Rendimentos são creditados automaticamente todos os dias",
+    "performanceInfo2": "Você pode reinvestir seus rendimentos a qualquer momento",
+    "performanceInfo3": "Acompanhe o crescimento do seu patrimônio em tempo real",
+    "invested": "Investido",
+    "dailyEarnings": "Ganho diário",
+    "totalReturnValue": "Retorno total",
+    "startedAt": "Início",
+    "endsAt": "Término"
   },
   "deposit": {
     "title": "Depositar",
@@ -121,7 +131,8 @@
     "awaitingPayment": "Aguardando pagamento...",
     "paymentApproved": "Pagamento aprovado! Saldo creditado.",
     "paymentExpired": "Pagamento expirado. Tente novamente.",
-    "paymentCancelled": "Pagamento cancelado."
+    "paymentCancelled": "Pagamento cancelado.",
+    "youWillSend": "Você enviará"
   },
   "withdraw": {
     "title": "Sacar",

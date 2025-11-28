@@ -166,6 +166,9 @@ async function creditUserBalance(email, amount, reference, paymentId) {
 // Endpoint DBXBankPay - Formato REAL do payload
 router.post('/dbxbankpay', async (req, res) => {
   try {
+    console.log('🔔 Webhook DBX recebido!');
+    console.log('Payload:', JSON.stringify(req.body, null, 2));
+
     // Verificar assinatura HMAC
     const rawBody = JSON.stringify(req.body);
     const timestamp = req.headers['x-dbxpay-timestamp'];

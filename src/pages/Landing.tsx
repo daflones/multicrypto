@@ -201,7 +201,7 @@ const Landing: React.FC = () => {
             />
             <TestimonialCard 
               image="/images/feed/pessoa4.png"
-              name="Fernanda Lima"
+              name="Fernando Lima"
               role="Estudante"
               text="Comecei sem saber nada de cripto e o suporte me ajudou em tudo. Ótima forma de começar a investir."
             />

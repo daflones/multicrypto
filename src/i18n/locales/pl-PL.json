@@ -258,6 +258,56 @@
     "withdrawals": "Wypłaty",
     "investments": "Inwestycje"
   },
+  "landing": {
+    "hero": {
+      "title": "Pomnażaj swoje cyfrowe aktywa z inteligencją",
+      "subtitle": "Najbezpieczniejsza i najbardziej dochodowa platforma do automatyzacji zarobków w krypto. Zacznij już dziś i obserwuj wzrost swojego portfela.",
+      "cta": "Rozpocznij teraz",
+      "login": "Zaloguj się",
+      "badge": "W 100% zautomatyzowana platforma",
+      "watchVideo": "Obejrzyj wideo"
+    },
+    "stats": {
+      "users": "Aktywni użytkownicy",
+      "paid": "Wypłacono łącznie",
+      "invested": "Zainwestowano łącznie"
+    },
+    "features": {
+      "title": "Dlaczego warto wybrać Multi Crypto?",
+      "subtitle": "Nowoczesna technologia dla Twoich inwestycji",
+      "daily": {
+        "title": "Dzienny zysk",
+        "desc": "Stałe zyski automatycznie dopisywane do Twojego konta każdego dnia."
+      },
+      "secure": {
+        "title": "Maksymalne bezpieczeństwo",
+        "desc": "Twoje dane i aktywa chronione najbardziej zaawansowanym szyfrowaniem."
+      },
+      "support": {
+        "title": "Wsparcie 24/7",
+        "desc": "Dedykowany zespół gotowy do pomocy w każdej chwili."
+      },
+      "withdraw": {
+        "title": "Szybkie wypłaty",
+        "desc": "Otrzymuj zyski przez PIX lub Crypto szybko i bez biurokracji."
+      }
+    },
+    "video": {
+      "title": "Zobacz jak to działa"
+    },
+    "testimonials": {
+      "title": "Co mówią nasi inwestorzy",
+      "subtitle": "Prawdziwe historie tych, którzy już zarabiają"
+    },
+    "faq": {
+      "title": "Często zadawane pytania"
+    },
+    "cta_footer": {
+      "title": "Gotowy na zmianę swojego życia finansowego?",
+      "subtitle": "Dołącz do tysięcy zadowolonych inwestorów.",
+      "button": "Utwórz darmowe konto"
+    }
+  },
   "admin": {
     "title": "Panel administratora",
     "dashboard": "Panel",

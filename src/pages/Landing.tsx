@@ -11,10 +11,12 @@ import {
   ArrowRight,
   Star
 } from 'lucide-react';
+import { useAuthStore } from '../store/authStore';
 import LanguageSelector from '../components/common/LanguageSelector';
 
 const Landing: React.FC = () => {
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <div className="min-h-screen bg-background text-white overflow-x-hidden">
@@ -32,18 +34,31 @@ const Landing: React.FC = () => {
           
           <div className="flex items-center space-x-4">
             <LanguageSelector showLabel={false} />
-            <Link 
-              to="/login" 
-              className="hidden md:block text-gray-300 hover:text-white transition-colors"
-            >
-              {t('landing.hero.login')}
-            </Link>
-            <Link 
-              to="/register" 
-              className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-full font-medium transition-all transform hover:scale-105 shadow-lg shadow-primary/25"
-            >
-              {t('landing.hero.cta')}
-            </Link>
+            
+            {isAuthenticated ? (
+              <Link 
+                to="/dashboard" 
+                className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-full font-medium transition-all transform hover:scale-105 shadow-lg shadow-primary/25 flex items-center space-x-2"
+              >
+                <Wallet size={18} />
+                <span>{t('dashboard.overview')}</span>
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  to="/login" 
+                  className="hidden md:block text-gray-300 hover:text-white transition-colors"
+                >
+                  {t('landing.hero.login')}
+                </Link>
+                <Link 
+                  to="/register" 
+                  className="bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-full font-medium transition-all transform hover:scale-105 shadow-lg shadow-primary/25"
+                >
+                  {t('landing.hero.cta')}
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -71,13 +86,24 @@ const Landing: React.FC = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <Link 
-              to="/register" 
-              className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-xl shadow-primary/25 flex items-center justify-center space-x-2"
-            >
-              <span>{t('landing.hero.cta')}</span>
-              <ArrowRight size={20} />
-            </Link>
+            {isAuthenticated ? (
+              <Link 
+                to="/dashboard" 
+                className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-xl shadow-primary/25 flex items-center justify-center space-x-2"
+              >
+                <Wallet size={20} />
+                <span>{t('dashboard.viewAll')}</span>
+                <ArrowRight size={20} />
+              </Link>
+            ) : (
+              <Link 
+                to="/register" 
+                className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-xl shadow-primary/25 flex items-center justify-center space-x-2"
+              >
+                <span>{t('landing.hero.cta')}</span>
+                <ArrowRight size={20} />
+              </Link>
+            )}
             <a 
               href="#video" 
               className="w-full sm:w-auto bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center space-x-2"
@@ -246,10 +272,10 @@ const Landing: React.FC = () => {
             {t('landing.cta_footer.subtitle')}
           </p>
           <Link 
-            to="/register" 
+            to={isAuthenticated ? "/dashboard" : "/register"}
             className="inline-flex items-center justify-center space-x-2 bg-white text-primary hover:bg-gray-100 px-10 py-4 rounded-full font-bold text-lg transition-all transform hover:scale-105 shadow-xl"
           >
-            <span>{t('landing.cta_footer.button')}</span>
+            <span>{isAuthenticated ? t('dashboard.viewAll') : t('landing.cta_footer.button')}</span>
             <ArrowRight size={20} />
           </Link>
         </div>

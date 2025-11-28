@@ -49,7 +49,7 @@ function ProtectedRoutes() {
 }
 
 function RootRoute() {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isLoading } = useAuthStore();
 
   if (isLoading) {
     return (
@@ -59,7 +59,9 @@ function RootRoute() {
     );
   }
 
-  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <Landing />;
+  // Sempre mostra a Landing Page, independente de estar logado ou não
+  // A Landing Page vai se adaptar baseada no estado de autenticação
+  return <Landing />;
 }
 
 function App() {

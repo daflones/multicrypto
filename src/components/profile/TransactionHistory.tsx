@@ -8,17 +8,33 @@ import { useCurrency } from '../../hooks/useCurrency';
 
 interface Transaction {
   id: string;
-  type: 'deposit' | 'withdraw' | 'investment' | 'commission' | 'yield';
+  type: 'deposit' | 'withdrawal' | 'investment' | 'commission' | 'yield';
   amount: number;
-  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'failed';
   payment_method?: string;
-  balance_type?: 'main' | 'commission';
+  balance_type?: 'main' | 'commission' | 'yield';
   created_at: string;
   product?: {
     name: string;
     price?: number;
   };
-  data?: any;
+  data?: {
+    pix_key?: string;
+    pix_key_type?: string;
+    fee?: number;
+    netAmount?: number;
+    totalDeducted?: number;
+    originalAmount?: number;
+    rejection_reason?: string;
+    refunded_amount?: number;
+    failed_at?: string;
+    rejected_at?: string;
+    approved_at?: string;
+    completed_at?: string;
+    integration_error?: string;
+    wallet_address?: string;
+    [key: string]: any;
+  };
   description?: string;
 }
 
@@ -195,7 +211,7 @@ const TransactionHistory: React.FC = () => {
     switch (type) {
       case 'deposit':
         return <ArrowDownLeft className="text-green-400" size={20} />;
-      case 'withdraw':
+      case 'withdrawal':
         return <ArrowUpRight className="text-red-400" size={20} />;
       case 'investment':
         return <ShoppingCart className="text-amber-400" size={20} />;
@@ -217,6 +233,8 @@ const TransactionHistory: React.FC = () => {
         return 'text-yellow-400';
       case 'rejected':
         return 'text-red-400';
+      case 'failed':
+        return 'text-orange-400';
       default:
         return 'text-gray-400';
     }
@@ -232,6 +250,8 @@ const TransactionHistory: React.FC = () => {
         return t('transactions.pending');
       case 'rejected':
         return t('transactions.rejected');
+      case 'failed':
+        return 'Falhou';
       default:
         return status;
     }
@@ -243,7 +263,7 @@ const TransactionHistory: React.FC = () => {
       case 'commission':
       case 'yield':
         return 'text-green-400';
-      case 'withdraw':
+      case 'withdrawal':
       case 'investment':
         return 'text-red-400';
       default:
@@ -257,7 +277,7 @@ const TransactionHistory: React.FC = () => {
       case 'commission':
       case 'yield':
         return '+';
-      case 'withdraw':
+      case 'withdrawal':
       case 'investment':
         return '-';
       default:
@@ -322,6 +342,58 @@ const TransactionHistory: React.FC = () => {
                       </span>
                     </div>
                     
+                    {/* Detalhes de Saque */}
+                    {transaction.type === 'withdrawal' && transaction.data && (
+                      <div className="mt-2 space-y-1">
+                        {/* Chave PIX */}
+                        {transaction.data.pix_key && (
+                          <div className="text-xs text-gray-400">
+                            <span className="text-gray-500">PIX ({transaction.data.pix_key_type?.toUpperCase()}):</span>{' '}
+                            <span className="font-mono text-gray-300">{transaction.data.pix_key}</span>
+                          </div>
+                        )}
+                        
+                        {/* Valores */}
+                        {transaction.data.netAmount && (
+                          <div className="text-xs text-gray-400">
+                            <span className="text-gray-500">Valor líquido:</span>{' '}
+                            <span className="text-green-400">{formatAmount(transaction.data.netAmount)}</span>
+                            {transaction.data.fee && (
+                              <span className="text-gray-500"> (Taxa: {formatAmount(transaction.data.fee)})</span>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Motivo de Rejeição */}
+                        {transaction.status === 'rejected' && transaction.data.rejection_reason && (
+                          <div className="text-xs bg-red-500/10 border border-red-500/20 rounded px-2 py-1 mt-1">
+                            <span className="text-red-400">Motivo: {transaction.data.rejection_reason}</span>
+                            {transaction.data.refunded_amount && (
+                              <span className="text-gray-400 ml-2">
+                                (Devolvido: {formatAmount(transaction.data.refunded_amount)})
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Erro de Integração (Falhou) */}
+                        {transaction.status === 'failed' && (
+                          <div className="text-xs bg-orange-500/10 border border-orange-500/20 rounded px-2 py-1 mt-1">
+                            <span className="text-orange-400">
+                              Erro: {transaction.data.integration_error || 'Falha no processamento'}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Sucesso */}
+                        {transaction.status === 'completed' && transaction.data.completed_at && (
+                          <div className="text-xs text-green-400">
+                            ✓ Pago em {formatDate(transaction.data.completed_at)}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     {/* Detalhes adicionais */}
                     {transaction.product && (
                       <div className="mt-1 text-xs text-gray-500">
@@ -352,7 +424,8 @@ const TransactionHistory: React.FC = () => {
                   )}
                   {transaction.balance_type && (
                     <p className="text-xs text-gray-500">
-                      {transaction.balance_type === 'commission' ? 'Comissão' : 'Principal'}
+                      {transaction.balance_type === 'commission' ? 'Comissão' : 
+                       transaction.balance_type === 'yield' ? 'Rendimento' : 'Principal'}
                     </p>
                   )}
                 </div>

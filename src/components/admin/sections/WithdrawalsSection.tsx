@@ -15,11 +15,11 @@ import Pagination from '../../ui/Pagination';
 
 interface WithdrawTransaction {
   id: string;
-  type: 'withdraw';
+  type: 'withdrawal';
   amount: number;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'failed';
   payment_method: string;
-  balance_type: 'main' | 'commission';
+  balance_type: 'main' | 'commission' | 'yield';
   created_at: string;
   user: {
     id: string;
@@ -31,11 +31,19 @@ interface WithdrawTransaction {
     commission_balance: number;
   };
   data?: {
+    // PIX
     pix_key?: string;
     pix_key_type?: 'cpf' | 'email' | 'phone' | 'random';
+    // Crypto
     wallet_address?: string;
     network?: 'TRC20' | 'BEP20' | 'ERC20';
     crypto_type?: string;
+    // Valores calculados
+    fee?: number;
+    netAmount?: number;
+    totalDeducted?: number;
+    originalAmount?: number;
+    // Banco (se aplicável)
     bank_name?: string;
     account_number?: string;
     agency?: string;
@@ -47,7 +55,7 @@ const WithdrawalsSection: React.FC = () => {
   const [withdrawals, setWithdrawals] = useState<WithdrawTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected' | 'failed'>('pending');
   const [selectedWithdraw, setSelectedWithdraw] = useState<WithdrawTransaction | null>(null);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   
@@ -76,7 +84,7 @@ const WithdrawalsSection: React.FC = () => {
           data,
           user:users(id, name, email, phone, cpf, balance, commission_balance)
         `)
-        .eq('type', 'withdraw')
+        .eq('type', 'withdrawal')
         .order('created_at', { ascending: false })
         .limit(200);
 
@@ -159,9 +167,12 @@ const WithdrawalsSection: React.FC = () => {
       case 'pending':
         return 'text-yellow-400 bg-yellow-500/20';
       case 'approved':
+      case 'completed':
         return 'text-green-400 bg-green-500/20';
       case 'rejected':
         return 'text-red-400 bg-red-500/20';
+      case 'failed':
+        return 'text-orange-400 bg-orange-500/20';
       default:
         return 'text-gray-400 bg-gray-500/20';
     }
@@ -262,6 +273,7 @@ const WithdrawalsSection: React.FC = () => {
           <option value="all">Todos</option>
           <option value="approved">Aprovados</option>
           <option value="rejected">Rejeitados</option>
+          <option value="failed">Falhou</option>
         </select>
       </div>
 
@@ -302,7 +314,9 @@ const WithdrawalsSection: React.FC = () => {
                 </div>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(withdrawal.status)}`}>
                   {withdrawal.status === 'pending' ? 'Pendente' :
-                   withdrawal.status === 'approved' ? 'Aprovado' : 'Rejeitado'}
+                   withdrawal.status === 'approved' ? 'Aprovado' :
+                   withdrawal.status === 'failed' ? 'Falhou' :
+                   withdrawal.status === 'completed' ? 'Concluído' : 'Rejeitado'}
                 </span>
               </div>
 
@@ -310,12 +324,33 @@ const WithdrawalsSection: React.FC = () => {
               <div className="flex items-center justify-between py-2 border-t border-surface-light">
                 <div>
                   <span className="text-gray-400 text-sm">Valor</span>
-                  <p className="text-xs text-gray-500">Líquido: {formatCurrency(withdrawal.amount * 0.95)}</p>
+                  <p className="text-xs text-gray-500">
+                    Líquido: {formatCurrency(withdrawal.data?.netAmount || withdrawal.amount * 0.95)}
+                    {withdrawal.data?.fee && ` (Taxa: ${formatCurrency(withdrawal.data.fee)})`}
+                  </p>
                 </div>
                 <span className="font-bold text-xl text-red-400">
                   -{formatCurrency(withdrawal.amount)}
                 </span>
               </div>
+
+              {/* Dados de Pagamento */}
+              {withdrawal.data?.pix_key && (
+                <div className="py-2 border-t border-surface-light">
+                  <p className="text-xs text-gray-400">
+                    Chave PIX ({withdrawal.data.pix_key_type?.toUpperCase()}): 
+                    <span className="text-white ml-1 font-mono">{withdrawal.data.pix_key}</span>
+                  </p>
+                </div>
+              )}
+              {withdrawal.data?.wallet_address && (
+                <div className="py-2 border-t border-surface-light">
+                  <p className="text-xs text-gray-400">
+                    Carteira ({withdrawal.data.network}): 
+                    <span className="text-white ml-1 font-mono text-xs break-all">{withdrawal.data.wallet_address}</span>
+                  </p>
+                </div>
+              )}
 
               {/* Info adicional */}
               <div className="flex items-center justify-between text-xs pt-2 border-t border-surface-light">
@@ -335,11 +370,11 @@ const WithdrawalsSection: React.FC = () => {
                 <span className="text-gray-500">{formatDate(withdrawal.created_at)}</span>
               </div>
 
-              {/* Botão de ação para pendentes */}
-              {withdrawal.status === 'pending' && (
+              {/* Botão de ação para pendentes e failed */}
+              {(withdrawal.status === 'pending' || withdrawal.status === 'failed') && (
                 <div className="mt-3 pt-3 border-t border-surface-light">
                   <button className="w-full py-2 bg-primary/20 text-primary rounded-lg text-sm font-medium">
-                    Revisar Saque
+                    {withdrawal.status === 'failed' ? 'Reprocessar Saque' : 'Revisar Saque'}
                   </button>
                 </div>
               )}

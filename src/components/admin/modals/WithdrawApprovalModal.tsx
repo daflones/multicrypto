@@ -5,11 +5,11 @@ import { formatCurrency, formatDate, formatCPF, formatPhone } from '../../../uti
 
 interface WithdrawTransaction {
   id: string;
-  type: 'withdraw';
+  type: 'withdrawal';
   amount: number;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'approved' | 'rejected' | 'completed' | 'failed';
   payment_method: string;
-  balance_type: 'main' | 'commission';
+  balance_type: 'main' | 'commission' | 'yield';
   created_at: string;
   user: {
     id: string;
@@ -26,6 +26,10 @@ interface WithdrawTransaction {
     wallet_address?: string;
     network?: 'TRC20' | 'BEP20' | 'ERC20';
     crypto_type?: string;
+    fee?: number;
+    netAmount?: number;
+    totalDeducted?: number;
+    originalAmount?: number;
     bank_name?: string;
     account_number?: string;
     agency?: string;
@@ -133,32 +137,31 @@ const WithdrawApprovalModal: React.FC<WithdrawApprovalModalProps> = ({
   };
 
   const processWithdrawalViaDBXpay = async (transaction: WithdrawTransaction) => {
-    const apiKey = process.env.REACT_APP_DBXPAY_API_KEY;
-    const baseURL = 'https://api.dbxpay.com';
+    const apiKey = import.meta.env.VITE_DBXPAY_API_KEY;
     
     if (!apiKey) {
       throw new Error('DBXpay API key não configurada');
     }
-
-    const fee = transaction.amount * 0.05;
-    const netAmount = transaction.amount - fee;
 
     // Validar se os dados PIX estão disponíveis
     if (!transaction.data?.pix_key || !transaction.data?.pix_key_type) {
       throw new Error('Dados PIX não encontrados na transação');
     }
 
+    // Usar valor líquido já calculado no momento do saque, ou calcular 95%
+    const netAmount = transaction.data?.netAmount || (transaction.amount * 0.95);
+
     // Payload conforme documentação oficial do DBXpay
+    // Campo correto é "pix_type" (não "pix_key_type")
     const payload = {
       amount: netAmount,
       pix_key: transaction.data.pix_key,
-      pix_key_type: transaction.data.pix_key_type,
-      external_reference: `CY_${transaction.id}`
+      pix_type: transaction.data.pix_key_type // API usa "pix_type"
     };
 
     console.log('Enviando saque para DBXpay:', payload);
 
-    const response = await fetch(`${baseURL}/api/v1/withdrawals/create`, {
+    const response = await fetch('https://dbxbankpay.com/api/v1/withdrawals/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -171,20 +174,18 @@ const WithdrawApprovalModal: React.FC<WithdrawApprovalModalProps> = ({
 
     console.log('Resposta DBXpay:', data);
 
-    if (!response.ok || !data.success) {
+    if (!response.ok) {
       return {
         success: false,
-        error: data.message || data.detail || 'Erro na API DBXpay'
+        error: data.message || data.detail || data.error || 'Erro na API DBXpay'
       };
     }
 
     return {
       success: true,
-      transactionId: data.data.id,
-      status: data.data.status || 'pending',
-      message: data.message || 'Saque processado via DBXpay',
-      fee: data.data.fee,
-      netAmount: data.data.net_amount
+      transactionId: data.id,
+      status: data.status || 'pending',
+      message: 'Saque processado via DBXpay'
     };
   };
 
@@ -203,7 +204,7 @@ const WithdrawApprovalModal: React.FC<WithdrawApprovalModalProps> = ({
 
       const { error } = await supabase.rpc('reject_withdrawal', {
         transaction_id: transaction.id,
-        rejection_reason: rejectionReason.trim()
+        reason: rejectionReason.trim()
       });
 
       if (error) {

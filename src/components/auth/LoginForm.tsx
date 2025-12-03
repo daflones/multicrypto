@@ -22,7 +22,8 @@ const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const from = location.state?.from?.pathname || '/';
+  // Always redirect to dashboard after successful login
+  const from = '/dashboard';
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

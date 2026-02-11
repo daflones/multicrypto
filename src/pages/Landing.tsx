@@ -6,7 +6,7 @@ import {
   Shield, 
   Clock, 
   Wallet, 
-  Play, 
+  // Play, // hidden - video section disabled for now
   ChevronDown,
   ArrowRight,
   Star,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Mail, Lock, LogIn, Send } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
@@ -20,7 +20,7 @@ const LoginForm: React.FC = () => {
   
   const { login, isLoading, error, clearError } = useAuthStore();
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
   
   // Always redirect to dashboard after successful login
   const from = '/dashboard';

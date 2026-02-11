@@ -19,7 +19,7 @@ import { useAuthStore } from '../store/authStore';
 import { useCurrency } from '../hooks/useCurrency';
 import LanguageSelector from '../components/common/LanguageSelector';
 
-const LAUNCH_DATE = new Date('2025-02-25T00:00:00-03:00').getTime();
+const LAUNCH_DATE = new Date('2026-02-25T00:00:00-03:00').getTime();
 
 const useCountdown = (targetDate: number) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });

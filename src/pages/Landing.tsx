@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -19,10 +19,35 @@ import { useAuthStore } from '../store/authStore';
 import { useCurrency } from '../hooks/useCurrency';
 import LanguageSelector from '../components/common/LanguageSelector';
 
+const LAUNCH_DATE = new Date('2025-02-25T00:00:00-03:00').getTime();
+
+const useCountdown = (targetDate: number) => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date().getTime();
+      const diff = Math.max(targetDate - now, 0);
+      setTimeLeft({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((diff % (1000 * 60)) / 1000),
+      });
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
+  return timeLeft;
+};
+
 const Landing: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuthStore();
   const { formatAmount } = useCurrency();
+  const countdown = useCountdown(LAUNCH_DATE);
 
   return (
     <div className="min-h-screen bg-background text-white overflow-x-hidden">
@@ -107,6 +132,7 @@ const Landing: React.FC = () => {
                 <ArrowRight size={20} />
               </Link>
             )}
+            {/* Ver Video button - hidden for now
             <a 
               href="#video" 
               className="w-full sm:w-auto bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center space-x-2"
@@ -114,32 +140,36 @@ const Landing: React.FC = () => {
               <Play size={20} className="fill-current" />
               <span>{t('landing.hero.watchVideo')}</span>
             </a>
+            */}
           </div>
 
-          {/* Stats Bar */}
-          <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-white/10 pt-10 max-w-4xl mx-auto">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-white mb-1">15k+</p>
-              <p className="text-sm text-gray-500">{t('landing.stats.users')}</p>
+          {/* Pre-Launch Countdown */}
+          <div className="mt-20 border-t border-white/10 pt-10 max-w-4xl mx-auto">
+            <div className="inline-flex items-center space-x-2 bg-primary/20 border border-primary/30 rounded-full px-5 py-2 mb-6 animate-pulse">
+              <Zap size={16} className="text-primary" />
+              <span className="text-sm font-semibold text-primary">{t('landing.prelaunch.badge')}</span>
             </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-success mb-1">{formatAmount(2500000)}+</p>
-              <p className="text-sm text-gray-500">{t('landing.stats.paid')}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary mb-1">{formatAmount(5800000)}+</p>
-              <p className="text-sm text-gray-500">{t('landing.stats.invested')}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-white mb-1">4.9/5</p>
-              <div className="flex justify-center text-yellow-500 mb-1">
-                <Star size={12} fill="currentColor" />
-                <Star size={12} fill="currentColor" />
-                <Star size={12} fill="currentColor" />
-                <Star size={12} fill="currentColor" />
-                <Star size={12} fill="currentColor" />
+            <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{t('landing.prelaunch.title')}</h3>
+            <p className="text-gray-400 mb-8">{t('landing.prelaunch.subtitle')}</p>
+            <div className="grid grid-cols-4 gap-4 max-w-lg mx-auto">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <p className="text-4xl md:text-5xl font-bold bg-gradient-to-b from-primary to-secondary bg-clip-text text-transparent">{String(countdown.days).padStart(2, '0')}</p>
+                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{t('landing.prelaunch.days')}</p>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <p className="text-4xl md:text-5xl font-bold bg-gradient-to-b from-primary to-secondary bg-clip-text text-transparent">{String(countdown.hours).padStart(2, '0')}</p>
+                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{t('landing.prelaunch.hours')}</p>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <p className="text-4xl md:text-5xl font-bold bg-gradient-to-b from-primary to-secondary bg-clip-text text-transparent">{String(countdown.minutes).padStart(2, '0')}</p>
+                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{t('landing.prelaunch.minutes')}</p>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <p className="text-4xl md:text-5xl font-bold bg-gradient-to-b from-primary to-secondary bg-clip-text text-transparent">{String(countdown.seconds).padStart(2, '0')}</p>
+                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{t('landing.prelaunch.seconds')}</p>
               </div>
             </div>
+            <p className="text-sm text-gray-500 mt-6">{t('landing.prelaunch.date')}</p>
           </div>
         </div>
       </section>
@@ -185,7 +215,7 @@ const Landing: React.FC = () => {
             <div>
               <div className="inline-flex items-center space-x-2 bg-primary/20 px-4 py-2 rounded-full mb-6">
                 <Coins size={20} className="text-primary" />
-                <span className="text-primary font-semibold">Multi Coin 🪙</span>
+                <span className="text-primary font-semibold">Multi Coin</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('landing.multicoin.title')}</h2>
               <p className="text-gray-400 text-lg mb-8">{t('landing.multicoin.desc')}</p>
@@ -378,6 +408,7 @@ const Landing: React.FC = () => {
           </div>
         </div>
       </section>
+      {/* Video Section - hidden for now
       <section id="video" className="py-20 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
@@ -386,7 +417,6 @@ const Landing: React.FC = () => {
           </div>
           
           <div className="max-w-4xl mx-auto aspect-video bg-surface rounded-2xl border border-white/10 shadow-2xl overflow-hidden relative group">
-            {/* Placeholder de Vídeo - Substitua pelo iframe do YouTube real */}
             <div className="absolute inset-0 flex items-center justify-center bg-black/50 group-hover:bg-black/40 transition-all cursor-pointer">
               <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/50 transform group-hover:scale-110 transition-transform">
                 <Play size={32} className="text-white fill-current ml-1" />
@@ -400,6 +430,7 @@ const Landing: React.FC = () => {
           </div>
         </div>
       </section>
+      */}
 
       {/* Testimonials Section */}
       <section className="py-20 bg-surface/50">
@@ -409,7 +440,7 @@ const Landing: React.FC = () => {
             <p className="text-gray-400 text-lg">{t('landing.testimonials.subtitle')}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {(t('landing.testimonials.list', { returnObjects: true }) as Array<{ name: string, role: string, text: string }>).map((testimonial, index) => (
               <TestimonialCard 
                 key={index}

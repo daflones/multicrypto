@@ -293,10 +293,15 @@
       "badge": "AI + Crypto Technology 2025",
       "watchVideo": "Watch Video"
     },
-    "stats": {
-      "users": "Active Users",
-      "paid": "Total Paid",
-      "invested": "Total Invested"
+    "prelaunch": {
+      "badge": "PRE-LAUNCH",
+      "title": "Official Launch Coming Soon!",
+      "subtitle": "We are in pre-launch phase. Sign up now and be one of the first!",
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds",
+      "date": "Official launch: February 25, 2025"
     },
     "features": {
       "title": "Why choose Multi Crypto?",
@@ -384,8 +389,8 @@
       "subtitle": "Real stories from those who are already profiting",
       "list": [
         {
-          "name": "Richard Smith",
-          "role": "Investor since 2023",
+          "name": "Carlos Silva",
+          "role": "Entrepreneur",
           "text": "It's amazing how simple the platform is. I started small and now I have a passive income that covers my bills."
         },
         {
@@ -394,12 +399,7 @@
           "text": "I've tested several platforms, but Multi Crypto is the only one that delivers what it promises. Withdrawals are instant!"
         },
         {
-          "name": "Charles Edwards",
-          "role": "Entrepreneur",
-          "text": "Transparency is the key. I can track every cent of daily yield. I recommend it to everyone."
-        },
-        {
-          "name": "Fernanda Lee",
+          "name": "Jonas Knupp",
           "role": "Student",
           "text": "I started knowing nothing about crypto and support helped me through everything. Great way to start investing."
         }

@@ -276,10 +276,15 @@
       "badge": "Công nghệ AI + Crypto 2025",
       "watchVideo": "Xem video"
     },
-    "stats": {
-      "users": "Người dùng hoạt động",
-      "paid": "Tổng đã thanh toán",
-      "invested": "Tổng đã đầu tư"
+    "prelaunch": {
+      "badge": "TIỀN RA MẮT",
+      "title": "Ra Mắt Chính Thức Sắp Tới!",
+      "subtitle": "Chúng tôi đang trong giai đoạn tiền ra mắt. Đăng ký ngay và trở thành một trong những người đầu tiên!",
+      "days": "Ngày",
+      "hours": "Giờ",
+      "minutes": "Phút",
+      "seconds": "Giây",
+      "date": "Ra mắt chính thức: 25 tháng 2 năm 2025"
     },
     "features": {
       "title": "Tại sao chọn Multi Crypto?",

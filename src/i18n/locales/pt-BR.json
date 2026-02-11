@@ -293,10 +293,15 @@
       "badge": "Tecnologia IA + Crypto 2025",
       "watchVideo": "Ver Vídeo"
     },
-    "stats": {
-      "users": "Usuários Ativos",
-      "paid": "Total Pago",
-      "invested": "Total Investido"
+    "prelaunch": {
+      "badge": "PRE-LANÇAMENTO",
+      "title": "Lançamento Oficial em Breve!",
+      "subtitle": "Estamos em fase de pré-lançamento. Cadastre-se agora e seja um dos primeiros!",
+      "days": "Dias",
+      "hours": "Horas",
+      "minutes": "Minutos",
+      "seconds": "Segundos",
+      "date": "Lançamento oficial: 25 de Fevereiro de 2025"
     },
     "features": {
       "title": "Por que escolher a Multi Crypto?",
@@ -385,7 +390,7 @@
       "list": [
         {
           "name": "Carlos Silva",
-          "role": "Investidor desde 2024",
+          "role": "Empresário",
           "text": "Excelente plataforma! Tenho obtido retornos consistentes e os saques são sempre pontuais."
         },
         {
@@ -394,12 +399,7 @@
           "text": "O sistema de indicação é incrível. Consegui construir uma renda passiva sólida em poucos meses."
         },
         {
-          "name": "Carlos Eduardo",
-          "role": "Empresário",
-          "text": "A transparência é o diferencial. Consigo acompanhar cada centavo de rendimento diário. Recomendo a todos."
-        },
-        {
-          "name": "Fernanda Lima",
+          "name": "Jonas Knupp",
           "role": "Estudante",
           "text": "Comecei sem saber nada de cripto e o suporte me ajudou em tudo. Ótima forma de começar a investir."
         }

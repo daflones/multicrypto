@@ -270,10 +270,15 @@
       "badge": "W 100% zautomatyzowana platforma",
       "watchVideo": "Obejrzyj wideo"
     },
-    "stats": {
-      "users": "Aktywni użytkownicy",
-      "paid": "Wypłacono łącznie",
-      "invested": "Zainwestowano łącznie"
+    "prelaunch": {
+      "badge": "PRZEDPREMIERA",
+      "title": "Oficjalne uruchomienie wkrótce!",
+      "subtitle": "Jesteśmy w fazie przedpremierowej. Zarejestruj się teraz i bądź jednym z pierwszych!",
+      "days": "Dni",
+      "hours": "Godzin",
+      "minutes": "Minut",
+      "seconds": "Sekund",
+      "date": "Oficjalne uruchomienie: 25 lutego 2025"
     },
     "features": {
       "title": "Dlaczego warto wybrać Multi Crypto?",

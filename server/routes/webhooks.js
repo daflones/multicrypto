@@ -91,7 +91,10 @@ async function creditUserBalanceByReference(externalReference, amount, customerE
     }
     
     // Calcular novo saldo
-    const newBalance = (Number(user.balance) || 0) + Number(amount);
+    const currentBalance = Number(user.balance) || 0;
+    const newBalance = currentBalance + Number(amount);
+    
+    console.log(`💰 Atualizando saldo: ${currentBalance} + ${amount} = ${newBalance}`);
     
     // Atualizar saldo do usuário
     const { error: updateError } = await supabase
@@ -100,9 +103,11 @@ async function creditUserBalanceByReference(externalReference, amount, customerE
       .eq('id', user.id);
     
     if (updateError) {
-      console.error('Erro ao atualizar saldo:', updateError);
+      console.error('❌ Erro ao atualizar saldo:', updateError);
       return false;
     }
+    
+    console.log('✅ Saldo atualizado no banco de dados com sucesso');
     
     // Registrar transação
     const { error: transactionError } = await supabase

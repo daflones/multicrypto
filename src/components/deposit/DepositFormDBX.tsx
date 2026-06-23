@@ -25,6 +25,7 @@ const DepositForm: React.FC<DepositFormProps> = () => {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'aguardando' | 'aprovado' | 'expirado' | 'cancelado'>('idle');
   const [copied, setCopied] = useState(false);
   const [usdRate, setUsdRate] = useState<number | null>(null);
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
 
   const { user } = useAuthStore();
   
@@ -56,8 +57,48 @@ const DepositForm: React.FC<DepositFormProps> = () => {
     fetchUsdRate();
   }, []);
 
-  // O status será atualizado via webhook
-  // Não fazemos polling, apenas aguardamos a notificação do webhook
+  // Polling para verificar status do pagamento
+  useEffect(() => {
+    if (step === 2 && payment && paymentStatus === 'aguardando') {
+      // Iniciar polling a cada 5 segundos
+      const interval = setInterval(async () => {
+        try {
+          // Verificar se há transação aprovada no banco para este payment_id
+          const { supabase } = await import('../../services/supabase');
+          const { data: transactions } = await supabase
+            .from('transactions')
+            .select('*')
+            .eq('user_id', user?.id)
+            .eq('type', 'deposit')
+            .eq('status', 'approved')
+            .contains('data', { payment_id: payment.id })
+            .order('created_at', { ascending: false })
+            .limit(1);
+
+          if (transactions && transactions.length > 0) {
+            // Pagamento aprovado encontrado
+            console.log('✅ Pagamento aprovado detectado via polling');
+            setPaymentStatus('aprovado');
+            setPollingInterval(null);
+            clearInterval(interval);
+            
+            // Atualizar saldo do usuário no store
+            const { refreshBalance } = useAuthStore.getState();
+            await refreshBalance();
+          }
+        } catch (error) {
+          console.error('Erro ao verificar status do pagamento:', error);
+        }
+      }, 5000);
+
+      setPollingInterval(interval);
+
+      // Limpar intervalo quando componente desmontar
+      return () => {
+        clearInterval(interval);
+      };
+    }
+  }, [step, payment, paymentStatus, user?.id]);
 
   const handleAmountChange = (value: string) => {
     const numericValue = value.replace(/[^\d,]/g, '').replace(',', '.');

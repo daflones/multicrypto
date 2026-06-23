@@ -173,7 +173,7 @@ const Profile: React.FC = () => {
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <a
-            href={`https://wa.me/5512982689483?text=${encodeURIComponent(`Olá, sou usuário da plataforma, meu cpf é ${user.cpf || ''}. Preciso de ajuda.`)}`}
+            href={`https://wa.me/573337431288?text=${encodeURIComponent(`Olá, sou usuário da plataforma, meu cpf é ${user.cpf || ''}. Preciso de ajuda.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 text-center bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
@@ -181,7 +181,7 @@ const Profile: React.FC = () => {
             {t('profile.contactSupport')}
           </a>
           <a
-            href="https://chat.whatsapp.com/IEqTSpXZSC1FqqMRXJhHeg?mode=ac_t"
+            href="https://chat.whatsapp.com/K9YQvciX5UbB4JT8F4JdGV"
             target="_blank"
             rel="noopener noreferrer"
             className="flex-1 text-center bg-secondary hover:bg-secondary/80 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"

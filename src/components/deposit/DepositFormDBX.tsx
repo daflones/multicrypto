@@ -25,7 +25,6 @@ const DepositForm: React.FC<DepositFormProps> = () => {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'aguardando' | 'aprovado' | 'expirado' | 'cancelado'>('idle');
   const [copied, setCopied] = useState(false);
   const [usdRate, setUsdRate] = useState<number | null>(null);
-  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
 
   const { user } = useAuthStore();
   
@@ -79,7 +78,6 @@ const DepositForm: React.FC<DepositFormProps> = () => {
             // Pagamento aprovado encontrado
             console.log('✅ Pagamento aprovado detectado via polling');
             setPaymentStatus('aprovado');
-            setPollingInterval(null);
             clearInterval(interval);
             
             // Atualizar saldo do usuário no store
@@ -90,8 +88,6 @@ const DepositForm: React.FC<DepositFormProps> = () => {
           console.error('Erro ao verificar status do pagamento:', error);
         }
       }, 5000);
-
-      setPollingInterval(interval);
 
       // Limpar intervalo quando componente desmontar
       return () => {

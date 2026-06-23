@@ -38,11 +38,13 @@ const Register: React.FC = () => {
             {/* Logo with better sizing for horizontal format */}
             <div className="flex justify-center mb-6">
               <div className="relative">
-                <img 
-                  src="/images/logo.png" 
-                  alt="Multi Crypto" 
-                  className="h-14 w-auto object-contain filter drop-shadow-lg"
-                />
+                <div className="h-14 w-14 rounded-full overflow-hidden">
+                  <img 
+                    src="/images/logo.png" 
+                    alt="Multi Crypto" 
+                    className="h-full w-full object-cover filter drop-shadow-lg"
+                  />
+                </div>
                 {/* Glow effect behind logo */}
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-purple-600/20 blur-xl -z-10 scale-110"></div>
               </div>

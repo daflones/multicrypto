@@ -55,8 +55,8 @@ const Landing: React.FC = () => {
       <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-white/10">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center">
-            <div className="h-12 overflow-hidden">
-              <img src="/images/logo.png" alt="Multi Crypto" className="h-full w-auto object-contain" />
+            <div className="h-12 w-12 overflow-hidden rounded-full">
+              <img src="/images/logo.png" alt="Multi Crypto" className="h-full w-full object-cover" />
             </div>
           </div>
           

@@ -4,7 +4,7 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Caddy espera porta 3000
+const PORT = process.env.PORT || 3001; // Backend usa porta 3001
 
 // Middlewares
 app.use(cors());

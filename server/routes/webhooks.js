@@ -19,7 +19,7 @@ function verifyDbxSignature(rawBody, ts, sig, secret) {
 }
 
 // Função para creditar saldo do usuário usando external_reference, email ou CPF
-async function creditUserBalanceByReference(externalReference, amount, customerEmail, customerDocument, paymentId) {
+async function creditUserBalanceByReference(externalReference, amount, customerEmail, customerDocument, paymentId, gateway = 'dbxbankpay') {
   try {
     let user = null;
     
@@ -118,7 +118,7 @@ async function creditUserBalanceByReference(externalReference, amount, customerE
           external_reference: externalReference,
           customer_email: customerEmail,
           customer_document: customerDocument,
-          gateway: 'dbxbankpay',
+          gateway: gateway,
           processed_at: new Date().toISOString()
         }
       });
@@ -203,6 +203,62 @@ async function creditUserBalance(email, amount, reference, paymentId) {
     return false;
   }
 }
+
+// Endpoint PayFast4 - Webhook de confirmação de pagamento
+router.post('/payfast4', async (req, res) => {
+  try {
+    console.log('🔔 Webhook PayFast4 recebido!');
+    console.log('Payload:', JSON.stringify(req.body, null, 2));
+
+    const { event, transaction_id, external_reference, status, amount } = req.body;
+    
+    console.log('📦 Processando webhook PayFast4:', {
+      event,
+      transaction_id,
+      external_reference,
+      status,
+      amount
+    });
+    
+    if (status === 'approved' || status === 'aprovado') {
+      console.log('💰 Pagamento PayFast4 aprovado detectado. Iniciando crédito...');
+      
+      // Creditar saldo do usuário automaticamente
+      const success = await creditUserBalanceByReference(
+        external_reference, 
+        amount, 
+        req.body.customer_email || null, 
+        req.body.customer_document || null, 
+        transaction_id,
+        'payfast4'
+      );
+      
+      if (success) {
+        console.log(`✅ Saldo creditado com sucesso para referência: ${external_reference}`);
+      } else {
+        console.error(`❌ Falha ao creditar saldo para referência: ${external_reference}`);
+      }
+    } else {
+      console.log('⚠️ Status não é aprovado, ignorando webhook.');
+    }
+    
+    // Sempre responder com 200 OK rapidamente
+    res.status(200).json({ received: true });
+    
+  } catch (error) {
+    console.error('Erro ao processar webhook PayFast4:', error);
+    res.status(200).json({ received: true, error: error.message });
+  }
+});
+
+// Endpoint GET para teste PayFast4
+router.get('/payfast4', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'PayFast4 webhook endpoint',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Endpoint DBXBankPay - Formato REAL do payload
 router.post('/dbxbankpay', async (req, res) => {

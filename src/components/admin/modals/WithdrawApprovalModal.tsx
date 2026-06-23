@@ -60,7 +60,7 @@ const WithdrawApprovalModal: React.FC<WithdrawApprovalModalProps> = ({
     try {
       setLoading(true);
 
-      // 1. Aprovar no banco de dados (muda status para 'processing')
+      // Aprovar no banco de dados (muda status para 'completed')
       const { error: dbError } = await supabase.rpc('approve_withdrawal', {
         transaction_id: transaction.id
       });
@@ -71,61 +71,7 @@ const WithdrawApprovalModal: React.FC<WithdrawApprovalModalProps> = ({
         return;
       }
 
-      // 2. Processar saque via DBXpay
-      try {
-        const dbxResponse = await processWithdrawalViaDBXpay(transaction);
-        
-        if (dbxResponse.success) {
-          // Atualizar transação com dados do DBXpay
-          await supabase
-            .from('transactions')
-            .update({
-              status: 'completed',
-              data: {
-                ...transaction.data,
-                dbx_transaction_id: dbxResponse.transactionId,
-                dbx_status: dbxResponse.status,
-                completed_at: new Date().toISOString()
-              }
-            })
-            .eq('id', transaction.id);
-
-          alert('Saque aprovado e processado com sucesso via PIX!');
-        } else {
-          // Se falhar no DBXpay, marcar como failed
-          await supabase
-            .from('transactions')
-            .update({
-              status: 'failed',
-              data: {
-                ...transaction.data,
-                dbx_error: dbxResponse.error,
-                failed_at: new Date().toISOString()
-              }
-            })
-            .eq('id', transaction.id);
-
-          alert('Saque aprovado mas falhou no processamento PIX: ' + dbxResponse.error);
-        }
-      } catch (dbxError: any) {
-        console.error('DBXpay processing error:', dbxError);
-        
-        // Marcar como failed se houver erro na integração
-        await supabase
-          .from('transactions')
-          .update({
-            status: 'failed',
-            data: {
-              ...transaction.data,
-              integration_error: dbxError.message,
-              failed_at: new Date().toISOString()
-            }
-          })
-          .eq('id', transaction.id);
-
-        alert('Saque aprovado mas falhou na integração PIX: ' + dbxError.message);
-      }
-
+      alert('Saque aprovado com sucesso!');
       onUpdate();
       onClose();
     } catch (error) {
@@ -134,59 +80,6 @@ const WithdrawApprovalModal: React.FC<WithdrawApprovalModalProps> = ({
     } finally {
       setLoading(false);
     }
-  };
-
-  const processWithdrawalViaDBXpay = async (transaction: WithdrawTransaction) => {
-    const apiKey = import.meta.env.VITE_DBXPAY_API_KEY;
-    
-    if (!apiKey) {
-      throw new Error('DBXpay API key não configurada');
-    }
-
-    // Validar se os dados PIX estão disponíveis
-    if (!transaction.data?.pix_key || !transaction.data?.pix_key_type) {
-      throw new Error('Dados PIX não encontrados na transação');
-    }
-
-    // Usar valor líquido já calculado no momento do saque, ou calcular 95%
-    const netAmount = transaction.data?.netAmount || (transaction.amount * 0.95);
-
-    // Payload conforme documentação oficial do DBXpay
-    // Campo correto é "pix_type" (não "pix_key_type")
-    const payload = {
-      amount: netAmount,
-      pix_key: transaction.data.pix_key,
-      pix_type: transaction.data.pix_key_type // API usa "pix_type"
-    };
-
-    console.log('Enviando saque para DBXpay:', payload);
-
-    const response = await fetch('https://dbxbankpay.com/api/v1/withdrawals/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': apiKey
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-
-    console.log('Resposta DBXpay:', data);
-
-    if (!response.ok) {
-      return {
-        success: false,
-        error: data.message || data.detail || data.error || 'Erro na API DBXpay'
-      };
-    }
-
-    return {
-      success: true,
-      transactionId: data.id,
-      status: data.status || 'pending',
-      message: 'Saque processado via DBXpay'
-    };
   };
 
   const handleReject = async () => {

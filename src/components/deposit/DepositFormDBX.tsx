@@ -3,7 +3,7 @@ import { AlertCircle, Copy, CheckCircle, Clock, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store/authStore';
 import { PAYMENT_METHODS } from '../../utils/constants';
-import { dbxBankPayService, DBXPaymentResponse } from '../../services/dbxbankpay.service';
+import { payfast4Service, PayFast4PaymentResponse } from '../../services/payfast4.service';
 import { useCurrency } from '../../hooks/useCurrency';
 
 interface DepositFormProps {
@@ -21,7 +21,7 @@ const DepositForm: React.FC<DepositFormProps> = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [payment, setPayment] = useState<DBXPaymentResponse | null>(null);
+  const [payment, setPayment] = useState<PayFast4PaymentResponse | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'aguardando' | 'aprovado' | 'expirado' | 'cancelado'>('idle');
   const [copied, setCopied] = useState(false);
   const [usdRate, setUsdRate] = useState<number | null>(null);
@@ -76,8 +76,8 @@ const DepositForm: React.FC<DepositFormProps> = () => {
     const amount = parseFloat(formData.amount.replace(',', '.')) || 0;
     
     // Validação de valor mínimo
-    if (amount < 10) {
-      setError(t('deposit.minimumAmount'));
+    if (amount < 50) {
+      setError('Valor mínimo de depósito é R$ 50,00');
       return;
     }
     
@@ -86,17 +86,16 @@ const DepositForm: React.FC<DepositFormProps> = () => {
 
     try {
       if (formData.paymentMethod === 'pix') {
-        // Criar pagamento PIX via DBXBankPay
-        const externalReference = dbxBankPayService.generateExternalReference(user?.id || 'anonymous');
-        const webhookUrl = import.meta.env.VITE_WEBHOOK_URL || 'https://multicrypto.com.br/api/webhooks/dbxbankpay';
+        // Criar pagamento PIX via PayFast4
+        const externalReference = payfast4Service.generateExternalReference(user?.id || 'anonymous');
+        const webhookUrl = import.meta.env.VITE_WEBHOOK_URL || 'https://multicrypto.com.br/api/webhooks/payfast4';
         
-        console.log('🔧 DEBUG - Criando pagamento:');
+        console.log('🔧 DEBUG - Criando pagamento PayFast4:');
         console.log('🔗 Webhook URL enviada:', webhookUrl);
         console.log('🆔 Referência:', externalReference);
         
         const paymentData = {
-          amount: dbxBankPayService.formatAmountToCents(amount),
-          description: `Recarga Multi Crypto - ${formatAmount(amount)}`,
+          amount: amount,
           customer_email: user?.email || '',
           customer_name: user?.email || 'Usuário',
           customer_document: user?.cpf || '',
@@ -105,9 +104,9 @@ const DepositForm: React.FC<DepositFormProps> = () => {
           webhook_url: webhookUrl
         };
 
-        const newPayment = await dbxBankPayService.createPayment(paymentData);
+        const newPayment = await payfast4Service.createPayment(paymentData);
         setPayment(newPayment);
-        setPaymentStatus(newPayment.status);
+        setPaymentStatus(newPayment.status as any);
       }
       
       setStep(2);
@@ -210,6 +209,24 @@ const DepositForm: React.FC<DepositFormProps> = () => {
             <label className="block text-sm font-medium text-gray-300">
               {t('deposit.amount')} ({currency.code})
             </label>
+            
+            {/* Preset Amount Buttons */}
+            <div className="grid grid-cols-4 gap-2">
+              {[50, 100, 250, 500].map((presetAmount) => (
+                <button
+                  key={presetAmount}
+                  onClick={() => setFormData(prev => ({ ...prev, amount: presetAmount.toString() }))}
+                  className={`py-2 px-3 rounded-lg border-2 transition-all text-sm font-medium ${
+                    formData.amount === presetAmount.toString()
+                      ? 'border-primary bg-primary/10 text-primary'
+                      : 'border-surface-light hover:border-primary/50 text-gray-300'
+                  }`}
+                >
+                  {currency.symbol}{presetAmount}
+                </button>
+              ))}
+            </div>
+            
             <div className="relative">
               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm font-medium">
                 {currency.symbol}
@@ -315,12 +332,12 @@ const DepositForm: React.FC<DepositFormProps> = () => {
                 <div className="flex items-center space-x-2">
                   <input
                     type="text"
-                    value={payment.qr_code}
+                    value={payment.pix_code}
                     readOnly
                     className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white text-sm font-mono"
                   />
                   <button
-                    onClick={() => copyToClipboard(payment.qr_code)}
+                    onClick={() => copyToClipboard(payment.pix_code)}
                     className="px-3 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors"
                   >
                     {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
